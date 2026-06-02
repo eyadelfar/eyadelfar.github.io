@@ -730,6 +730,35 @@
     animation: eggShake 0.5s ease-in-out 3;
   }
   @keyframes eggShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-1.5deg); } 75% { transform: rotate(1.5deg); } }
+
+  body.touch #canvas { touch-action: none; }
+  #touch-ui { position: fixed; inset: 0; z-index: 30; pointer-events: none; display: none; }
+  body.touch #touch-ui { display: block; }
+  body.touch #controls { display: none; }
+  #joy {
+    position: absolute; left: 24px; bottom: 30px; width: 130px; height: 130px;
+    border-radius: 50%; background: rgba(12,20,28,0.34); border: 1.5px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(6px); pointer-events: auto; touch-action: none;
+  }
+  #joy-thumb {
+    position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px;
+    border-radius: 50%; background: radial-gradient(circle at 40% 35%, #eaf6ff, #3abef9);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4); transition: transform 0.04s;
+  }
+  #touch-actions { position: absolute; right: 22px; bottom: 34px; display: flex; flex-direction: column; gap: 14px; pointer-events: auto; }
+  .tbtn {
+    width: 66px; height: 66px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25);
+    background: rgba(12,20,28,0.42); backdrop-filter: blur(6px); color: #eaf6ff;
+    font: 700 22px/1 Inter, sans-serif; display: grid; place-items: center; touch-action: manipulation;
+  }
+  .tbtn:active { background: rgba(58,190,249,0.4); transform: scale(0.94); }
+  #touch-hint {
+    position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+    color: rgba(255,255,255,0.6); font: 600 11px/1 ui-monospace, monospace; white-space: nowrap;
+    background: rgba(0,0,0,0.25); padding: 6px 12px; border-radius: 999px;
+  }
+  body.touch.ui-open #touch-ui { display: none; }
+  @media (pointer: coarse) { #mobile-warning { display: none; } }
   .browser-dots i:hover { transform: scale(1.25); filter: brightness(1.2); }
 
   #lightbox {
@@ -807,6 +836,15 @@
   <div id="prompt" class="ui"></div>
   <div id="controls" class="ui"><b>W</b> <b>A</b> <b>S</b> <b>D</b> Move · <b>Mouse</b> Look · <b>Scroll</b> Zoom · <b>V</b> Spectator</div>
   <div id="notice"></div>
+
+  <div id="touch-ui">
+    <div id="joy"><div id="joy-thumb"></div></div>
+    <div id="touch-actions">
+      <button id="tBtnInteract" class="tbtn" title="Interact">E</button>
+      <button id="tBtnView" class="tbtn" title="Spectator">👁</button>
+    </div>
+    <div id="touch-hint">Left stick to move · drag to look · tap to interact</div>
+  </div>
 
   <aside id="panel">
     <button class="close-btn" onclick="closePanel()" title="Close (Esc)"><span>✕</span> Close</button>
@@ -1089,6 +1127,9 @@
     const cssScene = new THREE.Scene();
     let css3dActive = false;
     let drosteMode = false, drosteZoom = 1;
+    const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
+    if (isTouch) document.body.classList.add('touch');
+    const joyVec = { x: 0, y: 0 };
     const MONITOR_POS = new THREE.Vector3(0, 1.6, -4.05);
     const _camFwd = new THREE.Vector3(), _toMon = new THREE.Vector3();
 
@@ -2448,7 +2489,7 @@
     }
 
     function triggerLockProcess() {
-
+      if (isTouch) return;
       if (!mousePointerLockState && !uiOpen && entered) {
         const p = canvas.requestPointerLock();
         if (p && p.catch) p.catch(() => {});
@@ -2524,6 +2565,63 @@
       if (e.code === 'Escape') { closePanel(); if (drosteMode || cloneGroup.children.length) exitDroste(); }
     });
     window.addEventListener('keyup', (e) => { pressedKeys[e.code] = false; });
+
+    const joyEl = document.getElementById('joy');
+    const joyThumb = document.getElementById('joy-thumb');
+    let joyId = null;
+    function joyUpdate(e) {
+      for (const t of e.changedTouches) {
+        if (t.identifier !== joyId) continue;
+        const r = joyEl.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, max = r.width / 2;
+        let dx = t.clientX - cx, dy = t.clientY - cy; const d = Math.hypot(dx, dy);
+        if (d > max) { dx *= max / d; dy *= max / d; }
+        joyVec.x = dx / max; joyVec.y = dy / max;
+        joyThumb.style.transform = `translate(${dx}px,${dy}px)`;
+      }
+    }
+    function joyEnd(e) {
+      for (const t of e.changedTouches) if (t.identifier === joyId) { joyId = null; joyVec.x = 0; joyVec.y = 0; joyThumb.style.transform = ''; }
+    }
+    if (joyEl) {
+      joyEl.addEventListener('touchstart', e => { e.preventDefault(); joyId = e.changedTouches[0].identifier; joyUpdate(e); }, { passive: false });
+      joyEl.addEventListener('touchmove', e => { e.preventDefault(); joyUpdate(e); }, { passive: false });
+      joyEl.addEventListener('touchend', joyEnd);
+      joyEl.addEventListener('touchcancel', joyEnd);
+    }
+
+    let lookId = null, lookX = 0, lookY = 0, lookMoved = 0;
+    canvas.addEventListener('touchstart', e => {
+      if (typingMode || uiOpen || lookId !== null) return;
+      const t = e.changedTouches[0]; lookId = t.identifier; lookX = t.clientX; lookY = t.clientY; lookMoved = 0;
+    }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+      if (lookId === null) return; e.preventDefault();
+      for (const t of e.changedTouches) {
+        if (t.identifier !== lookId) continue;
+        const dx = t.clientX - lookX, dy = t.clientY - lookY; lookX = t.clientX; lookY = t.clientY;
+        lookMoved += Math.abs(dx) + Math.abs(dy);
+        const s = 0.005;
+        if (spectatorMode) {
+          spectatorAzimuth -= dx * s;
+          spectatorElevation = THREE.MathUtils.clamp(spectatorElevation + dy * s, -0.6, 1.4);
+        } else {
+          cameraYaw -= dx * s; cameraPitch -= dy * s;
+          if (isSeatedState) { cameraYaw = THREE.MathUtils.clamp(cameraYaw, -0.55, 0.55); cameraPitch = THREE.MathUtils.clamp(cameraPitch, -0.35, 0.28); }
+          else cameraPitch = THREE.MathUtils.clamp(cameraPitch, -1.35, 1.35);
+          synchronizeTransformationRotation();
+        }
+      }
+    }, { passive: false });
+    function lookTap() {
+      if (uiOpen) return;
+      if (laserActive) forwardScreenClick(laserUV);
+      else triggerContextInteraction();
+    }
+    canvas.addEventListener('touchend', e => {
+      for (const t of e.changedTouches) if (t.identifier === lookId) { lookId = null; if (lookMoved < 12) lookTap(); }
+    });
+    document.getElementById('tBtnInteract').addEventListener('click', () => { if (!uiOpen) lookTap(); });
+    document.getElementById('tBtnView').addEventListener('click', () => toggleSpectatorMode());
 
     function toggleSpectatorMode() {
       if (uiOpen) return;
@@ -2829,6 +2927,10 @@
       if (pressedKeys['KeyS']) moveDir.sub(forward);
       if (pressedKeys['KeyD']) moveDir.add(right);
       if (pressedKeys['KeyA']) moveDir.sub(right);
+      if (joyVec.x || joyVec.y) {
+        moveDir.add(forward.clone().multiplyScalar(-joyVec.y));
+        moveDir.add(right.clone().multiplyScalar(joyVec.x));
+      }
       inputMag = Math.min(moveDir.length(), 1.0);
 
       if (inputMag > 0.001) {
@@ -3318,6 +3420,7 @@
       if (pcBooted && typingMode && Math.floor(elapsed * 3) % 2 === 0) redrawWorkstationMonitor();
 
       updateControlsDisplay();
+      if (isTouch) document.body.classList.toggle('ui-open', uiOpen);
       composer.render();
 
       if (drosteMode) drawDroste();   // infinite-mirror feedback onto the monitor
