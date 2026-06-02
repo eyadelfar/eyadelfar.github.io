@@ -858,12 +858,10 @@
 
   <div id="entry">
     <div class="entry-card">
-      <div class="badge">☀️ Native Physics Engine v4.0</div>
       <h1>Step into a <em>Realistic Workspace</em>.</h1>
       <p>An ultra-responsive, high-fidelity interactive portfolio. Explore as a character, boot the workstation, toggle system commands, and switch to cinematic spectator view.</p>
       <div class="entry-actions">
         <button id="enterBtn" class="primary-btn">Enter Studio</button>
-        <button id="tourBtn" class="ghost-btn">Quick Guide</button>
       </div>
       <div id="mobile-warning">Desktop mouse & keyboard highly recommended for native FPS interaction mechanics.</div>
     </div>
@@ -888,6 +886,13 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+    if (window.self !== window.top) {
+      document.documentElement.innerHTML =
+        '<body style="margin:0;height:100vh;display:grid;place-items:center;background:#0e171f;color:#cfe6f5;font:600 16px system-ui,sans-serif">' +
+        '<a href="interactive_room.html" target="_top" style="color:#3abef9;text-decoration:none">↗ Open the 3D Studio</a></body>';
+      throw new Error('The 3D studio runs at top level only (prevents room-in-room recursion).');
+    }
 
     const DATA = {
       impact: {
@@ -957,7 +962,6 @@
     const fpsText = document.getElementById('fpsText');
     const entry = document.getElementById('entry');
     const enterBtn = document.getElementById('enterBtn');
-    const tourBtn = document.getElementById('tourBtn');
     const reticle = document.getElementById('reticle');
     const controlsEl = document.getElementById('controls');
 
@@ -1051,7 +1055,7 @@
     camera.position.set(0, 1.68, 3.5);
     camera.rotation.order = 'YXZ';
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -1084,6 +1088,7 @@
     document.body.appendChild(css3dEl);
     const cssScene = new THREE.Scene();
     let css3dActive = false;
+    let drosteMode = false, drosteZoom = 1;
     const MONITOR_POS = new THREE.Vector3(0, 1.6, -4.05);
     const _camFwd = new THREE.Vector3(), _toMon = new THREE.Vector3();
 
@@ -1538,7 +1543,8 @@
     propAnimators.push(() => { const a = steamGeo.attributes.position.array; for (let i = 0; i < steamN; i++) { a[i * 3 + 1] += 0.0016; if (a[i * 3 + 1] > 0.44) a[i * 3 + 1] = 0.18; } steamGeo.attributes.position.needsUpdate = true; });
 
     const towerGroup = new THREE.Group();
-    towerGroup.position.set(1.85, 0.04, -4.0);
+    towerGroup.position.set(1.95, 0.04, -3.95);
+    towerGroup.scale.setScalar(0.55);
     scene.add(towerGroup);
     rbox('Case', [0.5, 0.96, 0.92], [0, 0.48, 0], mat(0x14181d, { roughness: 0.5, metalness: 0.55 }), towerGroup, 0.02);
     [-0.2, 0.2].forEach(dx => [-0.36, 0.36].forEach(dz => cylinder('Foot', 0.028, 0.028, 0.02, 10, [dx, 0.005, dz], mat(0x0a0a0a, { roughness: 0.85 }), towerGroup)));
@@ -2311,7 +2317,7 @@
       },
       (xhr) => {
         if (xhr.total) {
-          const pct = Math.round((xhr.loaded / xhr.total) * 100);
+          const pct = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
           const fill = document.getElementById('loaderFill');
           const pctEl = document.getElementById('loaderPct');
           if (fill) fill.style.width = pct + '%';
@@ -2455,9 +2461,6 @@
       showNotice('Studio initialized. WASD to walk · Mouse to look · V for spectator view.');
       updateControlsDisplay();
     });
-    tourBtn.addEventListener('click', () => {
-      showNotice('WASD walk · Mouse look · Scroll zoom · E interact · V spectator · T console (when seated).');
-    });
     canvas.addEventListener('mousedown', () => {
       if (typingMode || uiOpen) return;
 
@@ -2518,7 +2521,7 @@
         cyclePCInterfaceModes(); }
       if (e.code === 'KeyV') toggleSpectatorMode();
 
-      if (e.code === 'Escape') { closePanel(); if (cloneGroup.children.length) { clearClones(); studioClicks = 0; } }
+      if (e.code === 'Escape') { closePanel(); if (drosteMode || cloneGroup.children.length) exitDroste(); }
     });
     window.addEventListener('keyup', (e) => { pressedKeys[e.code] = false; });
 
@@ -2747,7 +2750,7 @@
 
     function redrawWorkstationMonitor() {
       const ctx = screenCtx;
-      if (!ctx) return;
+      if (!ctx || drosteMode) return;
       if (!pcBooted) {
         ctx.fillStyle = '#05080c';
         ctx.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
@@ -2869,13 +2872,13 @@
 
       const px = 1280, py = Math.round(px * (1.09 / 2.24));
       const iframe = document.createElement('iframe');
-      iframe.src = 'portfolio.html';
       iframe.style.width = px + 'px';
       iframe.style.height = py + 'px';
       iframe.style.border = '0';
       iframe.style.background = '#0f0f1e';
       iframe.style.pointerEvents = 'none';
       iframe.addEventListener('load', () => attachStudioIntercept(iframe));
+      iframe.src = 'portfolio.html';
       const obj = new CSS3DObject(iframe);
       const scale = 2.24 / px;
       obj.scale.set(scale, scale, scale);
@@ -3008,17 +3011,28 @@
     const cloneGroup = new THREE.Group();
     scene.add(cloneGroup);
     let studioClicks = 0, eggTimer = null;
+    function exitDroste() { drosteMode = false; drosteZoom = 1; clearClones(); studioClicks = 0; redrawWorkstationMonitor(); }
+    function drawDroste() {
+      const w = screenCanvas.width, h = screenCanvas.height;
+      const sw = renderer.domElement.width, sh = renderer.domElement.height;
+      const cw = sw / drosteZoom, ch = sh / drosteZoom;
+      try { screenCtx.drawImage(renderer.domElement, (sw - cw) / 2, (sh - ch) / 2, cw, ch, 0, 0, w, h); } catch (_) { return; }
+      screenCtx.fillStyle = 'rgba(58,190,249,0.05)'; screenCtx.fillRect(0, 0, w, h);
+      screenTexture.needsUpdate = true;
+    }
     function clearClones() {
       while (cloneGroup.children.length) cloneGroup.remove(cloneGroup.children[0]);
       document.getElementById('egg').classList.remove('show');
     }
     function makeClone(scale) {
       if (!loadedCharacterModel) return null;
-      const c = loadedCharacterModel.clone(true);
-      c.scale.multiplyScalar(scale);
-      c.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
-      c.userData.isClone = true;
-      return c;
+      const inner = loadedCharacterModel.clone(true);
+      inner.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+      const g = new THREE.Group();   // wrapper keeps the model's feet-on-floor offset intact under scaling
+      g.add(inner);
+      g.scale.setScalar(scale);
+      g.userData.isClone = true;
+      return g;
     }
     function cloneStage(n) {
       if (!loadedCharacterModel) { showNotice('Studio still loading…'); return; }
@@ -3026,35 +3040,36 @@
       const fwd = new THREE.Vector3(); camera.getWorldDirection(fwd); fwd.y = 0; if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, -1); fwd.normalize();
       const cx = camera.position.x, cz = camera.position.z;
       if (n === 1) {
-        for (let i = 0; i < 18; i++) {
+        for (let i = 0; i < 14; i++) {
           const c = makeClone(0.5); if (!c) break;
-          const a = Math.random() * Math.PI * 2, r = 1.4 + Math.random() * 2.6;
+          const a = (i / 14) * Math.PI * 2 + Math.random() * 0.45, r = 2.0 + Math.random() * 2.6;
           c.position.set(THREE.MathUtils.clamp(cx + Math.cos(a) * r, -6, 6), 0, THREE.MathUtils.clamp(cz + Math.sin(a) * r, -4.5, 12));
           c.rotation.y = Math.random() * Math.PI * 2; c.userData.spin = (Math.random() - 0.5) * 2.2;
           cloneGroup.add(c);
         }
-        showNotice("You're already inside… 👀 (×18 of you)");
+        showNotice("You're already inside… 👀 (×14 of you)");
       } else if (n === 2) {
         for (let i = 0; i < 8; i++) {
           const c = makeClone(0.62); if (!c) break;
           const a = i / 8 * Math.PI * 2;
-          c.position.set(cx + Math.cos(a) * 2.3, 0, cz + Math.sin(a) * 2.3);
-          c.lookAt(cx, 0.8, cz); c.userData.spin = 0;
+          c.position.set(cx + Math.cos(a) * 2.6, 0, cz + Math.sin(a) * 2.6);
+          c.rotation.y = Math.atan2(cx - c.position.x, -(cz - c.position.z)); c.userData.spin = 0;
           cloneGroup.add(c);
         }
         showNotice('The clones are narrowing down…');
       } else {
         const center = new THREE.Vector3(
-          THREE.MathUtils.clamp(cx + fwd.x * 3.2, -5, 5), 0, THREE.MathUtils.clamp(cz + fwd.z * 3.2, -4, 11));
+          THREE.MathUtils.clamp(cx + fwd.x * 3.4, -4.5, 4.5), 0, THREE.MathUtils.clamp(cz + fwd.z * 3.4, -3.5, 10.3));
         const angs = [-Math.PI / 2, Math.PI / 6, Math.PI * 5 / 6];
-        const pos = angs.map(a => new THREE.Vector3(center.x + Math.cos(a) * 1.4, 0, center.z + Math.sin(a) * 1.4));
+        const pos = angs.map(a => new THREE.Vector3(center.x + Math.cos(a) * 2.0, 0, center.z + Math.sin(a) * 2.0));
         const up = new THREE.Vector3(0, 1, 0);
         const sleeveM = physMat(0xccd2da, { roughness: 0.6, clearcoat: 0.12 });
         const skinM = mat(0xe6bd99, { roughness: 0.6 });
         for (let i = 0; i < 3; i++) {
           const c = makeClone(0.85); if (!c) break;
           c.position.copy(pos[i]);
-          const tgt = pos[(i + 1) % 3]; c.lookAt(tgt.x, 0.8, tgt.z);
+          const tgt = pos[(i + 1) % 3];
+          c.rotation.y = Math.atan2(tgt.x - pos[i].x, -(tgt.z - pos[i].z));
           cloneGroup.add(c);
 
           const dir = tgt.clone().sub(pos[i]); dir.y = 0; dir.normalize();
@@ -3081,15 +3096,18 @@
         }
         document.getElementById('egg').classList.add('show');
         if (eggTimer) clearTimeout(eggTimer);
-        eggTimer = setTimeout(() => { clearClones(); studioClicks = 0; }, 8000);
+        eggTimer = setTimeout(exitDroste, 9000);
         showNotice('🕷️ Finally, a worthy opponent.');
       }
     }
     function studioClick(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (browserEl.classList.contains('active')) closeBrowser();
       studioClicks++;
-      if (studioClicks > 3) { clearClones(); studioClicks = 1; }
-      cloneStage(studioClicks);
+      drosteMode = true;
+      drosteZoom = Math.min(2.4, 1 + studioClicks * 0.2);
+      if (studioClicks >= 3) cloneStage(3);
+      else showNotice(studioClicks === 1 ? '🌀 The studio… inside the studio.' : '🌀 Going deeper…');
     }
 
     function attachStudioIntercept(iframe) {
@@ -3302,8 +3320,10 @@
       updateControlsDisplay();
       composer.render();
 
+      if (drosteMode) drawDroste();   // infinite-mirror feedback onto the monitor
+
       let nearMonitor = false;
-      if (pcBooted && !spectatorMode && !uiOpen && !typingMode) {
+      if (!drosteMode && pcBooted && !spectatorMode && !uiOpen && !typingMode) {
         const dToMon = camera.position.distanceTo(MONITOR_POS);
         if (dToMon < 4.3) {
           _camFwd.set(0, 0, 0); camera.getWorldDirection(_camFwd);
@@ -3345,5 +3365,6 @@
 
     console.log('☀️ Eyad Elfar AI Studio — character + AI installations ready. WASD move · Mouse look · E interact · V spectator.');
   </script>
+  <script data-goatcounter="https://eyadelfar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
