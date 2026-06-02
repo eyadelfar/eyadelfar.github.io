@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eyad Elfar | AI Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+
+    --bg:      #0f0f1e;
+    --bg2:     #161628;
+    --bg3:     #1e1e32;
+
+    --accent:  #7c74ff;
+    --accent2: #b09afa;
+
+    --text:    #f0f0f8;
+    --text2:   #9696b8;
+
+    --green:   #4ade9e;
+    --orange:  #fb923c;
+    --pink:    #f472b6;
+    --blue:    #60a5fa;
+    --cyan:    #22d3ee;
+
+    --border:  rgba(255, 255, 255, .10);
+    --glass:   rgba(22, 22, 42, .65);
+    --radius:  16px;
+
+    --ease:    cubic-bezier(.4, 0, .2, 1);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.8;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4,
+  .section-title,
+  .venture-body h3,
+  .stat .num,
+  .github-stat-num,
+  nav .logo {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  .callout {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    margin: 14px 0;
+    border-radius: 10px;
+    background: rgba(124, 116, 255, .07);
+    border-left: 3px solid var(--accent);
+    font-size: .92rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .callout-label {
+    display: inline-block;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .card p { font-size: .93rem; line-height: 1.7; }
+  .card h3 { letter-spacing: -.01em; }
+  .section-title { letter-spacing: -.02em; }
+  a {
+    color: var(--accent2);
+    text-decoration: none;
+    transition: color .25s ease;
+  }
+  a:hover { color: #c4b5fd; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  img { max-width: 100%; border-radius: var(--radius); }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 14px 0;
+    background: rgba(15, 15, 30, .80);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+    transition: all .4s var(--ease);
+  }
+  nav.scrolled {
+    padding: 8px 0;
+    background: rgba(15, 15, 30, .96);
+  }
+  nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  nav .logo {
+    font-weight: 900;
+    font-size: 1.3rem;
+    background: linear-gradient(135deg, var(--accent), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  nav .nav-links { display: flex; gap: 28px; }
+  nav .nav-links a {
+    position: relative;
+    color: var(--text2);
+    font-size: .92rem;
+    font-weight: 500;
+    transition: color .3s;
+  }
+  nav .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent2);
+    border-radius: 1px;
+    transform: scaleX(0);
+    transition: transform .3s var(--ease);
+  }
+  nav .nav-links a:hover { color: var(--text); }
+  nav .nav-links a:hover::after,
+  nav .nav-links a.active::after { transform: scaleX(1); }
+  nav .nav-links a.active { color: var(--accent2); }
+
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 140px 28px 100px;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url('images/hero_banner.png') center / cover no-repeat;
+    opacity: .18;
+    filter: blur(3px);
+    transition: transform .1s linear;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(124, 116, 255, .10) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(15, 15, 30, .30) 0%, var(--bg) 100%);
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .hero-avatar {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 60px rgba(124, 116, 255, .28), 0 0 120px rgba(124, 116, 255, .10);
+    animation: float 6s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .hero-info { text-align: left; }
+  .hero-langs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .hero-lang {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 500;
+    color: var(--text2);
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-14px); }
+  }
+  .hero h1 {
+    font-size: 3.6rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 10px;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--cyan), var(--accent));
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 6s ease infinite;
+  }
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50%       { background-position: 100% 50%; }
+  }
+  .hero .subtitle {
+    font-size: 1.3rem;
+    color: var(--accent2);
+    font-weight: 500;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeUp .8s .3s var(--ease) forwards;
+  }
+  .hero .location {
+    color: var(--text2);
+    font-size: 1rem;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp .8s .5s var(--ease) forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp .8s .7s var(--ease) forwards;
+  }
+  .hero-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 26px;
+    border-radius: 28px;
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--text);
+    background: rgba(124, 116, 255, .10);
+    border: 1px solid rgba(124, 116, 255, .22);
+    backdrop-filter: blur(12px);
+    transition: all .35s var(--ease);
+  }
+  .hero-links a:hover {
+    background: rgba(124, 116, 255, .22);
+    border-color: var(--accent);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(124, 116, 255, .22);
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity .8s var(--ease), transform .8s var(--ease);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: opacity .8s var(--ease), transform .8s var(--ease);
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity .8s var(--ease), transform .8s var(--ease);
+  }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  .reveal-scale {
+    opacity: 0;
+    transform: scale(.92);
+    transition: opacity .7s var(--ease), transform .7s var(--ease);
+  }
+  .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+  .stagger > * {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity .6s var(--ease), transform .6s var(--ease);
+  }
+  .stagger.visible > * { opacity: 1; transform: translateY(0); }
+  .stagger.visible > *:nth-child(1)  { transition-delay: .00s; }
+  .stagger.visible > *:nth-child(2)  { transition-delay: .08s; }
+  .stagger.visible > *:nth-child(3)  { transition-delay: .16s; }
+  .stagger.visible > *:nth-child(4)  { transition-delay: .24s; }
+  .stagger.visible > *:nth-child(5)  { transition-delay: .32s; }
+  .stagger.visible > *:nth-child(6)  { transition-delay: .40s; }
+  .stagger.visible > *:nth-child(7)  { transition-delay: .48s; }
+  .stagger.visible > *:nth-child(8)  { transition-delay: .56s; }
+  .stagger.visible > *:nth-child(9)  { transition-delay: .64s; }
+  .stagger.visible > *:nth-child(10) { transition-delay: .72s; }
+  .stagger.visible > *:nth-child(11) { transition-delay: .80s; }
+  .stagger.visible > *:nth-child(12) { transition-delay: .88s; }
+  .stagger.visible > *:nth-child(13) { transition-delay: .96s; }
+
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 16px;
+    padding: 56px 0;
+  }
+  .stat {
+    text-align: center;
+    padding: 24px 14px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    transition: all .4s var(--ease);
+  }
+  .stat:hover {
+    transform: translateY(-6px);
+    border-color: rgba(124, 116, 255, .32);
+    box-shadow: 0 12px 40px rgba(124, 116, 255, .12);
+  }
+  .stat .num   { font-size: 2.2rem; font-weight: 900; color: var(--accent2); }
+  .stat .label { font-size: .85rem; color: var(--text2); margin-top: 4px; }
+
+  section { padding: 72px 0; }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 2.1rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+  .section-title::before {
+    content: '';
+    flex-shrink: 0;
+    width: 4px;
+    height: 34px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+  }
+  .section-desc { color: var(--text2); font-size: 1rem; margin-bottom: 36px; }
+  .section-sub  { color: var(--text2); font-size: .95rem; margin-bottom: 2rem; }
+  .divider {
+    height: 1px;
+    border: none;
+    margin: 0;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  .card {
+    position: relative;
+    overflow: hidden;
+    padding: 30px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    transition: all .4s var(--ease);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124, 116, 255, .04), transparent);
+    opacity: 0;
+    transition: opacity .4s;
+    pointer-events: none;
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(124, 116, 255, .28);
+    box-shadow: 0 16px 48px rgba(124, 116, 255, .10);
+  }
+  .card h3   { position: relative; font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .card .meta { color: var(--text2); font-size: .9rem; margin-bottom: 12px; }
+  .card p    { position: relative; color: var(--text); margin-bottom: 10px; }
+  .card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    transition: transform .5s var(--ease);
+  }
+  .card:hover .card-img { transform: scale(1.04); }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; position: relative; }
+  .badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--accent2);
+    background: rgba(124, 116, 255, .10);
+    border: 1px solid rgba(124, 116, 255, .16);
+    transition: all .3s var(--ease);
+  }
+  .badge:hover { background: rgba(124, 116, 255, .20); transform: translateY(-2px); }
+  .badge.green  { color: var(--green);  background: rgba(74, 222, 158, .08);  border-color: rgba(74, 222, 158, .16); }
+  .badge.green:hover  { background: rgba(74, 222, 158, .18); }
+  .badge.orange { color: var(--orange); background: rgba(251, 146, 60, .08);  border-color: rgba(251, 146, 60, .16); }
+  .badge.orange:hover { background: rgba(251, 146, 60, .18); }
+  .badge.pink   { color: var(--pink);   background: rgba(244, 114, 182, .08); border-color: rgba(244, 114, 182, .16); }
+  .badge.pink:hover   { background: rgba(244, 114, 182, .18); }
+  .badge.blue   { color: var(--blue);   background: rgba(96, 165, 250, .08);  border-color: rgba(96, 165, 250, .16); }
+  .badge.blue:hover   { background: rgba(96, 165, 250, .18); }
+
+  .impacts { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  .impact {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: .88rem;
+    background: rgba(74, 222, 158, .06);
+    border: 1px solid rgba(74, 222, 158, .14);
+    transition: all .3s;
+  }
+  .impact:hover { background: rgba(74, 222, 158, .12); transform: translateY(-2px); }
+  .impact strong { color: var(--green); font-weight: 800; }
+
+  .venture-card {
+    overflow: hidden;
+    margin-bottom: 32px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--bg2), var(--bg3));
+    border: 1px solid rgba(124, 116, 255, .18);
+    transition: all .5s var(--ease);
+  }
+  .venture-card:hover {
+    border-color: rgba(124, 116, 255, .38);
+    box-shadow: 0 20px 60px rgba(124, 116, 255, .12);
+  }
+  .venture-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: transform .6s var(--ease);
+  }
+  .venture-card:hover .venture-img { transform: scale(1.03); }
+  .venture-body { padding: 36px; }
+  .venture-body h3      { font-size: 1.7rem; font-weight: 800; color: var(--accent2); margin-bottom: 4px; }
+  .venture-body .tagline { font-size: 1rem; color: var(--text2); font-style: italic; margin-bottom: 20px; }
+  .venture-body p        { margin-bottom: 14px; }
+  .venture-features { columns: 2; column-gap: 24px; margin: 14px 0; }
+  .venture-features li       { margin-bottom: 6px; break-inside: avoid; font-size: .95rem; }
+  .venture-features li strong { color: var(--accent2); }
+
+  .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; }
+  .project-grid .card { margin-bottom: 0; }
+
+  .project-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  .project-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+
+  .project-grid-featured { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  .project-card-hero {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+  }
+  .project-card-hero .card-img {
+    width: 270px;
+    height: 210px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+  .project-card-hero-content { flex: 1; display: flex; flex-direction: column; }
+
+  .project-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .42rem .9rem;
+    font-size: .8rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all .25s var(--ease);
+  }
+  .project-link-kaggle {
+    color: var(--cyan);
+    border: 1px solid rgba(34, 211, 238, .35);
+  }
+  .project-link-kaggle:hover {
+    background: rgba(34, 211, 238, .14);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .project-link-github {
+    color: var(--accent2);
+    border: 1px solid rgba(124, 116, 255, .35);
+  }
+  .project-link-github:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .carousel-wrapper { position: relative; }
+  .carousel-track {
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 0 20px;
+  }
+  .carousel-track::-webkit-scrollbar { display: none; }
+  .carousel-track .card {
+    flex: 0 0 370px;
+    scroll-snap-align: start;
+    margin-bottom: 0;
+  }
+  .carousel-track .card:hover { transform: translateY(-6px); }
+  .carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .carousel-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--text);
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    transition: all .35s var(--ease);
+  }
+  .carousel-btn:hover {
+    background: rgba(124, 116, 255, .18);
+    border-color: var(--accent);
+    color: #fff;
+    transform: scale(1.1);
+  }
+  .carousel-btn:active { transform: scale(.95); }
+  .carousel-dots { display: flex; gap: 8px; align-items: center; }
+  .carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    background: var(--border);
+    transition: all .3s var(--ease);
+  }
+  .carousel-dot.active { background: var(--accent2); width: 24px; border-radius: 4px; }
+  .carousel-counter { font-size: .88rem; font-weight: 600; color: var(--text2); min-width: 50px; text-align: center; }
+
+  .journey-h { position: relative; }
+  .journey-track {
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 2px 4px;
+  }
+  .journey-track::-webkit-scrollbar { display: none; }
+  .journey-card {
+    flex: 0 0 520px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+  .journey-step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .journey-step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: .75rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    flex-shrink: 0;
+  }
+  .journey-period {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--accent2);
+  }
+
+  .journey-steps {
+    display: flex;
+    align-items: flex-start;
+    padding: 0 2px;
+    margin: 22px 0 8px;
+    position: relative;
+  }
+  .journey-steps::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 8px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--border));
+  }
+  .journey-step-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .journey-step-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent2);
+    transition: all .35s var(--ease);
+  }
+  .journey-step-btn.active .journey-step-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 14px rgba(124, 116, 255, .65);
+    transform: scale(1.4);
+  }
+  .journey-step-label {
+    font-size: .72rem;
+    color: var(--text2);
+    font-weight: 500;
+    text-align: center;
+    transition: color .3s;
+    white-space: nowrap;
+  }
+  .journey-step-btn.active .journey-step-label {
+    color: var(--accent2);
+    font-weight: 700;
+  }
+  .company-link {
+    color: var(--accent2);
+    font-weight: 700;
+    border-bottom: 1px dashed rgba(176, 154, 250, .35);
+    transition: all .2s;
+  }
+  .company-link:hover { color: #c4b5fd; border-color: #c4b5fd; }
+
+  .skills-rows { display: flex; flex-direction: column; gap: 8px; }
+  .skill-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 0;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    transition: border-color .3s var(--ease);
+  }
+  .skill-row:hover { border-color: rgba(124, 116, 255, .30); }
+  .skill-row-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 148px;
+    flex-shrink: 0;
+    padding-right: 16px;
+    margin-right: 16px;
+    border-right: 1px solid var(--border);
+  }
+  .skill-row-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .sic-purple { background: rgba(124, 116, 255, .14); color: var(--accent2); }
+  .sic-blue   { background: rgba(96, 165, 250, .14);  color: var(--blue); }
+  .sic-green  { background: rgba(74, 222, 158, .14);  color: var(--green); }
+  .sic-orange { background: rgba(251, 146, 60, .14);  color: var(--orange); }
+  .sic-cyan   { background: rgba(34, 211, 238, .14);  color: var(--cyan); }
+  .sic-pink   { background: rgba(244, 114, 182, .14); color: var(--pink); }
+  .skill-row-name {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .skill-chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex: 1;
+    padding: 2px 0;
+  }
+  .skill-chips::-webkit-scrollbar { display: none; }
+  .skill-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: .76rem;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: rgba(124, 116, 255, .07);
+    border: 1px solid rgba(124, 116, 255, .14);
+    color: var(--text2);
+    transition: all .2s var(--ease);
+    cursor: default;
+  }
+  .skill-chip:hover { background: rgba(124, 116, 255, .16); color: var(--text); transform: translateY(-1px); }
+  .skill-chip-e { font-size: .82rem; line-height: 1; }
+  .skill-chip.blue   { color: var(--blue);   background: rgba(96,165,250,.07);   border-color: rgba(96,165,250,.16); }
+  .skill-chip.blue:hover   { background: rgba(96,165,250,.16); color: var(--blue); }
+  .skill-chip.green  { color: var(--green);  background: rgba(74,222,158,.07);   border-color: rgba(74,222,158,.16); }
+  .skill-chip.green:hover  { background: rgba(74,222,158,.16); color: var(--green); }
+  .skill-chip.orange { color: var(--orange); background: rgba(251,146,60,.07);   border-color: rgba(251,146,60,.16); }
+  .skill-chip.orange:hover { background: rgba(251,146,60,.16); color: var(--orange); }
+  .skill-chip.cyan   { color: var(--cyan);   background: rgba(34,211,238,.07);   border-color: rgba(34,211,238,.16); }
+  .skill-chip.cyan:hover   { background: rgba(34,211,238,.16); color: var(--cyan); }
+  .skill-chip.pink   { color: var(--pink);   background: rgba(244,114,182,.07);  border-color: rgba(244,114,182,.16); }
+  .skill-chip.pink:hover   { background: rgba(244,114,182,.16); color: var(--pink); }
+
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .cert-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-radius: var(--radius);
+    background: var(--glass);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .4s var(--ease);
+  }
+  .cert-card:hover {
+    border-color: rgba(124, 116, 255, .28);
+    color: var(--text);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(124, 116, 255, .10);
+  }
+  .cert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .cert-icon.mckinsey,
+  .cert-icon.coursera,
+  .cert-icon.ericsson,
+  .cert-icon.samsung  { background: rgba(96, 165, 250, .12); color: var(--blue); }
+  .cert-icon.orange   { background: rgba(251, 146, 60, .12);  color: var(--orange); }
+  .cert-icon.udacity  { background: rgba(124, 116, 255, .12); color: var(--accent2); }
+  .cert-icon.kaggle   { background: rgba(34, 211, 238, .12);  color: var(--cyan); }
+  .cert-icon.techno   { background: rgba(74, 222, 158, .12);  color: var(--green); }
+  .cert-info { flex: 1; min-width: 0; }
+  .cert-name     { font-weight: 700; font-size: .95rem; line-height: 1.3; }
+  .cert-provider { font-size: .82rem; color: var(--text2); }
+  .cert-year     { font-size: .82rem; font-weight: 700; color: var(--accent2); flex-shrink: 0; }
+  .cert-card .ext-icon {
+    font-size: .75rem;
+    color: var(--text2);
+    opacity: 0;
+    transition: opacity .3s, transform .3s;
+  }
+  .cert-card:hover .ext-icon { opacity: 1; transform: translateX(2px); }
+
+  footer {
+    text-align: center;
+    padding: 52px 28px;
+    font-size: .88rem;
+    color: var(--text2);
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+  .footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: .95rem;
+    margin-bottom: 14px;
+  }
+  .footer-links a { transition: color .3s; }
+  .footer-links a:hover { color: #fff; }
+  .footer-sep { color: rgba(255, 255, 255, .15); }
+
+  .back-to-top {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #fff;
+    border: none;
+    background: var(--accent);
+    box-shadow: 0 8px 32px rgba(124, 116, 255, .32);
+    opacity: 0;
+    transform: translateY(20px) scale(.8);
+    transition: all .4s var(--ease);
+  }
+  .back-to-top.show  { opacity: 1; transform: translateY(0) scale(1); }
+  .back-to-top:hover { background: var(--accent2); transform: translateY(-3px) scale(1.08); }
+
+  .github-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+  .github-stat-card {
+    padding: 1.6rem;
+    text-align: center;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    transition: all .4s var(--ease);
+  }
+  .github-stat-card:hover {
+    border-color: rgba(124, 116, 255, .32);
+    transform: translateY(-4px);
+  }
+  .github-stat-num {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, var(--accent), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .github-stat-label { color: var(--text2); font-size: .85rem; }
+  .github-heatmap-wrapper {
+    padding: 2rem 2rem 1.5rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+  }
+  .github-heatmap-wrapper h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .github-heatmap-img { width: 100%; max-width: 900px; border-radius: 8px; opacity: .92; }
+  .github-repos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+  }
+  .github-repo-card {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    padding: 1.5rem;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(12px);
+    transition: all .4s var(--ease);
+  }
+  .github-repo-card:hover {
+    border-color: rgba(124, 116, 255, .35);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(124, 116, 255, .10);
+  }
+  .github-repo-header  { display: flex; align-items: flex-start; gap: .6rem; }
+  .github-repo-icon    { font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
+  .github-repo-name    { font-size: .95rem; font-weight: 700; color: var(--accent2); }
+  .github-repo-desc    { font-size: .85rem; color: var(--text2); flex: 1; line-height: 1.55; }
+  .github-repo-meta    { display: flex; align-items: center; gap: .9rem; font-size: .78rem; color: var(--text2); flex-wrap: wrap; }
+  .github-repo-meta span { display: flex; align-items: center; gap: .3rem; }
+  .github-repo-lang-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .lang-js { background: #f1e05a; }
+  .lang-py { background: #4b8bca; }
+  .github-repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: auto;
+    padding: .45rem 1rem;
+    width: fit-content;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--accent2);
+    text-decoration: none;
+    border: 1px solid rgba(124, 116, 255, .40);
+    border-radius: 8px;
+    transition: all .25s;
+  }
+  .github-repo-link:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .github-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: 1.5rem;
+    padding: .6rem 1.4rem;
+    font-size: .88rem;
+    color: var(--text2);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: all .25s;
+  }
+  .github-profile-btn:hover {
+    border-color: var(--accent2);
+    color: var(--text);
+    background: rgba(124, 116, 255, .08);
+  }
+
+  @media (max-width: 768px) {
+    .hero h1                { font-size: 2.4rem; }
+    .hero .subtitle         { font-size: 1.05rem; }
+    .hero-avatar            { width: 130px; height: 130px; }
+    .hero-top               { flex-direction: column; text-align: center; }
+    .hero-info              { text-align: center; }
+    .hero-langs             { justify-content: center; }
+    .stats-bar              { grid-template-columns: repeat(2, 1fr); }
+    .section-title          { font-size: 1.65rem; }
+    .project-grid           { grid-template-columns: 1fr; }
+    .project-grid-2         { grid-template-columns: 1fr; }
+    .project-grid-4         { grid-template-columns: repeat(2, 1fr); }
+    .project-grid-featured  { grid-template-columns: 1fr; }
+    .project-card-hero      { flex-direction: column; }
+    .project-card-hero .card-img { width: 100%; height: 200px; margin-bottom: 18px; }
+    .github-repos-grid      { grid-template-columns: 1fr; }
+    .skill-row-label        { min-width: 110px; }
+    .cert-grid              { grid-template-columns: 1fr; }
+    nav .nav-links          { display: none; }
+    .venture-img            { height: 200px; }
+    .venture-features       { columns: 1; }
+    .carousel-track .card   { flex: 0 0 calc(100vw - 80px); }
+    .journey-card           { flex: 0 0 calc(100vw - 80px); }
+    .journey-step-label     { display: none; }
+    .github-stats-row       { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">Eyad Elfar</div>
+    <div class="nav-links">
+      <a href="#experience">Experience</a>
+      <a href="#ventures">Ventures</a>
+      <a href="#systems">Systems</a>
+      <a href="#projects">Projects</a>
+      <a href="#github-activity">GitHub</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-top">
+      <img src="me.jpeg" alt="Eyad Elfar" class="hero-avatar">
+      <div class="hero-info">
+        <h1><span>Eyad Elfar</span></h1>
+        <div class="subtitle">AI Engineer &middot; LLM Specialist &middot; Agentic Systems Architect</div>
+        <div class="location">Dubai, UAE</div>
+        <div class="hero-langs">
+          <span class="hero-lang">Arabic: Native</span>
+          <span class="hero-lang">English: Professional</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-links">
+      <a href="mailto:eyadamen588@gmail.com">Email</a>
+      <a href="tel:+971589794339">+971 58 979 4339</a>
+      <a href="https://www.linkedin.com/in/eyadelfar/" target="_blank">LinkedIn</a>
+      <a href="https://github.com/eyadelfar" target="_blank">GitHub</a>
+      <a href="https://www.kaggle.com/eyadamin1233" target="_blank">Kaggle</a>
+      <a href="resume.pdf" target="_blank">Résumé</a>
+      <a href="interactive_room.html">🎮 Enter 3D Studio</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="stats-bar stagger reveal">
+    <div class="stat"><div class="num">12+</div><div class="label">Production AI Systems</div></div>
+    <div class="stat"><div class="num">&lt;500ms</div><div class="label">Real-time AI Guidance</div></div>
+    <div class="stat"><div class="num">15K+</div><div class="label">Students Served</div></div>
+    <div class="stat"><div class="num">Bronze</div><div class="label">Kaggle Notebook Medal</div></div>
+    <div class="stat"><div class="num">500M+</div><div class="label">Records Analyzed</div></div>
+    <div class="stat"><div class="num">75%+</div><div class="label">Less Manual Work</div></div>
+  </div>
+
+  <hr class="divider">
+
+  <section id="experience">
+    <div class="section-title reveal">Work Experience</div>
+
+    <div class="journey-h reveal">
+      <div class="journey-track" id="expCarousel">
+
+        <div class="card journey-card">
+          <div class="journey-step-header">
+            <span class="journey-step-num">1</span>
+            <span class="journey-period">May 2025 &ndash; Present</span>
+          </div>
+          <h3>AI Engineer</h3>
+          <div class="meta"><a class="company-link" href="https://baroncabot.com/our-team/" target="_blank">Baron &amp; Cabot</a> &middot; Dubai, UAE</div>
+          <p>Owned a real-time sales copilot (FastAPI/React over WebSockets) returning sub-500ms guidance via Vertex AI, RAG &amp; semantic caching, plus an ElevenLabs voice agent and a Cloud Run platform automating 30+ stages of the property lifecycle.</p>
+          <div class="impacts">
+            <span class="impact"><strong>&lt;500ms</strong> live guidance</span>
+            <span class="impact"><strong>6,000+</strong> calls/day</span>
+            <span class="impact"><strong>100+</strong> meetings booked (mo. 1)</span>
+            <span class="impact"><strong>30+</strong> stages automated</span>
+            <span class="impact"><strong>21+</strong> n8n workflows</span>
+            <span class="impact"><strong>14-factor</strong> lead scoring</span>
+          </div>
+          <div class="badges">
+            <span class="badge">FastAPI</span><span class="badge">Google ADK</span><span class="badge">Gemini</span>
+            <span class="badge">PostgreSQL</span><span class="badge">pgvector</span><span class="badge">HubSpot</span>
+            <span class="badge">Twilio</span><span class="badge">Docker</span><span class="badge">Cloud Run</span>
+            <span class="badge">n8n</span><span class="badge">Redis</span><span class="badge">Celery</span>
+          </div>
+        </div>
+
+        <div class="card journey-card">
+          <div class="journey-step-header">
+            <span class="journey-step-num">2</span>
+            <span class="journey-period">Apr 2024 &ndash; Apr 2025</span>
+          </div>
+          <h3>Data Scientist</h3>
+          <div class="meta"><a class="company-link" href="https://menrv.ai/" target="_blank">MENRV.AI</a></div>
+          <p>AI-powered fashion technology and financial forecasting. Virtual try-on for Shein/Myntra, AI presentation assistant, BiLSTM + Prophet forecasting, multilingual TTS (50+ languages).</p>
+          <div class="impacts">
+            <span class="impact"><strong>90%</strong> try-on accuracy</span>
+            <span class="impact"><strong>80%</strong> faster content</span>
+            <span class="impact"><strong>5x</strong> global reach</span>
+            <span class="impact"><strong>8h &rarr; 5min</strong> reporting</span>
+          </div>
+          <div class="badges">
+            <span class="badge">PyTorch</span><span class="badge">vLLM</span><span class="badge">BiLSTM</span>
+            <span class="badge">Prophet</span><span class="badge">TTS</span><span class="badge">Computer Vision</span>
+          </div>
+        </div>
+
+        <div class="card journey-card">
+          <div class="journey-step-header">
+            <span class="journey-step-num">3</span>
+            <span class="journey-period">Nov 2024 &ndash; Apr 2025</span>
+          </div>
+          <h3>AI Engineer (Contract)</h3>
+          <div class="meta">NEOMI &middot; Remote, Egypt</div>
+          <p>Designed and owned the core AI engine for an AR learning platform serving 15,000+ students, pairing handwriting recognition with an LLM-based evaluator and assessment analytics, scaled to 20 German schools.</p>
+          <div class="impacts">
+            <span class="impact"><strong>15K+</strong> students</span>
+            <span class="impact"><strong>92%</strong> educator alignment</span>
+            <span class="impact"><strong>20</strong> German schools</span>
+            <span class="impact"><strong>+85%</strong> educator insight</span>
+            <span class="impact"><strong>&minus;60%</strong> grading time</span>
+            <span class="impact"><strong>&minus;75%</strong> debugging</span>
+          </div>
+          <div class="badges">
+            <span class="badge">Computer Vision</span><span class="badge">LLM Eval</span><span class="badge">AR</span>
+            <span class="badge">CI/CD</span><span class="badge">MLOps</span>
+          </div>
+        </div>
+
+        <div class="card journey-card">
+          <div class="journey-step-header">
+            <span class="journey-step-num">4</span>
+            <span class="journey-period">Dec 2023 &ndash; Mar 2024</span>
+          </div>
+          <h3>AI Instructor</h3>
+          <div class="meta"><a class="company-link" href="https://www.ischooltech.com/" target="_blank">iSchool</a> &middot; Hybrid, Egypt</div>
+          <p>Taught Python and AI to 70+ students across 64 sessions, coaching 36 to build and present working RL-driven games. Designed hands-on curriculum with Scratch, Arduino, and PictoBlox.</p>
+          <div class="badges">
+            <span class="badge">Python</span><span class="badge">Reinforcement Learning</span>
+            <span class="badge">Arduino</span><span class="badge">PictoBlox</span>
+          </div>
+        </div>
+
+        <div class="card journey-card">
+          <div class="journey-step-header">
+            <span class="journey-step-num">5</span>
+            <span class="journey-period">Sep 2023 &ndash; Dec 2023</span>
+          </div>
+          <h3>Data Analyst</h3>
+          <div class="meta">e-finance &middot; On-site, Egypt</div>
+          <p>Analyzed 500M+ transaction records to surface 10+ behavioral insights in digital payments that informed executive decisions, and optimized ETL pipelines while automating monthly management reporting.</p>
+          <div class="impacts">
+            <span class="impact"><strong>500M+</strong> records analyzed</span>
+            <span class="impact"><strong>10+</strong> behavioral insights</span>
+            <span class="impact"><strong>2&times;</strong> data throughput</span>
+          </div>
+          <div class="badges">
+            <span class="badge">SQL</span><span class="badge">ETL</span><span class="badge">Python</span><span class="badge">Reporting</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="journey-steps">
+        <button class="journey-step-btn active" onclick="expGoto(0)">
+          <span class="journey-step-dot"></span>
+          <span class="journey-step-label">Baron &amp; Cabot</span>
+        </button>
+        <button class="journey-step-btn" onclick="expGoto(1)">
+          <span class="journey-step-dot"></span>
+          <span class="journey-step-label">MENRV.AI</span>
+        </button>
+        <button class="journey-step-btn" onclick="expGoto(2)">
+          <span class="journey-step-dot"></span>
+          <span class="journey-step-label">NEOMI</span>
+        </button>
+        <button class="journey-step-btn" onclick="expGoto(3)">
+          <span class="journey-step-dot"></span>
+          <span class="journey-step-label">iSchool</span>
+        </button>
+        <button class="journey-step-btn" onclick="expGoto(4)">
+          <span class="journey-step-dot"></span>
+          <span class="journey-step-label">e-finance</span>
+        </button>
+      </div>
+
+      <div class="carousel-nav">
+        <button class="carousel-btn" onclick="scrollCarousel('expCarousel', -1)" aria-label="Previous">&larr;</button>
+        <div class="carousel-dots" id="expDots"></div>
+        <span class="carousel-counter" id="expCounter">1 / 4</span>
+        <button class="carousel-btn" onclick="scrollCarousel('expCarousel', 1)" aria-label="Next">&rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="ventures">
+    <div class="section-title reveal">Founded Ventures</div>
+
+    <div class="venture-card reveal-scale">
+      <img src="images/keepquill.png" alt="KeepQuill" class="venture-img">
+      <div class="venture-body">
+        <h3>KeepQuill</h3>
+        <div class="tagline">AI-Powered Memory Book Generator &middot; keepquill.com (launching)</div>
+        <p>Transforms personal photo collections into beautifully printed memory books. AI handles the narrative, layout, and design so users just upload and share.</p>
+        <div class="callout">
+          <span class="callout-label">Pipeline</span>
+          <span>Upload → Cluster (DINOv2 + HDBSCAN) → AI Interview → Write → Export, with real-time SSE progress and privacy-first on-device image processing.</span>
+        </div>
+        <ul class="venture-features">
+          <li>16+ design templates, 7 book structures</li>
+          <li>Client-side background removal (ONNX/WebGPU)</li>
+          <li>PDF export via Playwright + Jinja2</li>
+          <li>Video export with page effects (Celery async)</li>
+          <li>AI chat widget with sentiment analysis</li>
+          <li>Designer marketplace with approval workflow</li>
+          <li>13 languages with RTL Arabic support</li>
+          <li>4 payment gateways: Stripe, PayPal, Fawry, Paymob</li>
+          <li>~218 frontend components, ~150 backend modules</li>
+          <li>Prometheus + Grafana monitoring</li>
+        </ul>
+        <div class="badges">
+          <span class="badge green">React 19</span><span class="badge green">FastAPI</span>
+          <span class="badge green">Gemini 2.0</span><span class="badge green">DINOv2</span>
+          <span class="badge green">Supabase</span><span class="badge green">Redis</span>
+          <span class="badge green">Celery</span><span class="badge green">Playwright</span>
+          <span class="badge green">Stripe</span><span class="badge green">Docker</span>
+          <span class="badge green">Zustand</span><span class="badge green">Tailwind CSS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="venture-card reveal-scale">
+      <img src="images/favisra.png" alt="Favisra" class="venture-img">
+      <div class="venture-body">
+        <h3>Favisra</h3>
+        <div class="tagline">Self-Hosted Business Performance &amp; KPI Dashboard Platform &middot; favisra.com (launching)</div>
+        <p>Self-hosted platform that centralizes KPI dashboards and operational metrics. Runs on your own infrastructure and displays on office TVs, kiosk screens, or the web.</p>
+        <div class="callout">
+          <span class="callout-label">Core&nbsp;Innovation</span>
+          <span>Proprietary DSL formula engine for reusable, auditable KPI definitions with aggregations, conditional filtering, version history, and circular reference detection.</span>
+        </div>
+        <ul class="venture-features">
+          <li><strong>25+</strong> widget types: charts, gauges, KPIs, forecasts</li>
+          <li>Auto-rotating TV slideshow &amp; kiosk mode</li>
+          <li>Connectors: HubSpot, Zoho, Xero, Sheets, SQL, REST, CSV</li>
+          <li>Multi-tenancy with 5-level role hierarchy</li>
+          <li>Fernet-encrypted OAuth &amp; RS256-signed JWT licensing</li>
+          <li>Auto PostgreSQL backups + Let's Encrypt SSL</li>
+          <li>Full audit trail for compliance</li>
+        </ul>
+        <div class="badges">
+          <span class="badge orange">React 18</span><span class="badge orange">TypeScript</span>
+          <span class="badge orange">FastAPI</span><span class="badge orange">PostgreSQL 16</span>
+          <span class="badge orange">Celery</span><span class="badge orange">Redis</span>
+          <span class="badge orange">ECharts</span><span class="badge orange">Docker</span>
+          <span class="badge orange">Turborepo</span><span class="badge orange">Sentry</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="systems">
+    <div class="section-title reveal">Baron &amp; Cabot | Production Systems</div>
+    <p class="section-desc reveal">12 production AI systems built as sole AI Engineer for <a href="https://baroncabot.com/our-team/" target="_blank">Baron &amp; Cabot</a>, a UK property investment firm.</p>
+
+    <div class="carousel-wrapper reveal">
+      <div class="carousel-track" id="systemsCarousel">
+
+        <div class="card">
+          <img src="images/sales_automation.png" alt="Sales Progression Automation" class="card-img">
+          <h3>Sales Progression Automation</h3>
+          <div class="meta">AI-native deal lifecycle platform</div>
+          <p>7-phase workflow engine (60–80 tasks) driving document verification, communication, and AI decision-making across 118 HubSpot stages. RAG over 14 internal playbooks.</p>
+          <div class="badges">
+            <span class="badge">FastAPI</span><span class="badge">Google ADK</span><span class="badge">Gemini</span>
+            <span class="badge">pgvector</span><span class="badge">HubSpot</span><span class="badge">React 19</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/voice_agent.png" alt="Voice Agent" class="card-img">
+          <h3>Voice Agent</h3>
+          <div class="meta">Production AI calling system</div>
+          <p>Pipecat pipeline: Whisper STT → Gemini Flash → Kokoro TTS, over Twilio telephony with live knowledge-base RAG and automatic call recording.</p>
+          <div class="badges">
+            <span class="badge">Pipecat</span><span class="badge">Whisper</span><span class="badge">Gemini Flash</span>
+            <span class="badge">Kokoro TTS</span><span class="badge">Twilio</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/dialer.png" alt="Dialer" class="card-img">
+          <h3>Dialer: Next Best Call</h3>
+          <div class="meta">ML-powered lead prioritization</div>
+          <p>ML ensemble (LightGBM + CatBoost) trained on 839K+ calls. One-click lead ranking surfaces the best next dial for each of 15+ reps via Aircall SDK.</p>
+          <div class="badges">
+            <span class="badge">LightGBM</span><span class="badge">CatBoost</span><span class="badge">Next.js 15</span>
+            <span class="badge">Aircall</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/cashflows_app.png" alt="Cashflows App" class="card-img">
+          <h3>Cashflows App</h3>
+          <div class="meta">Real estate cashflow visualization</div>
+          <p>Property investment cashflow tracking with CSV import, real-time dashboards. Next.js 16 + React 19, tRPC, Drizzle ORM.</p>
+          <div class="badges">
+            <span class="badge">Next.js 16</span><span class="badge">tRPC</span><span class="badge">Drizzle ORM</span>
+            <span class="badge">Recharts</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/messages_tracker.png" alt="Messages Tracker" class="card-img">
+          <h3>Messages Tracker</h3>
+          <div class="meta">Staff analytics + RAG chatbot</div>
+          <p>200+ agent metrics with pgvector semantic search over calls, contacts, deals, and meetings. React + Ant Design frontend.</p>
+          <div class="badges">
+            <span class="badge">FastAPI</span><span class="badge">pgvector</span><span class="badge">Gemini</span>
+            <span class="badge">React</span><span class="badge">Ant Design</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/meeting_recorder.png" alt="Meeting Recorder" class="card-img">
+          <h3>Meeting Recorder</h3>
+          <div class="meta">Chrome extension + self-hosted STT</div>
+          <p>Chrome extension captures meeting audio → Moonshine STT + Silero VAD transcribe locally via ONNX → embeddings stored in pgvector for semantic search.</p>
+          <div class="badges">
+            <span class="badge">Chrome Extension</span><span class="badge">Moonshine STT</span>
+            <span class="badge">ONNX</span><span class="badge">WebSockets</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/meta_ads.png" alt="Meta Ads AI Auditor" class="card-img">
+          <h3>Meta Ads AI Auditor</h3>
+          <div class="meta">190+ check audit system</div>
+          <p>190+ automated checks covering creative, targeting, and spend. Includes competitor surveillance via Meta Ad Library API and AI-generated video ads with Remotion.</p>
+          <div class="badges">
+            <span class="badge">FastAPI</span><span class="badge">Meta Ads API</span>
+            <span class="badge">Remotion</span><span class="badge">AI Image Gen</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/staff_dashboard.png" alt="Staff Dashboard" class="card-img">
+          <h3>Staff Dashboard</h3>
+          <div class="meta">AI analytics with streaming chat</div>
+          <p>FAISS vector index semantic search with multi-agent streaming WebSocket chat. Gemini AI integration.</p>
+          <div class="badges">
+            <span class="badge">FastAPI</span><span class="badge">FAISS</span>
+            <span class="badge">Gemini</span><span class="badge">WebSockets</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/bcoutreacher.png" alt="BCOutreacher" class="card-img">
+          <h3>BCOutreacher</h3>
+          <div class="meta">Multi-channel outbound prospecting</div>
+          <p>LinkedIn + email outreach with AI personalization, intent-signal tracking via LeadIntercept, AI copywriting.</p>
+          <div class="badges">
+            <span class="badge">HubSpot</span><span class="badge">LinkedIn</span>
+            <span class="badge">AI Copywriting</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="images/report_generator.png" alt="Report Generator" class="card-img">
+          <h3>Report Generator</h3>
+          <div class="meta">Dynamic reporting + email delivery</div>
+          <p>Customizable business reports with date filtering, multiple report types, and automated email delivery.</p>
+          <div class="badges"><span class="badge">FastAPI</span><span class="badge">Email Delivery</span></div>
+        </div>
+
+        <div class="card">
+          <img src="images/cashflow_automation.png" alt="Cashflow Automation" class="card-img">
+          <h3>Cashflow Automation</h3>
+          <div class="meta">Excel financial modeling</div>
+          <p>Python automation for parsing Monthly Cash Statement workbooks with fuzzy-matching field extraction.</p>
+          <div class="badges"><span class="badge">Python</span><span class="badge">Excel</span><span class="badge">Fuzzy Matching</span></div>
+        </div>
+
+        <div class="card">
+          <img src="images/n8n_automation.png" alt="N8N Automation Suite" class="card-img">
+          <h3>N8N Automation Suite</h3>
+          <div class="meta">Meeting intelligence pipeline</div>
+          <p>Fireflies webhook → Gemini classification → HubSpot deal routing → staff enrichment. Automated CRM exports and weekly reporting.</p>
+          <div class="badges">
+            <span class="badge">n8n</span><span class="badge">Fireflies</span>
+            <span class="badge">Gemini</span><span class="badge">HubSpot</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="carousel-nav">
+        <button class="carousel-btn" onclick="scrollCarousel('systemsCarousel', -1)" aria-label="Previous">&larr;</button>
+        <div class="carousel-dots" id="systemsDots"></div>
+        <span class="carousel-counter" id="systemsCounter">1 / 12</span>
+        <button class="carousel-btn" onclick="scrollCarousel('systemsCarousel', 1)" aria-label="Next">&rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="projects">
+    <div class="section-title reveal">Featured Projects</div>
+
+    <div class="project-grid-featured stagger reveal">
+
+      <div class="card project-card-hero">
+        <img src="images/mental_health.png" alt="Gamers Mental Health" class="card-img">
+        <div class="project-card-hero-content">
+          <h3>Gamers' Mental Health Classifier</h3>
+          <div class="meta">NLP &amp; Explainable AI &middot; Bronze Medal &middot; 79 Upvotes</div>
+          <p>NLP pipeline classifying mental health risks from Reddit posts with <strong>94% accuracy</strong>. SHAP explainability applied across 5,000+ posts surfaces which language patterns correlate most with risk, making the model both precise and interpretable.</p>
+          <div class="badges">
+            <span class="badge pink">Scikit-learn</span><span class="badge pink">NLTK</span>
+            <span class="badge pink">Transformers</span><span class="badge pink">SHAP</span>
+          </div>
+          <div class="project-links">
+            <a href="https://www.kaggle.com/code/eyadamin1233/classify-gamers-mentality" target="_blank" rel="noopener" class="project-link project-link-kaggle">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              View on Kaggle
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <img src="images/cigarette_detection.png" alt="Cigarette Butt Detection" class="card-img">
+        <h3>Cigarette Butt Detection</h3>
+        <div class="meta">Computer Vision &middot; 92% accuracy</div>
+        <p>YOLOv8 real-time detection deployed to <strong>1,000+ users</strong> monitoring public spaces, cutting manual oversight costs by 70%.</p>
+        <div class="badges">
+          <span class="badge pink">YOLOv8</span><span class="badge pink">OpenCV</span>
+          <span class="badge pink">Docker</span><span class="badge pink">Kubernetes</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <img src="images/ocr_engine.png" alt="English Character OCR" class="card-img">
+        <h3>English Character OCR</h3>
+        <div class="meta">Production-Ready &middot; 96% accuracy</div>
+        <p>Custom OCR engine with advanced preprocessing reaching <strong>96% accuracy</strong> on scanned documents. Ships with an interactive paint-tool UI for real-time recognition.</p>
+        <div class="badges">
+          <span class="badge pink">TensorFlow</span><span class="badge pink">Keras</span>
+          <span class="badge pink">OpenCV</span><span class="badge pink">Flask</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <img src="images/attendance.png" alt="Attendance System" class="card-img">
+        <h3>One-Shot Attendance System</h3>
+        <div class="meta">Graduation Thesis &middot; Face Recognition</div>
+        <p>YOLO + RetinaFace + MTCNN face-recognition pipeline with one-shot enrollment, automated attendance marking, and a live Power BI dashboard.</p>
+        <div class="badges">
+          <span class="badge pink">YOLO</span><span class="badge pink">RetinaFace</span>
+          <span class="badge pink">DeepFace</span><span class="badge pink">Power BI</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/eyadelfar/Attendance-System" target="_blank" rel="noopener" class="project-link project-link-github">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            301 commits · GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <img src="images/creativity_assessment.png" alt="Creativity Assessment" class="card-img">
+        <h3>Creativity Assessment System</h3>
+        <div class="meta">Custom RCNN + FastAPI</div>
+        <p>Custom TensorFlow RCNN (FocalLoss, PatchExtractor, PositionalEmbedding) that scores children's artwork across <strong>6 creativity dimensions:</strong> fluency, flexibility, elaboration, readability, uniqueness, and mindfulness.</p>
+        <div class="badges">
+          <span class="badge pink">TensorFlow</span><span class="badge pink">RCNN</span>
+          <span class="badge pink">FastAPI</span><span class="badge pink">Custom Layers</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="reveal">
+    <div class="section-title">Data Science Portfolio</div>
+    <p class="section-desc">Kaggle: <a href="https://www.kaggle.com/eyadamin1233" target="_blank">eyadamin1233</a> &middot; Bronze Medal Notebook &nbsp;·&nbsp; <a href="https://github.com/eyadelfar/Data-Science-Portfolio" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.3rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> GitHub</a></p>
+
+    <div class="project-grid-2 stagger reveal">
+      <div class="card">
+        <h3>End-to-End</h3>
+        <p>Cigarette Butts Detection (YOLOv8), Gamers Mental Health (Clustering), Character Recognition Paint Tool, Bondora Churn Detection</p>
+      </div>
+      <div class="card">
+        <h3>Regression &amp; Classification</h3>
+        <p>BigMart Sales, Household Power Consumption, Salary Prediction, Heart Disease, Bondora Churn, Gamers Classification</p>
+      </div>
+      <div class="card">
+        <h3>NLP &amp; CV</h3>
+        <p>Twitter Sentiment, IMDB Sentiment, Breast Cancer (Hackathon), Character Recognition, Cigarette Butts (Competition)</p>
+      </div>
+      <div class="card">
+        <h3>Clustering, Scraping &amp; Viz</h3>
+        <p>Gamers Mental Health Clustering, Credit Card (SHAI), E-commerce Visualization, Bayt.com / PDFDrive Scraping</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="reveal">
+    <div class="section-title">University Projects</div>
+    <p class="section-desc" style="margin-bottom:1.5rem;">Helwan University CS/AI coursework &nbsp;·&nbsp; <a href="https://github.com/eyadelfar/University-Projects" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.3rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> View on GitHub</a></p>
+    <div class="project-grid-4 stagger reveal">
+      <div class="card"><h3>Signals and Systems</h3><p>Trigonometric Fourier Series, Simpson's Rule integration, FFT comparison with animated visualizations.</p>
+        <div class="badges"><span class="badge blue">NumPy</span><span class="badge blue">Matplotlib</span><span class="badge blue">FFT</span></div></div>
+      <div class="card"><h3>Information Retrieval Engine</h3><p>Custom search engine with indexing, ranking algorithms, and query processing.</p></div>
+      <div class="card"><h3>Gaming Buddy Website</h3><p>AI-integrated platform for gaming community matching.</p></div>
+      <div class="card"><h3>Restaurant Management</h3><p>Full management system for restaurant operations.</p></div>
+      <div class="card"><h3>Arduino IoT Projects</h3><p>Motor-controlled gate with buzzer alarm and ultrasonic sensor night light. Samsung Innovation Campus.</p>
+        <div class="badges"><span class="badge green">Arduino</span><span class="badge green">C++</span><span class="badge green">IoT</span></div></div>
+      <div class="card"><h3>Mouse Runner Game</h3><p>Pygame arcade with sprite animation, collision detection, gravity physics, and progressive scoring.</p>
+        <div class="badges"><span class="badge green">Python</span><span class="badge green">Pygame</span></div></div>
+      <div class="card"><h3>Spreadsheet Engine</h3><p>Custom spreadsheet app for programming languages course.</p></div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="github-activity" class="reveal">
+    <div class="section-title">GitHub Activity</div>
+    <p class="section-sub">Public contributions &amp; open-source work · <a href="https://github.com/eyadelfar" target="_blank" rel="noopener">@eyadelfar</a></p>
+
+    <div class="github-stats-row stagger reveal">
+      <div class="github-stat-card">
+        <span class="github-stat-num">1,079+</span>
+        <span class="github-stat-label">Contributions (last year)</span>
+      </div>
+      <div class="github-stat-card">
+        <span class="github-stat-num">8</span>
+        <span class="github-stat-label">Public Repositories</span>
+      </div>
+      <div class="github-stat-card">
+        <span class="github-stat-num">301</span>
+        <span class="github-stat-label">Commits (top repo)</span>
+      </div>
+      <div class="github-stat-card">
+        <span class="github-stat-num">12</span>
+        <span class="github-stat-label">Followers</span>
+      </div>
+    </div>
+
+    <div class="github-heatmap-wrapper reveal">
+      <h3>Contribution Graph · April 2025 – April 2026</h3>
+      <img
+        src="https://ghchart.rshah.org/7c74ff/eyadelfar"
+        alt="Eyad Elfar's GitHub contribution graph"
+        class="github-heatmap-img"
+        loading="lazy"
+      />
+    </div>
+
+    <div class="github-repos-grid stagger reveal">
+
+      <div class="github-repo-card">
+        <div class="github-repo-header">
+          <span class="github-repo-icon">📦</span>
+          <span class="github-repo-name">Attendance-System</span>
+        </div>
+        <p class="github-repo-desc">Graduation project. Face recognition attendance with YOLO + RetinaFace + MTCNN and a live Power BI dashboard.</p>
+        <div class="github-repo-meta">
+          <span><span class="github-repo-lang-dot lang-js"></span>JavaScript</span>
+          <span>🔀 301 commits</span>
+          <span>⭐ 0</span>
+        </div>
+        <a href="https://github.com/eyadelfar/Attendance-System" target="_blank" rel="noopener" class="github-repo-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          View Repo
+        </a>
+      </div>
+
+      <div class="github-repo-card">
+        <div class="github-repo-header">
+          <span class="github-repo-icon">🤖</span>
+          <span class="github-repo-name">Sales-RAG</span>
+        </div>
+        <p class="github-repo-desc">Retrieval-augmented generation over a sales knowledge base, powering LLM-driven Q&amp;A for sales automation.</p>
+        <div class="github-repo-meta">
+          <span><span class="github-repo-lang-dot lang-py"></span>Python</span>
+          <span>🔀 1 commit</span>
+          <span>⭐ 0</span>
+        </div>
+        <a href="https://github.com/eyadelfar/Sales-RAG" target="_blank" rel="noopener" class="github-repo-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          View Repo
+        </a>
+      </div>
+
+      <div class="github-repo-card">
+        <div class="github-repo-header">
+          <span class="github-repo-icon">📊</span>
+          <span class="github-repo-name">Data-Science-Portfolio</span>
+        </div>
+        <p class="github-repo-desc">ML projects spanning NLP, Computer Vision, regression, classification, clustering, and visualization. Bronze Medal notebook.</p>
+        <div class="github-repo-meta">
+          <span><span class="github-repo-lang-dot lang-py"></span>Jupyter Notebook</span>
+          <span>🔀 3 commits</span>
+          <span>⭐ 0</span>
+        </div>
+        <a href="https://github.com/eyadelfar/Data-Science-Portfolio" target="_blank" rel="noopener" class="github-repo-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          View Repo
+        </a>
+      </div>
+
+      <div class="github-repo-card">
+        <div class="github-repo-header">
+          <span class="github-repo-icon">🎓</span>
+          <span class="github-repo-name">University-Projects</span>
+        </div>
+        <p class="github-repo-desc">CS/AI university coursework covering signals &amp; systems, information retrieval, IoT projects, games, and a spreadsheet engine.</p>
+        <div class="github-repo-meta">
+          <span><span class="github-repo-lang-dot lang-py"></span>Jupyter Notebook</span>
+          <span>🔀 2 commits</span>
+          <span>⭐ 0</span>
+        </div>
+        <a href="https://github.com/eyadelfar/University-Projects" target="_blank" rel="noopener" class="github-repo-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          View Repo
+        </a>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;">
+      <a href="https://github.com/eyadelfar" target="_blank" rel="noopener" class="github-profile-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View Full GitHub Profile
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="skills">
+    <div class="section-title reveal">Technical Skills</div>
+    <div class="skills-rows stagger reveal">
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-purple">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+          </span>
+          <span class="skill-row-name">AI / ML</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip"><span class="skill-chip-e">🧠</span>LLMs (LoRA/QLoRA)</span>
+          <span class="skill-chip"><span class="skill-chip-e">📚</span>RAG</span>
+          <span class="skill-chip"><span class="skill-chip-e">🕸️</span>Agentic Systems</span>
+          <span class="skill-chip"><span class="skill-chip-e">🌐</span>Multimodal AI</span>
+          <span class="skill-chip"><span class="skill-chip-e">✨</span>Generative AI</span>
+          <span class="skill-chip"><span class="skill-chip-e">🎮</span>RL</span>
+          <span class="skill-chip"><span class="skill-chip-e">💬</span>NLP</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-blue">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </span>
+          <span class="skill-row-name">Languages</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip blue"><span class="skill-chip-e">🐍</span>Python</span>
+          <span class="skill-chip blue"><span class="skill-chip-e">🗃️</span>SQL</span>
+          <span class="skill-chip blue"><span class="skill-chip-e">📘</span>TypeScript</span>
+          <span class="skill-chip blue"><span class="skill-chip-e">📙</span>JavaScript</span>
+          <span class="skill-chip blue"><span class="skill-chip-e">☕</span>Java</span>
+          <span class="skill-chip blue"><span class="skill-chip-e">🔵</span>C</span>
+          <span class="skill-chip blue"><span class="skill-chip-e">🔴</span>C++</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-purple">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </span>
+          <span class="skill-row-name">ML Frameworks</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip"><span class="skill-chip-e">🔥</span>PyTorch</span>
+          <span class="skill-chip"><span class="skill-chip-e">🧮</span>TensorFlow</span>
+          <span class="skill-chip"><span class="skill-chip-e">🔬</span>Scikit-learn</span>
+          <span class="skill-chip"><span class="skill-chip-e">🤗</span>HuggingFace</span>
+          <span class="skill-chip"><span class="skill-chip-e">⛓️</span>LangChain</span>
+          <span class="skill-chip"><span class="skill-chip-e">🤖</span>Google ADK</span>
+          <span class="skill-chip"><span class="skill-chip-e">👥</span>CrewAI</span>
+          <span class="skill-chip"><span class="skill-chip-e">🎙️</span>Pipecat</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-cyan">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </span>
+          <span class="skill-row-name">Computer Vision</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip cyan"><span class="skill-chip-e">👁️</span>OpenCV</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">🎯</span>YOLOv8</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">🔭</span>Detectron2</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">🦕</span>DINOv2</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">😊</span>RetinaFace</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">🟦</span>MTCNN</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-green">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+          </span>
+          <span class="skill-row-name">Cloud &amp; Infra</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip green"><span class="skill-chip-e">☁️</span>GCP</span>
+          <span class="skill-chip green"><span class="skill-chip-e">🚀</span>Cloud Run</span>
+          <span class="skill-chip green"><span class="skill-chip-e">🧠</span>Vertex AI</span>
+          <span class="skill-chip green"><span class="skill-chip-e">📊</span>BigQuery</span>
+          <span class="skill-chip green"><span class="skill-chip-e">🐳</span>Docker</span>
+          <span class="skill-chip green"><span class="skill-chip-e">⚓</span>Kubernetes</span>
+          <span class="skill-chip green"><span class="skill-chip-e">🔶</span>Firebase</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-orange">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </span>
+          <span class="skill-row-name">Databases</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip orange"><span class="skill-chip-e">🐘</span>PostgreSQL</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">🔢</span>pgvector</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">🐬</span>MySQL</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">⚡</span>Redis</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">🟢</span>Supabase</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">🔍</span>FAISS</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">🔸</span>Firestore</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-blue">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </span>
+          <span class="skill-row-name">Web &amp; API</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip"><span class="skill-chip-e">⚡</span>FastAPI</span>
+          <span class="skill-chip"><span class="skill-chip-e">🍶</span>Flask</span>
+          <span class="skill-chip"><span class="skill-chip-e">▲</span>Next.js</span>
+          <span class="skill-chip"><span class="skill-chip-e">⚛️</span>React</span>
+          <span class="skill-chip"><span class="skill-chip-e">💚</span>Node.js</span>
+          <span class="skill-chip"><span class="skill-chip-e">🔗</span>tRPC</span>
+          <span class="skill-chip"><span class="skill-chip-e">🌐</span>WebSockets</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-green">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </span>
+          <span class="skill-row-name">MLOps</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip green"><span class="skill-chip-e">📈</span>MLflow</span>
+          <span class="skill-chip green"><span class="skill-chip-e">✨</span>Spark</span>
+          <span class="skill-chip green"><span class="skill-chip-e">💨</span>Airflow</span>
+          <span class="skill-chip green"><span class="skill-chip-e">🌿</span>Celery</span>
+          <span class="skill-chip green"><span class="skill-chip-e">🔄</span>n8n</span>
+          <span class="skill-chip green"><span class="skill-chip-e">📡</span>Prometheus</span>
+          <span class="skill-chip green"><span class="skill-chip-e">📊</span>Grafana</span>
+          <span class="skill-chip green"><span class="skill-chip-e">🛡️</span>Sentry</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-pink">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+          </span>
+          <span class="skill-row-name">Viz &amp; BI</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip pink"><span class="skill-chip-e">📋</span>Tableau</span>
+          <span class="skill-chip pink"><span class="skill-chip-e">📈</span>Power BI</span>
+          <span class="skill-chip pink"><span class="skill-chip-e">🎈</span>Streamlit</span>
+          <span class="skill-chip pink"><span class="skill-chip-e">📉</span>Plotly</span>
+          <span class="skill-chip pink"><span class="skill-chip-e">📐</span>Recharts</span>
+          <span class="skill-chip pink"><span class="skill-chip-e">🎨</span>ECharts</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-orange">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </span>
+          <span class="skill-row-name">Integrations</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip orange"><span class="skill-chip-e">🟠</span>HubSpot</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">📞</span>Twilio</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">💳</span>Stripe</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">💰</span>PayPal</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">📢</span>Meta Ads</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">📱</span>Aircall</span>
+          <span class="skill-chip orange"><span class="skill-chip-e">🕷️</span>Selenium</span>
+        </div>
+      </div>
+
+      <div class="skill-row">
+        <div class="skill-row-label">
+          <span class="skill-row-icon sic-cyan">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          </span>
+          <span class="skill-row-name">Hardware &amp; IoT</span>
+        </div>
+        <div class="skill-chips">
+          <span class="skill-chip cyan"><span class="skill-chip-e">🔧</span>Arduino</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">🔊</span>Ultrasonic</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">⚙️</span>Motor Control</span>
+          <span class="skill-chip cyan"><span class="skill-chip-e">🎮</span>Pygame</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="education" class="reveal">
+    <div class="section-title">Education</div>
+    <div class="card">
+      <h3>Bachelor of Computer Science and Artificial Intelligence</h3>
+      <div class="meta"><a class="company-link" href="https://www.helwan.edu.eg/" target="_blank">Helwan University</a> &middot; Cairo, Egypt &middot; Sep 2020 - May 2024</div>
+      <p><strong style="color:var(--green);">Grade: Excellent with Honors</strong></p>
+      <p style="margin-top:8px;">Graduation Project: One-Shot Attendance System using YOLO, RetinaFace, MTCNN with MySQL, MS SSIS, and live Power BI dashboard.</p>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="reveal">
+    <div class="section-title">Certifications</div>
+    <div class="cert-grid stagger reveal">
+
+      <a class="cert-card" href="https://www.mckinsey.com/forward/overview" target="_blank">
+        <div class="cert-icon mckinsey">M</div>
+        <div class="cert-info"><div class="cert-name">McKinsey Forward Program</div><div class="cert-provider">McKinsey &amp; Company</div></div>
+        <div class="cert-year">2024</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+      <a class="cert-card" href="https://www.coursera.org/" target="_blank">
+        <div class="cert-icon coursera">C</div>
+        <div class="cert-info"><div class="cert-name">NLP Specialization</div><div class="cert-provider">Coursera</div></div>
+        <div class="cert-year">2024</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+      <a class="cert-card" href="https://www.ericsson.com/" target="_blank">
+        <div class="cert-icon ericsson">E</div>
+        <div class="cert-info"><div class="cert-name">Secure Intelligence Training</div><div class="cert-provider">Ericsson</div></div>
+        <div class="cert-year">2023</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+      <a class="cert-card" href="https://www.orangedigitalcenters.com/" target="_blank">
+        <div class="cert-icon orange">O</div>
+        <div class="cert-info"><div class="cert-name">Data Science Diploma</div><div class="cert-provider">Orange Digital Center</div></div>
+        <div class="cert-year">2023</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+      <a class="cert-card" href="certificates/udacity.pdf" target="_blank">
+        <div class="cert-icon udacity">U</div>
+        <div class="cert-info"><div class="cert-name">Machine Learning Nanodegree</div><div class="cert-provider">Udacity &amp; EGFWD</div></div>
+        <div class="cert-year">2023</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+      <a class="cert-card" href="certificates/kaggle_data_cleaning.png" target="_blank">
+        <div class="cert-icon kaggle">K</div>
+        <div class="cert-info"><div class="cert-name">Data Cleaning, Intermediate ML, Intro to ML, Pandas</div><div class="cert-provider">Kaggle Micro-Courses</div></div>
+        <div class="cert-year">2022</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+      <a class="cert-card" href="certificates/samsung.png" target="_blank">
+        <div class="cert-icon samsung">S</div>
+        <div class="cert-info"><div class="cert-name">Coding &amp; Programming</div><div class="cert-provider">Samsung Innovation Campus</div></div>
+        <div class="cert-year">2021</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+      <a class="cert-card" href="certificates/technocolabs_internship.pdf" target="_blank">
+        <div class="cert-icon techno">T</div>
+        <div class="cert-info"><div class="cert-name">Data Scientist Internship</div><div class="cert-provider">Technocolabs Softwares</div></div>
+        <div class="cert-year">2021</div>
+        <span class="ext-icon">&nearr;</span>
+      </a>
+
+    </div>
+  </section>
+
+</div>
+
+<button class="back-to-top" onclick="window.scrollTo({top:0});">&uarr;</button>
+
+<footer id="contact">
+  <div class="footer-links">
+    <a href="mailto:eyadamen588@gmail.com">eyadamen588@gmail.com</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="https://www.linkedin.com/in/eyadelfar/" target="_blank">LinkedIn</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="https://github.com/eyadelfar" target="_blank">GitHub</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="https://www.kaggle.com/eyadamin1233" target="_blank">Kaggle</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="tel:+971589794339">+971 58 979 4339</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="resume.pdf" target="_blank">Résumé</a>
+    <span class="footer-sep">&middot;</span>
+    <a href="interactive_room.html">3D Studio</a>
+    <span class="footer-sep">&middot;</span>
+    <span style="color:var(--text2);">keepquill.com</span>
+    <span class="footer-sep">&middot;</span>
+    <span style="color:var(--text2);">favisra.com</span>
+  </div>
+  <p style="margin-top:14px;">Eyad Elfar &middot; AI Engineer &middot; Dubai, UAE &middot; 2026</p>
+</footer>
+
+<script>
+
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger').forEach(el => {
+  revealObserver.observe(el);
+});
+
+const nav = document.querySelector('nav');
+const navLinks = document.querySelectorAll('nav .nav-links a');
+const sections = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', () => {
+
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+
+  document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
+
+  const scrollY = window.scrollY + 140;
+  sections.forEach(s => {
+    const top = s.offsetTop - 100;
+    const bottom = top + s.offsetHeight;
+    const id = s.getAttribute('id');
+    const link = document.querySelector(`nav a[href="#${id}"]`);
+    if (link) {
+      if (scrollY >= top && scrollY < bottom) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    }
+  });
+}, { passive: true });
+
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const hero = document.querySelector('.hero-bg');
+      if (hero && window.scrollY < window.innerHeight) {
+        hero.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+      }
+      ticking = false;
+    });
+    ticking = true;
+  }
+}, { passive: true });
+
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.stat .num').forEach(num => {
+        const text = num.textContent;
+        const match = text.match(/(\d+)/);
+        if (match) {
+          const target = parseInt(match[1]);
+          const prefix = text.substring(0, text.indexOf(match[1]));
+          const suffix = text.substring(text.indexOf(match[1]) + match[1].length);
+          let current = 0;
+          const step = Math.max(1, Math.floor(target / 40));
+          const interval = setInterval(() => {
+            current = Math.min(current + step, target);
+            num.textContent = prefix + current + suffix;
+            if (current >= target) clearInterval(interval);
+          }, 30);
+        }
+      });
+      countObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.stats-bar').forEach(el => countObserver.observe(el));
+
+function scrollCarousel(id, dir) {
+  const track = document.getElementById(id);
+  const card = track.querySelector('.card');
+  const cardW = card.offsetWidth + 22;
+  track.scrollBy({ left: dir * cardW, behavior: 'smooth' });
+}
+
+function initCarousel(trackId, dotsId, counterId) {
+  const track = document.getElementById(trackId);
+  const dots = document.getElementById(dotsId);
+  const counter = document.getElementById(counterId);
+  const cards = track.querySelectorAll('.card');
+  const total = cards.length;
+
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => {
+      const cardW = cards[0].offsetWidth + 22;
+      track.scrollTo({ left: i * cardW, behavior: 'smooth' });
+    };
+    dots.appendChild(dot);
+  }
+
+  track.addEventListener('scroll', () => {
+    const cardW = cards[0].offsetWidth + 22;
+    const idx = Math.round(track.scrollLeft / cardW);
+    const clamped = Math.max(0, Math.min(idx, total - 1));
+    counter.textContent = (clamped + 1) + ' / ' + total;
+    dots.querySelectorAll('.carousel-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === clamped);
+    });
+  }, { passive: true });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    const carousel = document.querySelector('.carousel-track:hover');
+    if (carousel) {
+      const dir = e.key === 'ArrowRight' ? 1 : -1;
+      scrollCarousel(carousel.id, dir);
+    }
+  }
+});
+
+initCarousel('systemsCarousel', 'systemsDots', 'systemsCounter');
+initCarousel('expCarousel', 'expDots', 'expCounter');
+
+(function() {
+  const track = document.getElementById('expCarousel');
+  const steps = document.querySelectorAll('.journey-step-btn');
+  if (!track || !steps.length) return;
+  track.addEventListener('scroll', () => {
+    const card = track.querySelector('.card');
+    if (!card) return;
+    const cardW = card.offsetWidth + 22;
+    const idx = Math.max(0, Math.min(Math.round(track.scrollLeft / cardW), steps.length - 1));
+    steps.forEach((s, i) => s.classList.toggle('active', i === idx));
+  }, { passive: true });
+})();
+
+function expGoto(idx) {
+  const track = document.getElementById('expCarousel');
+  const card = track.querySelector('.card');
+  if (!track || !card) return;
+  track.scrollTo({ left: idx * (card.offsetWidth + 22), behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
