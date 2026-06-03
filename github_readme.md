@@ -1,5 +1,5 @@
 <div align="center">
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=220&section=header&text=Eyad%20Elfar&fontSize=78&fontAlignY=32&animation=twinkling&fontColor=ffffff&desc=AI%20Engineer%20%C2%B7%20LLM%20Specialist%20%C2%B7%20Agentic%20Systems%20Architect&descSize=18&descAlignY=55&descColor=ffffff&v=3" alt="Eyad Elfar — AI Engineer · LLM Specialist · Agentic Systems Architect" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=220&section=header&text=Eyad%20Elfar&fontSize=78&fontAlignY=32&animation=twinkling&fontColor=ffffff&desc=AI%20Engineer%20%C2%B7%20LLM%20Specialist%20%C2%B7%20Agentic%20Systems%20Architect&descSize=18&descAlignY=55&descColor=ffffff&v=3" alt="Eyad Elfar · AI Engineer · LLM Specialist · Agentic Systems Architect" />
 
 <br />
 
@@ -20,7 +20,7 @@
 <tr>
 <td width="65%" valign="top">
 
-Hi, I’m **Eyad Elfar**, an **AI Engineer in Dubai, UAE** building production **LLM, voice, and agentic systems** for **real estate and fintech**. I architect real-time copilots, voice agents, and automation that run inside live business workflows — not just demos.
+Hi, I’m **Eyad Elfar**, an **AI Engineer in Dubai, UAE** building production **LLM, voice, and agentic systems** for **real estate and fintech**. I architect real-time copilots, voice agents, and automation that run inside live business workflows · not just demos.
 
 My focus is AI that is **fast, reliable, measurable, and useful**: sub-second guidance, agents that take real actions, and pipelines that move the numbers leadership actually tracks.
 
@@ -272,7 +272,7 @@ Built a real-time attendance system that captures attendance from a single image
 
 ### BSc in Computer Science & Artificial Intelligence
 **Helwan University** · Egypt  
-*2020 – 2024*
+*2020 - 2024*
 
 **Grade:** Excellent with Honors
 
@@ -283,11 +283,11 @@ Built a real-time attendance system that captures attendance from a single image
 
 ### Certifications
 
-- McKinsey Forward Program — McKinsey & Company, 2024
-- NLP Specialization — Coursera, 2024
-- Secure Intelligence Training — Ericsson, 2023
-- Data Science Diploma — Orange Digital Center, 2023
-- Machine Learning Nanodegree — Udacity & EGFWD, 2023
+- McKinsey Forward Program · McKinsey & Company, 2024
+- NLP Specialization · Coursera, 2024
+- Secure Intelligence Training · Ericsson, 2023
+- Data Science Diploma · Orange Digital Center, 2023
+- Machine Learning Nanodegree · Udacity & EGFWD, 2023
 
 </td>
 </tr>
