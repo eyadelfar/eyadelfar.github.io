@@ -693,6 +693,10 @@
   .pviz-shimmer::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent, var(--c), transparent); opacity: 0.35; transform: translateX(-100%); animation: pshim 3s ease-in-out infinite; }
   @keyframes pshim { to { transform: translateX(100%); } }
   .browser-dots i { cursor: pointer; transition: transform 0.12s, filter 0.12s; }
+  .ico { width: 1.05em; height: 1.05em; display: inline-block; vertical-align: -0.18em; flex: none; }
+  .browser-tab .ico { width: 16px; height: 16px; }
+  .pill .ico { width: 13px; height: 13px; vertical-align: -0.12em; }
+  .tbtn .ico { width: 26px; height: 26px; vertical-align: middle; }
 
   #laserdot {
     position: fixed; z-index: 22; width: 14px; height: 14px; margin: -7px 0 0 -7px;
