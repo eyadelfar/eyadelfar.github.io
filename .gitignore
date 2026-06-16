@@ -1,0 +1,8 @@
+# Secrets
+github_token.txt
+*.token
+.env
+
+# OS / editor cruft
+Thumbs.db
+.DS_Store

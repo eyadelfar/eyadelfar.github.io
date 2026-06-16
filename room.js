@@ -848,9 +848,7 @@
       return fg;
     }
     wallSign(0, 3.62, 12.84, Math.PI, 'Live Demos', '#56d8c9', 3.0, 0.5);
-    createVideoScreen(-2.2, 2.45, 12.84, Math.PI, 'videos/graphs_1.mp4', 'Signal Graphs I');
-    createVideoScreen(0, 2.45, 12.84, Math.PI, 'videos/graphs_2.mp4', 'Signal Graphs II');
-    createVideoScreen(2.2, 2.45, 12.84, Math.PI, 'videos/graphs_3.mp4', 'Signal Graphs III');
+    createVideoScreen(0, 2.45, 12.84, Math.PI, 'videos/graphs.mp4', 'Signal Graphs', 2.6, 1.6);
 
     function buildWallBoard(key, pos, rotY, dSize = [2.2, 1.3]) {
       const meta = DATA[key];
