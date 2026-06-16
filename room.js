@@ -848,8 +848,9 @@
       videoScreens.push({ video, glow, pos: worldPos });
       return fg;
     }
-    wallSign(0, 3.62, 12.84, Math.PI, 'Live Demos', '#56d8c9', 3.0, 0.5);
-    createVideoScreen(0, 2.45, 12.84, Math.PI, 'videos/graphs.mp4', 'Signal Graphs', 2.6, 1.6);
+    wallSign(0, 3.62, 12.84, Math.PI, 'Live Demos', '#56d8c9', 3.4, 0.5);
+    createVideoScreen(-1.75, 2.45, 12.84, Math.PI, 'videos/graphs.mp4', 'Signal Graphs', 2.0, 1.25);
+    createVideoScreen(1.75, 2.45, 12.84, Math.PI, 'videos/attendance.mp4', 'Attendance System', 2.0, 1.25);
 
     function buildWallBoard(key, pos, rotY, dSize = [2.2, 1.3]) {
       const meta = DATA[key];
@@ -1215,7 +1216,7 @@
       faceCenter(group, -4.6, 6.2);
       const cy = topY + 1.15;
       box('ARpanel', [2.75, 1.75, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3, emissive: 0x060a0f, emissiveIntensity: 0.2 }), group);
-      const sTex = ['assets/ar/sample1.png', 'assets/ar/sample2.png', 'assets/ar/sample3.png', 'assets/ar/sample4.png'].map(s => loadTex(s));
+      const sTex = ['assets/ar/sample1.webp', 'assets/ar/sample2.webp', 'assets/ar/sample3.webp', 'assets/ar/sample4.webp'].map(s => loadTex(s));
       const imgMat = new THREE.MeshBasicMaterial({ map: sTex[0] });
       plane('ARimg', 0.95, 0.95, [-0.72, cy, 0.02], [0, 0, 0], imgMat, group);
       const dims = ['Readability', 'Flexibility', 'Elaboration', 'Uniqueness', 'Mindfulness', 'Fluency'];
