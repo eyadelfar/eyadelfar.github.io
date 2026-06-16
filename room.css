@@ -745,6 +745,9 @@
     border-radius: 50%; background: radial-gradient(circle at 40% 35%, #eaf6ff, #3abef9);
     box-shadow: 0 6px 18px rgba(0,0,0,0.4); transition: transform 0.04s;
   }
+  #exitRoom { position: absolute; top: 16px; right: 16px; pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; padding: 9px 15px; border-radius: 22px; font: 600 14px/1 'Inter', system-ui, sans-serif; color: #eaf6ff; background: rgba(10,18,30,0.74); border: 1px solid rgba(58,190,249,0.35); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  #exitRoom .ico { width: 18px; height: 18px; }
+  #exitRoom:active { background: rgba(58,190,249,0.4); transform: scale(0.96); }
   #touch-actions { position: absolute; right: 22px; bottom: 34px; display: flex; flex-direction: column; gap: 14px; pointer-events: auto; }
   .tbtn {
     width: 66px; height: 66px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25);

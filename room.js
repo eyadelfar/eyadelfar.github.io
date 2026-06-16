@@ -1645,10 +1645,23 @@
       }
     });
 
+    // Exit the playground back to the portfolio (Esc twice on desktop, Back button on mobile)
+    let escArmed = false, escTimer = null;
+    function disarmExit() { escArmed = false; clearTimeout(escTimer); }
+    function exitRoom() { disarmExit(); window.location.href = 'index.html'; }
+    function handleEscExit() {
+      if (escArmed) { exitRoom(); return; }
+      escArmed = true;
+      showNotice('Press Esc again to exit to the portfolio');
+      clearTimeout(escTimer);
+      escTimer = setTimeout(() => { escArmed = false; }, 2000);
+    }
+    window.exitRoom = exitRoom;
+
     window.addEventListener('keydown', (e) => {
 
       if (uiOpen) {
-        if (e.code === 'Escape') { e.preventDefault(); closeOverlays(); }
+        if (e.code === 'Escape') { e.preventDefault(); closeOverlays(); disarmExit(); }
         return;
       }
       if (typingMode) { executeTerminalInputPipeline(e); return; }
@@ -1660,7 +1673,11 @@
         cyclePCInterfaceModes(); }
       if (e.code === 'KeyV') toggleSpectatorMode();
 
-      if (e.code === 'Escape') { closePanel(); if (drosteMode || cloneGroup.children.length) exitDroste(); }
+      if (e.code === 'Escape') {
+        closePanel();
+        if (drosteMode || cloneGroup.children.length) { exitDroste(); disarmExit(); }
+        else handleEscExit();
+      }
     });
     window.addEventListener('keyup', (e) => { pressedKeys[e.code] = false; });
 
@@ -1722,6 +1739,8 @@
     document.getElementById('tBtnView').addEventListener('click', () => toggleSpectatorMode());
     const tBtnStand = document.getElementById('tBtnStand');
     tBtnStand.addEventListener('click', () => executeStandSequence());
+    const exitBtn = document.getElementById('exitRoom');
+    if (exitBtn) exitBtn.addEventListener('click', exitRoom);
 
     function toggleSpectatorMode() {
       if (uiOpen) return;

@@ -1505,27 +1505,24 @@
         <p>Transforms personal photo collections into beautifully printed memory books. AI handles the narrative, layout, and design so users just upload and share.</p>
         <div class="callout">
           <span class="callout-label">Pipeline</span>
-          <span>Upload → Cluster (DINOv2 + HDBSCAN) → AI Interview → Write → Export, with real-time SSE progress and privacy-first on-device image processing.</span>
+          <span>Upload → Smart clustering → AI interview → Write → Export, with real-time progress and privacy-first on-device image processing.</span>
         </div>
         <ul class="venture-features">
           <li>16+ design templates, 7 book structures</li>
-          <li>Client-side background removal (ONNX/WebGPU)</li>
-          <li>PDF export via Playwright + Jinja2</li>
-          <li>Video export with page effects (Celery async)</li>
+          <li>Client-side, privacy-first background removal</li>
+          <li>High-fidelity, print-ready PDF export</li>
+          <li>Video export with page effects</li>
           <li>AI chat widget with sentiment analysis</li>
           <li>Designer marketplace with approval workflow</li>
           <li>13 languages with RTL Arabic support</li>
-          <li>4 payment gateways: Stripe, PayPal, Fawry, Paymob</li>
-          <li>~218 frontend components, ~150 backend modules</li>
-          <li>Prometheus + Grafana monitoring</li>
+          <li>4 integrated payment gateways</li>
+          <li>Full observability &amp; monitoring</li>
         </ul>
         <div class="badges">
-          <span class="badge green">React 19</span><span class="badge green">FastAPI</span>
-          <span class="badge green">Gemini 2.0</span><span class="badge green">DINOv2</span>
-          <span class="badge green">Supabase</span><span class="badge green">Redis</span>
-          <span class="badge green">Celery</span><span class="badge green">Playwright</span>
-          <span class="badge green">Stripe</span><span class="badge green">Docker</span>
-          <span class="badge green">Zustand</span><span class="badge green">Tailwind CSS</span>
+          <span class="badge green">React 19</span><span class="badge green">TypeScript</span>
+          <span class="badge green">FastAPI</span><span class="badge green">Multimodal AI</span>
+          <span class="badge green">Computer Vision</span><span class="badge green">Self-hosted</span>
+          <span class="badge green">Docker</span><span class="badge green">Tailwind CSS</span>
         </div>
       </div>
     </div>
@@ -2563,40 +2560,33 @@ function expGoto(idx) {
         <h4>KeepQuill &mdash; AI-Powered Memory Book Generator</h4>
         <p>Your photos and your own feelings, arranged into a beautiful, print-ready memory book in minutes. The words and moments are yours &mdash; KeepQuill just gives them shape. The AI <strong>structures and arranges</strong>; it never replaces the sender's emotions.</p>
         <div class="rm-grid">
-          <div class="rm-stat"><b>~218</b><span>frontend components</span></div>
-          <div class="rm-stat"><b>13</b><span>languages (RTL)</span></div>
           <div class="rm-stat"><b>16+</b><span>design templates</span></div>
-          <div class="rm-stat"><b>4</b><span>payment gateways</span></div>
+          <div class="rm-stat"><b>7</b><span>book structures</span></div>
+          <div class="rm-stat"><b>13</b><span>languages (RTL)</span></div>
+          <div class="rm-stat"><b>&lt;5min</b><span>upload to preview</span></div>
         </div>
         <h4>How it works</h4>
         <div class="rm-flow">
           <span class="rm-step">Upload photos + story</span><span class="rm-arrow">&rarr;</span>
-          <span class="rm-step">Cluster (DINOv3)</span><span class="rm-arrow">&rarr;</span>
+          <span class="rm-step">Smart clustering</span><span class="rm-arrow">&rarr;</span>
           <span class="rm-step">Plan chapters</span><span class="rm-arrow">&rarr;</span>
           <span class="rm-step">AI writes captions</span><span class="rm-arrow">&rarr;</span>
           <span class="rm-step">Edit &amp; export PDF</span>
         </div>
-        <p>Photos are clustered by time, location, people and mood, distributed across chapters and spreads, then captioned and titled by <code>Gemini 2.5 Flash</code> (or a local MiniCPM). A single canonical <code>book-render</code> SDK lays every page out at a fixed 500px width, so the WYSIWYG editor matches the printed PDF exactly.</p>
+        <p>Photos are grouped by time, place, people and mood, distributed across chapters and spreads, then captioned and titled automatically. The editor is fully WYSIWYG &mdash; what you arrange on screen is exactly what gets printed.</p>
         <h4>Key features</h4>
         <ul>
-          <li>Smart photo clustering with DINOv3 embeddings + quality/duplicate scoring</li>
+          <li>Smart photo grouping with automatic quality &amp; duplicate detection</li>
           <li>WYSIWYG editor: edit text, crop/filter photos, drag-and-drop spreads</li>
-          <li>Client-side background removal (ONNX / WebGPU) &mdash; privacy-first</li>
-          <li>Vector PDF export via Gotenberg headless Chromium</li>
-          <li>Video export with page effects (Celery async), 720p / 4K</li>
-          <li>Voice story input via Whisper speech-to-text</li>
+          <li>Privacy-first, on-device background removal</li>
+          <li>High-fidelity, print-ready vector PDF export</li>
+          <li>Video export with page effects (720p / 4K)</li>
+          <li>Voice story input</li>
           <li>Designer marketplace with approval workflow</li>
           <li>Audio QR codes, love-letter pages, hard-copy printing</li>
         </ul>
-        <h4>Architecture &amp; stack</h4>
-        <ul>
-          <li><strong>Frontend:</strong> React 19, Vite, TypeScript, Tailwind 4, Zustand, react-pageflip</li>
-          <li><strong>Backend:</strong> FastAPI + Celery + Redis, Supabase (Postgres + RLS)</li>
-          <li><strong>AI:</strong> Gemini 2.5 Flash, local MiniCPM (llama.cpp), DINOv3, faster-whisper</li>
-          <li><strong>Shared SDKs:</strong> one canonical <code>book-render</code> consumed by editor, PDF, video &amp; public viewer</li>
-          <li><strong>Infra:</strong> Docker Compose, Traefik, Gotenberg, Prometheus + Grafana</li>
-          <li><strong>Payments:</strong> Stripe, PayPal, Fawry, Paymob &mdash; geo-discounted pricing</li>
-        </ul>
+        <h4>Under the hood</h4>
+        <p>A multi-service platform: a modern reactive web frontend, an asynchronous AI generation pipeline, and self-hosted, privacy-first processing. Core models and infrastructure are proprietary.</p>
         <h4>Pricing tiers</h4>
         <ul>
           <li><strong>Free Peek</strong> &mdash; 6 pages, 8 photos, watermarked, no card required</li>
