@@ -761,7 +761,7 @@
         kind: m.kind || 'image',
         src: m.src || imgUrl,
         title: m.title || caption || 'Image',
-        prompt: `Press <b>E</b> to view ${m.title || caption || 'image'}`
+        prompt: m.prompt || `Press <b>E</b> to view ${m.title || caption || 'image'}`
       };
       interactables.push(photo);
       if (caption) {
@@ -777,10 +777,10 @@
     }
 
     createFrame(-6.92, 2.45, -3.4, Math.PI / 2, 'me.webp', 1.05, 1.3, 'Eyad Elfar');
-    createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill');
+    createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill', { kind: 'page', src: 'portfolio.html#keepquill', title: 'KeepQuill - Sample Book & Readme', prompt: 'Press <b>E</b> to read the KeepQuill sample book' });
     createFrame(6.92, 2.5, -3.0, -Math.PI / 2, 'images/mental_health.webp', 0.78, 0.5, 'Mental Health NLP');
     createFrame(6.92, 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.webp', 0.78, 0.5, 'YOLOv8 Detection');
-    createFrame(6.92, 2.55, 11.2, -Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra');
+    createFrame(6.92, 2.55, 11.2, -Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'portfolio.html#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
     createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/voice_agent.webp', 0.78, 0.5, 'Voice Agents');
 
     function createDocFrame(x, y, z, rotY, title, subtitle, src, accent, w = 0.62, h = 0.82) {
@@ -2169,7 +2169,7 @@
         el = document.createElement('video');
         el.src = src; el.controls = true; el.autoplay = true; el.loop = true;
         el.setAttribute('playsinline', '');
-      } else if (kind === 'pdf') {
+      } else if (kind === 'pdf' || kind === 'page') {
         el = document.createElement('iframe');
         el.src = src;
       } else {

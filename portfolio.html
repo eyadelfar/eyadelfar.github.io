@@ -1278,6 +1278,10 @@
   .cre-track i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), var(--cyan)); transition: width .8s var(--ease); }
   .cre-dim small { color: var(--text2); font-size: .76rem; }
 
+  /* Embedded showcase (opened inside the 3D room via iframe) — show only the modal */
+  body.sc-embed > *:not(#sc-modal):not(#sc-templates) { display: none !important; }
+  body.sc-embed { background: var(--bg); }
+
   @media (max-width: 720px) {
     .dash { grid-template-columns: 1fr; }
     .dash-side { display: none; }
@@ -2819,6 +2823,17 @@ function expGoto(idx) {
     document.body.style.overflow = '';
     setTimeout(function(){ body.innerHTML = ''; }, 350); // stop video / reset
   };
+
+  // Deep-link: open a showcase from the URL hash (used by the 3D room's frames via iframe).
+  function openFromHash(){
+    const k = (location.hash || '').replace('#','');
+    if(SHOWCASES[k]){
+      if(window.self !== window.top) document.body.classList.add('sc-embed'); // hide page chrome when embedded
+      openShowcase(k);
+    }
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) closeShowcase(); });
 
   // In-card attendance video: preload=none until scrolled into view, then play/pause with visibility
