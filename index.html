@@ -6,7 +6,7 @@
 <title>Eyad Elfar | AI Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 
   :root {
@@ -1009,6 +1009,283 @@
     .journey-step-label     { display: none; }
     .github-stats-row       { grid-template-columns: repeat(2, 1fr); }
   }
+  /* ============================================================
+     SHOWCASE SYSTEM — card previews + click-to-expand modal
+     ============================================================ */
+
+  /* --- In-card preview (replaces the static images) --- */
+  .preview {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    transition: transform .5s var(--ease), border-color .3s;
+  }
+  .card:hover .preview { transform: scale(1.02); }
+  .preview--venture { height: 300px; border-radius: 0; border: 0; margin: 0; }
+  .preview > * { pointer-events: none; }
+  .preview-glass {
+    position: absolute; inset: 0; z-index: 6;
+    background: linear-gradient(180deg, transparent 55%, rgba(8,8,18,.55));
+    opacity: .9; transition: opacity .35s;
+  }
+  .preview:hover .preview-glass { opacity: .6; }
+  .preview-hint {
+    position: absolute; bottom: 11px; right: 11px; z-index: 7;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: .74rem; font-weight: 600; letter-spacing: .01em;
+    color: #fff; background: rgba(15,15,30,.72);
+    border: 1px solid var(--border); backdrop-filter: blur(8px);
+    pointer-events: none; transition: background .3s, border-color .3s;
+  }
+  .preview:hover .preview-hint { background: var(--accent); border-color: transparent; }
+  .preview-hint svg { width: 13px; height: 13px; }
+
+  /* --- Modal shell --- */
+  .sc-modal {
+    position: fixed; inset: 0; z-index: 2000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 18px;
+    background: rgba(6,6,14,.82); backdrop-filter: blur(10px);
+    opacity: 0; visibility: hidden;
+    transition: opacity .35s var(--ease), visibility .35s;
+  }
+  .sc-modal.open { opacity: 1; visibility: visible; }
+  .sc-dialog {
+    position: relative; width: min(1120px, 100%); max-height: 94vh;
+    display: flex; flex-direction: column;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 30px 90px rgba(0,0,0,.65);
+    transform: translateY(24px) scale(.97);
+    transition: transform .4s var(--ease);
+  }
+  .sc-modal.open .sc-dialog { transform: none; }
+  .sc-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .sc-head .sc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .sc-head h3 { font-size: 1.2rem; font-weight: 700; }
+  .sc-head .sc-tag { font-size: .85rem; color: var(--text2); margin-left: 2px; }
+  .sc-close {
+    margin-left: auto; flex-shrink: 0; cursor: pointer;
+    width: 36px; height: 36px; border-radius: 10px;
+    display: grid; place-items: center;
+    color: var(--text2); background: var(--bg3);
+    border: 1px solid var(--border); font-size: 1.1rem;
+    transition: all .25s;
+  }
+  .sc-close:hover { color: #fff; background: var(--pink); border-color: transparent; transform: rotate(90deg); }
+  .sc-body { overflow: auto; padding: 22px; }
+  .sc-body::-webkit-scrollbar { width: 9px; }
+  .sc-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 8px; }
+  .sc-tabs { display: flex; gap: 6px; padding: 12px 20px 0; flex-shrink: 0; flex-wrap: wrap; }
+  .sc-tab {
+    cursor: pointer; padding: 8px 16px; border-radius: 10px 10px 0 0;
+    font-size: .85rem; font-weight: 600; color: var(--text2);
+    background: transparent; border: 1px solid transparent; border-bottom: none;
+    transition: all .25s;
+  }
+  .sc-tab:hover { color: var(--text); }
+  .sc-tab.active { color: var(--accent2); background: var(--bg3); border-color: var(--border); }
+  .sc-pane { display: none; }
+  .sc-pane.active { display: block; animation: scFade .4s var(--ease); }
+  @keyframes scFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ============================================================
+     KEEPQUILL — interactive flip-book
+     ============================================================ */
+  .kq { --kq-burgundy:#8B2252; --kq-gold:#D4A574; --kq-cream:#FBF4EA; --kq-ink:#3a2230; --kq-caption:#9a7d5a; }
+  .kq-stage { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 8px 0 4px; }
+  .kq-book { position: relative; width: 340px; height: 460px; max-width: 86vw; }
+  .kq-book.fit { width: 300px; height: 405px; }
+  .kq-leaf {
+    position: absolute; inset: 0; border-radius: 4px 10px 10px 4px;
+    transform-origin: left center; transform-style: preserve-3d;
+    transition: transform .85s var(--ease);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    backface-visibility: hidden;
+    background: var(--kq-cream); color: var(--kq-ink);
+    overflow: hidden;
+  }
+  .kq-leaf.flipped { transform: rotateY(-178deg); }
+  .kq-page { position: absolute; inset: 0; padding: 30px 28px; display: flex; flex-direction: column; }
+  .kq-page::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: linear-gradient(90deg, rgba(0,0,0,.12), transparent); }
+  .kq-leaf .kq-edge { position: absolute; right: 0; top: 0; bottom: 0; width: 10px; background: linear-gradient(90deg, transparent, rgba(0,0,0,.10)); }
+  .kq-page--center { align-items: center; justify-content: center; text-align: center; }
+  .kq-cover { background: radial-gradient(120% 140% at 30% 20%, #a32d63, var(--kq-burgundy) 60%, #5e1639); color: var(--kq-cream); border: none; }
+  .kq-cover .kq-page::after { display: none; }
+  .kq-cover-frame { border: 1.5px solid rgba(255,255,255,.4); border-radius: 6px; padding: 36px 22px; height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+  .kq-mark { font-family: 'Playfair Display', serif; font-weight: 800; font-size: .8rem; letter-spacing: .35em; text-transform: uppercase; opacity: .85; }
+  .kq-cover h4 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; font-size: 2.1rem; line-height: 1.1; }
+  .kq-cover .kq-names { font-family: 'Dancing Script', cursive; font-size: 1.6rem; color: var(--kq-gold); }
+  .kq-cover .kq-sub { font-family: 'Cormorant Garamond', serif; font-size: .95rem; letter-spacing: .08em; opacity: .8; }
+  .kq-eyebrow { font-family: 'Playfair Display', serif; font-size: .68rem; letter-spacing: .28em; text-transform: uppercase; color: var(--kq-gold); margin-bottom: 6px; }
+  .kq-h { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.5rem; line-height: 1.15; color: var(--kq-burgundy); margin-bottom: 12px; }
+  .kq-photo { position: relative; border-radius: 6px; height: 168px; margin-bottom: 14px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+  .kq-photo span { position: absolute; bottom: 8px; left: 10px; font-family: 'Dancing Script', cursive; font-size: 1.05rem; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.5); }
+  .kq-body-text { font-family: 'Cormorant Garamond', serif; font-size: 1.08rem; line-height: 1.55; color: var(--kq-ink); }
+  .kq-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.5rem; line-height: 1.4; color: var(--kq-burgundy); }
+  .kq-quote-mark { font-family: 'Playfair Display', serif; font-size: 3.4rem; color: var(--kq-gold); line-height: .4; }
+  .kq-pagenum { margin-top: auto; font-family: 'Cormorant Garamond', serif; font-size: .8rem; color: var(--kq-caption); text-align: center; padding-top: 8px; }
+  .kq-divider { width: 46px; height: 2px; background: var(--kq-gold); margin: 6px auto 14px; }
+  .kq-controls { display: flex; align-items: center; gap: 16px; }
+  .kq-btn { cursor: pointer; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: var(--kq-burgundy); border: none; transition: all .25s; }
+  .kq-btn:hover { background: #a32d63; transform: scale(1.08); }
+  .kq-btn:disabled { opacity: .3; cursor: default; transform: none; }
+  .kq-counter { font-family: 'Cormorant Garamond', serif; font-size: .95rem; color: var(--text2); min-width: 70px; text-align: center; }
+
+  /* KeepQuill mini preview (cover only) */
+  .kq-mini { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(120% 140% at 30% 20%, #a32d63, #7a1f4d 60%, #4f1230); }
+  .kq-mini-book { width: 120px; height: 160px; border-radius: 4px 8px 8px 4px; background: radial-gradient(120% 140% at 30% 20%, #a32d63, #8B2252 60%, #5e1639); box-shadow: 0 14px 30px rgba(0,0,0,.5); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(212,165,116,.4); }
+  .kq-mini-book .m1 { font-family: 'Playfair Display', serif; font-size: .5rem; letter-spacing: .25em; color: rgba(255,255,255,.8); text-transform: uppercase; }
+  .kq-mini-book .m2 { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700; color: #FBF4EA; font-size: 1.15rem; }
+  .kq-mini-book .m3 { font-family: 'Dancing Script', cursive; color: #D4A574; font-size: 1rem; }
+
+  /* README panel (shared) */
+  .readme { max-width: 760px; margin: 0 auto; line-height: 1.75; }
+  .readme h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; color: var(--accent2); margin: 22px 0 10px; }
+  .readme h4:first-child { margin-top: 0; }
+  .readme p { color: var(--text); margin-bottom: 12px; }
+  .readme ul { list-style: none; margin: 8px 0 14px; display: grid; gap: 8px; }
+  .readme li { position: relative; padding-left: 22px; color: var(--text); font-size: .95rem; }
+  .readme li::before { content: ''; position: absolute; left: 4px; top: 9px; width: 7px; height: 7px; border-radius: 2px; background: var(--accent); transform: rotate(45deg); }
+  .readme code { font-family: 'JetBrains Mono', monospace; font-size: .82rem; background: var(--bg3); padding: 2px 7px; border-radius: 5px; color: var(--cyan); }
+  .readme .rm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin: 10px 0 16px; }
+  .readme .rm-stat { padding: 14px 16px; border-radius: 12px; background: var(--bg3); border: 1px solid var(--border); }
+  .readme .rm-stat b { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; color: var(--accent2); }
+  .readme .rm-stat span { font-size: .82rem; color: var(--text2); }
+  .readme .rm-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 16px; }
+  .readme .rm-step { padding: 7px 13px; border-radius: 9px; background: rgba(124,116,255,.1); border: 1px solid rgba(124,116,255,.2); font-size: .85rem; font-weight: 600; color: var(--accent2); }
+  .readme .rm-arrow { color: var(--text2); }
+
+  /* ============================================================
+     DASHBOARD REPLICAS — shared chrome
+     ============================================================ */
+  .dash { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); display: grid; grid-template-columns: 210px 1fr; min-height: 460px; font-size: 12px; }
+  .dash-side { padding: 16px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .dash-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }
+  .dash-brand .dbm { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-weight: 800; font-size: .85rem; }
+  .dash-brand b { font-size: .95rem; display: block; line-height: 1.15; }
+  .dash-brand small { font-size: .68rem; opacity: .7; }
+  .dash-nav { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; font-weight: 500; transition: background .2s; }
+  .dash-navhead { font-size: .62rem; text-transform: uppercase; letter-spacing: .12em; opacity: .45; margin: 12px 0 4px 4px; }
+  .dash-main { padding: 16px; overflow: hidden; }
+  .dash-topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .dash-kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 12px; }
+  .dash-row { display: grid; gap: 10px; margin-bottom: 12px; }
+  .dash-bars { display: flex; align-items: flex-end; gap: 7px; height: 90px; padding-top: 8px; }
+  .dash-bars i { flex: 1; border-radius: 3px 3px 0 0; display: block; transition: height .6s var(--ease); }
+
+  /* Favisra — dark midnight/cyan */
+  .fav { --fbg:#080f1c; --fsurf:rgba(11,21,42,.85); --fbord:rgba(110,155,220,.14); --ftext:#edf3ff; --fdim:#8aa3c4; --facc:#38bdf8; --facc2:#4ade80; background: var(--fbg); color: var(--ftext); }
+  .fav .dash-side { background: rgba(5,10,21,.97); border-right: 1px solid var(--fbord); }
+  .fav .dbm { background: linear-gradient(135deg,#38bdf8,#4ade80); color: #041020; }
+  .fav .dash-nav { color: var(--fdim); }
+  .fav .dash-nav.on { background: rgba(56,189,248,.13); color: var(--ftext); }
+  .fav .dash-nav:hover { background: rgba(56,189,248,.08); }
+  .fav .fcard { background: var(--fsurf); border: 1px solid var(--fbord); border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; }
+  .fav .fcard::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,#38bdf8,#4ade80); }
+  .fav .fcard.warn::before { background: linear-gradient(90deg,#fbbf24,#fb923c); }
+  .fav .fcard.crit::before { background: linear-gradient(90deg,#f87171,#fb923c); }
+  .fav .fk-label { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--fdim); margin-bottom: 7px; }
+  .fav .fk-val { font-size: 1.9rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+  .fav .fk-val.good { color: #34d399; } .fav .fk-val.warn { color: #fbbf24; } .fav .fk-val.crit { color: #f87171; }
+  .fav .fk-trend { font-size: .72rem; margin-top: 7px; color: var(--fdim); }
+  .fav .fk-trend b { color: #34d399; }
+  .fav .fk-prog { height: 4px; border-radius: 4px; background: rgba(255,255,255,.08); margin-top: 9px; overflow: hidden; }
+  .fav .fk-prog i { display: block; height: 100%; background: linear-gradient(90deg,#38bdf8,#4ade80); border-radius: 4px; }
+  .fav .ftitle { font-size: .82rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .fav .ftitle small { color: var(--fdim); font-weight: 500; }
+  .fav .lb { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
+  .fav .lb-card { position: relative; background: rgba(255,255,255,.03); border: 1px solid var(--fbord); border-radius: 12px; padding: 12px 6px; text-align: center; }
+  .fav .lb-av { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 7px; border: 2px solid var(--fbord); display: grid; place-items: center; font-weight: 700; color: #041020; font-size: .9rem; }
+  .fav .lb-rank { position: absolute; top: 6px; left: 6px; width: 18px; height: 18px; border-radius: 50%; font-size: .6rem; font-weight: 700; display: grid; place-items: center; background: var(--facc); color: #fff; }
+  .fav .lb-rank.g { background: #facc15; color: #422006; } .fav .lb-rank.s { background: #94a3b8; color: #0f172a; } .fav .lb-rank.b { background: #c2855a; color: #422006; }
+  .fav .lb-name { font-size: .68rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fav .lb-val { font-size: .85rem; font-weight: 800; margin-top: 2px; }
+  .fav .lb-name small { color: var(--fdim); }
+  .fav .dash-bars i { background: linear-gradient(180deg,#38bdf8,rgba(56,189,248,.25)); }
+  .fav .fpill { font-size: .68rem; padding: 4px 10px; border-radius: 20px; background: rgba(56,189,248,.12); color: var(--facc); border: 1px solid rgba(56,189,248,.25); }
+  .fav .fchip { font-size: .66rem; padding: 3px 9px; border-radius: 6px; background: rgba(74,222,128,.1); color: #4ade80; border: 1px solid rgba(74,222,128,.2); }
+  .fav .axis { font-size: .58rem; color: var(--fdim); display: flex; justify-content: space-between; margin-top: 5px; }
+
+  /* Cashflows — light navy/gold */
+  .cf { --cnavy:#0a2540; --cnavyl:#0f3460; --cgold:#d4af37; --cpos:#16a34a; --cneg:#dc2626; --cbg:#f8fafc; --ccard:#fff; --cmut:#64748b; --cbord:#e2e8f0; --ctext:#0f172a; background: var(--cbg); color: var(--ctext); }
+  .cf .dash-side { background: var(--cnavy); color: #fff; }
+  .cf .dbm { background: var(--cgold); color: var(--cnavy); }
+  .cf .dash-brand b { color: var(--cgold); }
+  .cf .dash-nav { color: rgba(255,255,255,.7); }
+  .cf .dash-navhead { color: rgba(255,255,255,.4); }
+  .cf .cf-field { background: var(--cnavyl); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 7px 10px; font-size: .72rem; color: rgba(255,255,255,.9); display: flex; justify-content: space-between; align-items: center; }
+  .cf .cf-field .v { color: var(--cgold); font-weight: 600; }
+  .cf .cf-toggle { width: 30px; height: 16px; border-radius: 10px; background: var(--cgold); position: relative; }
+  .cf .cf-toggle::after { content: ''; position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+  .cf .ccard { background: var(--ccard); border: 1px solid var(--cbord); border-radius: 10px; padding: 11px 13px; }
+  .cf .ck-label { font-size: .6rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--cmut); }
+  .cf .ck-val { font-size: 1.15rem; font-weight: 800; margin-top: 3px; }
+  .cf .ck-val.pos { color: var(--cpos); } .cf .ck-val.neg { color: var(--cneg); }
+  .cf .ctitle { font-size: .72rem; font-weight: 700; padding: 8px 11px; border-bottom: 1px solid var(--cbord); background: #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+  .cf table { width: 100%; border-collapse: collapse; font-size: .72rem; }
+  .cf td { padding: 5px 11px; border-bottom: 1px solid #f1f5f9; }
+  .cf td.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .cf td.pos { color: var(--cpos); } .cf td.neg { color: var(--cneg); }
+  .cf .fc-th { background: #f1f5f9; font-weight: 600; }
+  .cf .fc-hl { background: rgba(212,175,55,.12); }
+  .cf .dash-bars i { background: var(--cnavy); }
+  .cf .dash-bars i.gold { background: var(--cgold); }
+  .cf .dash-bars i.pos { background: var(--cpos); } .cf .dash-bars i.neg { background: var(--cneg); }
+  .cf .cbadge { font-size: .62rem; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--cgold); color: var(--cnavy); }
+  .cf .cbtn { font-size: .66rem; padding: 5px 10px; border-radius: 7px; border: 1px solid var(--cbord); color: var(--cmut); background: #fff; }
+
+  /* Cashflow Automation — workbook → data flow strip */
+  .cfa-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .cfa-node { background: var(--ccard); border: 1px solid var(--cbord); border-radius: 10px; padding: 12px; text-align: center; }
+  .cfa-node .ic { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; margin: 0 auto 7px; }
+  .cfa-node b { font-size: .76rem; display: block; }
+  .cfa-node span { font-size: .64rem; color: var(--cmut); }
+  .cfa-arrow { color: var(--cgold); font-size: 1.1rem; }
+
+  /* ============================================================
+     ATTENDANCE — video, CREATIVITY — artwork gallery
+     ============================================================ */
+  .vidp { position: absolute; inset: 0; }
+  .vidp video { width: 100%; height: 100%; object-fit: cover; }
+  .sc-video { width: 100%; border-radius: 12px; background: #000; max-height: 74vh; }
+  .play-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 7; width: 54px; height: 54px; border-radius: 50%; background: rgba(124,116,255,.9); display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+  .play-badge svg { width: 22px; height: 22px; color: #fff; margin-left: 3px; }
+
+  .cre-mini { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+  .cre-mini img { width: 100%; height: 100%; object-fit: cover; }
+  .cre-wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; align-items: start; }
+  .cre-stage { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #fff; }
+  .cre-stage img { width: 100%; display: block; aspect-ratio: 1; object-fit: contain; background: #fdfcfa; }
+  .cre-bbox { position: absolute; border: 2px solid var(--cyan); border-radius: 4px; box-shadow: 0 0 0 1px rgba(0,0,0,.2); }
+  .cre-bbox span { position: absolute; top: -18px; left: -2px; font-size: .6rem; font-weight: 700; background: var(--cyan); color: #042; padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+  .cre-thumbs { display: flex; gap: 8px; margin-top: 12px; }
+  .cre-thumbs img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid transparent; opacity: .55; transition: all .25s; }
+  .cre-thumbs img.on, .cre-thumbs img:hover { opacity: 1; border-color: var(--accent); }
+  .cre-scores { display: grid; gap: 12px; }
+  .cre-overall { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; background: var(--bg3); border: 1px solid var(--border); }
+  .cre-ring { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-family: 'Space Grotesk',sans-serif; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
+  .cre-dim b { font-size: .9rem; display: flex; justify-content: space-between; }
+  .cre-dim b span { color: var(--accent2); }
+  .cre-track { height: 7px; border-radius: 6px; background: var(--bg3); margin-top: 5px; overflow: hidden; }
+  .cre-track i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), var(--cyan)); transition: width .8s var(--ease); }
+  .cre-dim small { color: var(--text2); font-size: .76rem; }
+
+  @media (max-width: 720px) {
+    .dash { grid-template-columns: 1fr; }
+    .dash-side { display: none; }
+    .cre-wrap { grid-template-columns: 1fr; }
+    .dash-kpis { grid-template-columns: repeat(2,1fr); }
+    .sc-body { padding: 16px; }
+  }
+
 </style>
 </head>
 <body>
@@ -1211,7 +1488,17 @@
     <div class="section-title reveal">Founded Ventures</div>
 
     <div class="venture-card reveal-scale">
-      <img src="images/keepquill.png" alt="KeepQuill" class="venture-img">
+      <div class="preview preview--venture" onclick="openShowcase('keepquill')" role="button" tabindex="0" aria-label="Open interactive KeepQuill book">
+        <div class="kq-mini">
+          <div class="kq-mini-book">
+            <div class="m1">A Memory Book</div>
+            <div class="m2">Our&nbsp;Story</div>
+            <div class="m3">Eyad &amp; Malak</div>
+          </div>
+        </div>
+        <div class="preview-glass"></div>
+        <div class="preview-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2 2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6a2 2 0 0 0-2 2 2 2 0 0 0-2-2H4a2 2 0 0 1-2-2z"/></svg> Flip the book &amp; read</div>
+      </div>
       <div class="venture-body">
         <h3>KeepQuill</h3>
         <div class="tagline">AI-Powered Memory Book Generator &middot; keepquill.com (launching)</div>
@@ -1244,7 +1531,24 @@
     </div>
 
     <div class="venture-card reveal-scale">
-      <img src="images/favisra.png" alt="Favisra" class="venture-img">
+      <div class="preview preview--venture" onclick="openShowcase('favisra')" role="button" tabindex="0" aria-label="Open interactive Favisra dashboard">
+        <div class="fav" style="position:absolute;inset:0;display:block;min-height:0;border:0;border-radius:0;padding:14px 16px;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+            <div class="dbm" style="width:26px;height:26px;border-radius:7px;display:grid;place-items:center;font-weight:800;font-size:.75rem">F</div>
+            <b style="font-size:.85rem">Favisra</b><span class="fpill" style="margin-left:auto">Live</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+            <div class="fcard" style="padding:9px 11px"><div class="fk-label" style="margin-bottom:4px">Revenue</div><div class="fk-val good" style="font-size:1.15rem">£284k</div></div>
+            <div class="fcard warn" style="padding:9px 11px"><div class="fk-label" style="margin-bottom:4px">Win Rate</div><div class="fk-val warn" style="font-size:1.15rem">41%</div></div>
+            <div class="fcard" style="padding:9px 11px"><div class="fk-label" style="margin-bottom:4px">Calls</div><div class="fk-val" style="font-size:1.15rem">6.2k</div></div>
+          </div>
+          <div class="dash-bars" style="height:54px">
+            <i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:80%"></i><i style="height:70%"></i><i style="height:95%"></i><i style="height:60%"></i><i style="height:85%"></i>
+          </div>
+        </div>
+        <div class="preview-glass"></div>
+        <div class="preview-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg> Explore the dashboard</div>
+      </div>
       <div class="venture-body">
         <h3>Favisra</h3>
         <div class="tagline">Self-Hosted Business Performance &amp; KPI Dashboard Platform &middot; favisra.com (launching)</div>
@@ -1316,7 +1620,24 @@
         </div>
 
         <div class="card">
-          <img src="images/cashflows_app.png" alt="Cashflows App" class="card-img">
+          <div class="preview" onclick="openShowcase('cashflows')" role="button" tabindex="0" aria-label="Open interactive Cashflows dashboard">
+            <div class="cf" style="position:absolute;inset:0;display:block;min-height:0;border:0;border-radius:0;padding:13px 14px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px">
+                <div class="dbm" style="width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-weight:800;font-size:.7rem">B</div>
+                <b style="font-size:.8rem;color:var(--cgold)">Baron &amp; Cabot</b><span class="cbadge" style="margin-left:auto">GBP</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:9px">
+                <div class="ccard" style="padding:7px 9px"><div class="ck-label">5yr ROI</div><div class="ck-val pos">+62%</div></div>
+                <div class="ccard" style="padding:7px 9px"><div class="ck-label">Net/mo</div><div class="ck-val neg">-£340</div></div>
+                <div class="ccard" style="padding:7px 9px"><div class="ck-label">Equity</div><div class="ck-val">£182k</div></div>
+              </div>
+              <div class="dash-bars" style="height:48px;background:#fff;border:1px solid var(--cbord);border-radius:8px;padding:8px 8px 0">
+                <i class="gold" style="height:35%"></i><i class="gold" style="height:48%"></i><i class="gold" style="height:60%"></i><i class="gold" style="height:72%"></i><i class="gold" style="height:88%"></i><i style="height:100%"></i>
+              </div>
+            </div>
+            <div class="preview-glass"></div>
+            <div class="preview-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg> Open the calculator</div>
+          </div>
           <h3>Cashflows App</h3>
           <div class="meta">Real estate cashflow visualization</div>
           <p>Property investment cashflow tracking with CSV import, real-time dashboards. Next.js 16 + React 19, tRPC, Drizzle ORM.</p>
@@ -1390,7 +1711,20 @@
         </div>
 
         <div class="card">
-          <img src="images/cashflow_automation.png" alt="Cashflow Automation" class="card-img">
+          <div class="preview" onclick="openShowcase('cashflowauto')" role="button" tabindex="0" aria-label="Open Cashflow Automation pipeline">
+            <div class="cf" style="position:absolute;inset:0;display:block;min-height:0;border:0;border-radius:0;padding:14px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+                <b style="font-size:.78rem;color:var(--ctext)">Monthly Cash Statement</b><span class="cbadge" style="margin-left:auto">.xlsx → DB</span>
+              </div>
+              <div class="cfa-flow" style="grid-template-columns:1fr auto 1fr">
+                <div class="cfa-node"><div class="ic" style="background:#16a34a;color:#fff">XLS</div><b>Workbook</b><span>42 sheets</span></div>
+                <div class="cfa-arrow">→</div>
+                <div class="cfa-node"><div class="ic" style="background:var(--cnavy);color:var(--cgold)">PY</div><b>Fuzzy parse</b><span>field match</span></div>
+              </div>
+            </div>
+            <div class="preview-glass"></div>
+            <div class="preview-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg> See the pipeline</div>
+          </div>
           <h3>Cashflow Automation</h3>
           <div class="meta">Excel financial modeling</div>
           <p>Python automation for parsing Monthly Cash Statement workbooks with fuzzy-matching field extraction.</p>
@@ -1468,7 +1802,14 @@
       </div>
 
       <div class="card">
-        <img src="images/attendance.png" alt="Attendance System" class="card-img">
+        <div class="preview" onclick="openShowcase('attendance')" role="button" tabindex="0" aria-label="Play attendance system demo video">
+          <div class="vidp">
+            <video src="videos/attendance.mp4" muted loop playsinline preload="metadata" autoplay></video>
+          </div>
+          <div class="play-badge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          <div class="preview-glass"></div>
+          <div class="preview-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg> Watch the demo</div>
+        </div>
         <h3>One-Shot Attendance System</h3>
         <div class="meta">Graduation Thesis &middot; Face Recognition</div>
         <p>YOLO + RetinaFace + MTCNN face-recognition pipeline with one-shot enrollment, automated attendance marking, and a live Power BI dashboard.</p>
@@ -1485,7 +1826,16 @@
       </div>
 
       <div class="card">
-        <img src="images/creativity_assessment.png" alt="Creativity Assessment" class="card-img">
+        <div class="preview" onclick="openShowcase('creativity')" role="button" tabindex="0" aria-label="Open creativity assessment demo">
+          <div class="cre-mini">
+            <img src="assets/ar/sample1.png" alt="Child artwork sample 1">
+            <img src="assets/ar/sample2.png" alt="Child artwork sample 2">
+            <img src="assets/ar/sample3.png" alt="Child artwork sample 3">
+            <img src="assets/ar/sample4.png" alt="Child artwork sample 4">
+          </div>
+          <div class="preview-glass"></div>
+          <div class="preview-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg> Score the artwork</div>
+        </div>
         <h3>Creativity Assessment System</h3>
         <div class="meta">Custom RCNN + FastAPI</div>
         <p>Custom TensorFlow RCNN (FocalLoss, PatchExtractor, PositionalEmbedding) that scores children's artwork across <strong>6 creativity dimensions:</strong> fluency, flexibility, elaboration, readability, uniqueness, and mindfulness.</p>
@@ -2113,6 +2463,457 @@ function expGoto(idx) {
   track.scrollTo({ left: idx * (card.offsetWidth + 22), behavior: 'smooth' });
 }
 </script>
+<!-- ============ SHOWCASE MODAL ============ -->
+<div id="sc-modal" class="sc-modal" onclick="if(event.target===this)closeShowcase()">
+  <div class="sc-dialog">
+    <div class="sc-head">
+      <span class="sc-dot" id="sc-dot"></span>
+      <h3 id="sc-title"></h3><span class="sc-tag" id="sc-tag"></span>
+      <button class="sc-close" onclick="closeShowcase()" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="sc-body" id="sc-body"></div>
+  </div>
+</div>
+
+<div id="sc-templates" hidden>
+
+  <!-- ===== KeepQuill ===== -->
+  <div id="tpl-keepquill">
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:18px">
+      <button class="sc-tab active" data-kqtab="book" onclick="kqTab(this,'book')">&#128214; The Book</button>
+      <button class="sc-tab" data-kqtab="readme" onclick="kqTab(this,'readme')">&#128196; README</button>
+    </div>
+
+    <div class="sc-pane active" data-kqpane="book">
+      <div class="kq">
+        <div class="kq-stage">
+          <div class="kq-book">
+            <div class="kq-leaf kq-cover"><div class="kq-page kq-page--center"><div class="kq-cover-frame">
+              <div class="kq-mark">A KeepQuill Memory Book</div>
+              <h4>Our Story</h4>
+              <div class="kq-divider" style="background:rgba(212,165,116,.8)"></div>
+              <div class="kq-names">Eyad &amp; Malak</div>
+              <div class="kq-sub">2,700 days &amp; counting</div>
+            </div></div><span class="kq-edge"></span></div>
+
+            <div class="kq-leaf"><div class="kq-page kq-page--center">
+              <div class="kq-eyebrow">Dedication</div>
+              <div class="kq-divider"></div>
+              <p class="kq-body-text" style="font-style:italic;font-size:1.2rem">For us &mdash; for every quiet moment we almost forgot, and every loud one we never could.</p>
+              <div class="kq-pagenum">i</div>
+            </div><span class="kq-edge"></span></div>
+
+            <div class="kq-leaf"><div class="kq-page">
+              <div class="kq-eyebrow">Chapter One</div>
+              <h3 class="kq-h">The Beginning</h3>
+              <div class="kq-photo" style="background:linear-gradient(135deg,#f3d9c6,#e7b59a)"><span>April 2018 &middot; the hallway</span></div>
+              <p class="kq-body-text">I saw her in the school hallway. She didn't notice me at first, but I couldn't stop looking back. That day changed everything.</p>
+              <div class="kq-pagenum">1</div>
+            </div><span class="kq-edge"></span></div>
+
+            <div class="kq-leaf"><div class="kq-page">
+              <div class="kq-eyebrow">Chapter Two</div>
+              <h3 class="kq-h">Every Single Day</h3>
+              <div class="kq-photo" style="background:linear-gradient(135deg,#cfe0f0,#a9c4e6)"><span>day 2,700 of our streak</span></div>
+              <p class="kq-body-text">August 4th &mdash; day one of our streak. Over 2,700 days of talking, never missed one. Through exams, distance, everything. Not a single day of silence.</p>
+              <div class="kq-pagenum">2</div>
+            </div><span class="kq-edge"></span></div>
+
+            <div class="kq-leaf"><div class="kq-page">
+              <div class="kq-eyebrow">Chapter Three</div>
+              <h3 class="kq-h">The Surprise</h3>
+              <div class="kq-photo" style="background:linear-gradient(135deg,#f0d2da,#dca7b8)"><span>flowers, and a flight she didn't know about</span></div>
+              <p class="kq-body-text">She didn't know I was on that flight. I showed up at her door on her birthday, flowers in hand, heart pounding. Her face &mdash; I'll never forget it.</p>
+              <div class="kq-pagenum">3</div>
+            </div><span class="kq-edge"></span></div>
+
+            <div class="kq-leaf"><div class="kq-page kq-page--center">
+              <div class="kq-quote-mark">&#8220;</div>
+              <p class="kq-quote">We slow-danced in the kitchen at 2 AM, no music, just her humming softly.</p>
+              <div class="kq-divider"></div>
+              <div class="kq-pagenum">4</div>
+            </div><span class="kq-edge"></span></div>
+
+            <div class="kq-leaf"><div class="kq-page">
+              <div class="kq-eyebrow">Chapter Four</div>
+              <h3 class="kq-h">The Long Way Home</h3>
+              <div class="kq-photo" style="background:linear-gradient(135deg,#e9dcc4,#d2bd92)"><span>the longer route, on purpose</span></div>
+              <p class="kq-body-text">She fell asleep on my shoulder during that long drive home. I took the longer route on purpose &mdash; I wasn't ready for the night to end.</p>
+              <div class="kq-pagenum">5</div>
+            </div><span class="kq-edge"></span></div>
+
+            <div class="kq-leaf kq-cover"><div class="kq-page kq-page--center"><div class="kq-cover-frame">
+              <div class="kq-divider" style="background:rgba(212,165,116,.8)"></div>
+              <h4 style="font-size:1.7rem">Forever Yours</h4>
+              <div class="kq-sub" style="margin-top:6px">made with KeepQuill</div>
+            </div></div></div>
+          </div>
+          <div class="kq-controls">
+            <button class="kq-btn kq-prev" aria-label="Previous page"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <span class="kq-counter">Cover</span>
+            <button class="kq-btn kq-next" aria-label="Next page"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+          <p style="color:var(--text2);font-size:.82rem">Tap the page or use the arrows to turn. AI arranges <em>your</em> photos and <em>your</em> words &mdash; it never replaces your feelings.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sc-pane" data-kqpane="readme">
+      <div class="readme">
+        <h4>KeepQuill &mdash; AI-Powered Memory Book Generator</h4>
+        <p>Your photos and your own feelings, arranged into a beautiful, print-ready memory book in minutes. The words and moments are yours &mdash; KeepQuill just gives them shape. The AI <strong>structures and arranges</strong>; it never replaces the sender's emotions.</p>
+        <div class="rm-grid">
+          <div class="rm-stat"><b>~218</b><span>frontend components</span></div>
+          <div class="rm-stat"><b>13</b><span>languages (RTL)</span></div>
+          <div class="rm-stat"><b>16+</b><span>design templates</span></div>
+          <div class="rm-stat"><b>4</b><span>payment gateways</span></div>
+        </div>
+        <h4>How it works</h4>
+        <div class="rm-flow">
+          <span class="rm-step">Upload photos + story</span><span class="rm-arrow">&rarr;</span>
+          <span class="rm-step">Cluster (DINOv3)</span><span class="rm-arrow">&rarr;</span>
+          <span class="rm-step">Plan chapters</span><span class="rm-arrow">&rarr;</span>
+          <span class="rm-step">AI writes captions</span><span class="rm-arrow">&rarr;</span>
+          <span class="rm-step">Edit &amp; export PDF</span>
+        </div>
+        <p>Photos are clustered by time, location, people and mood, distributed across chapters and spreads, then captioned and titled by <code>Gemini 2.5 Flash</code> (or a local MiniCPM). A single canonical <code>book-render</code> SDK lays every page out at a fixed 500px width, so the WYSIWYG editor matches the printed PDF exactly.</p>
+        <h4>Key features</h4>
+        <ul>
+          <li>Smart photo clustering with DINOv3 embeddings + quality/duplicate scoring</li>
+          <li>WYSIWYG editor: edit text, crop/filter photos, drag-and-drop spreads</li>
+          <li>Client-side background removal (ONNX / WebGPU) &mdash; privacy-first</li>
+          <li>Vector PDF export via Gotenberg headless Chromium</li>
+          <li>Video export with page effects (Celery async), 720p / 4K</li>
+          <li>Voice story input via Whisper speech-to-text</li>
+          <li>Designer marketplace with approval workflow</li>
+          <li>Audio QR codes, love-letter pages, hard-copy printing</li>
+        </ul>
+        <h4>Architecture &amp; stack</h4>
+        <ul>
+          <li><strong>Frontend:</strong> React 19, Vite, TypeScript, Tailwind 4, Zustand, react-pageflip</li>
+          <li><strong>Backend:</strong> FastAPI + Celery + Redis, Supabase (Postgres + RLS)</li>
+          <li><strong>AI:</strong> Gemini 2.5 Flash, local MiniCPM (llama.cpp), DINOv3, faster-whisper</li>
+          <li><strong>Shared SDKs:</strong> one canonical <code>book-render</code> consumed by editor, PDF, video &amp; public viewer</li>
+          <li><strong>Infra:</strong> Docker Compose, Traefik, Gotenberg, Prometheus + Grafana</li>
+          <li><strong>Payments:</strong> Stripe, PayPal, Fawry, Paymob &mdash; geo-discounted pricing</li>
+        </ul>
+        <h4>Pricing tiers</h4>
+        <ul>
+          <li><strong>Free Peek</strong> &mdash; 6 pages, 8 photos, watermarked, no card required</li>
+          <li><strong>Love Note ($29.99)</strong> &mdash; 20 pages, 30 photos, all templates</li>
+          <li><strong>Love Story ($49.99)</strong> &mdash; 30 pages, 60 photos, image enhancement, 720p video <em>(most popular)</em></li>
+          <li><strong>Forever Yours ($79.99)</strong> &mdash; 40 pages, 100 photos, 4K video, branded QR, hard-copy print</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Favisra ===== -->
+  <div id="tpl-favisra">
+    <div class="dash fav">
+      <div class="dash-side">
+        <div class="dash-brand"><div class="dbm">F</div><div><b>Favisra</b><small>Performance OS</small></div></div>
+        <div class="dash-navhead">Workspace</div>
+        <div class="dash-nav on"><span>&#9632;</span> Overview</div>
+        <div class="dash-nav"><span>&#9632;</span> Dashboards</div>
+        <div class="dash-nav"><span>&#9632;</span> Reports</div>
+        <div class="dash-navhead">Metrics</div>
+        <div class="dash-nav"><span>&#9632;</span> Formulas</div>
+        <div class="dash-nav"><span>&#9632;</span> Data Sources</div>
+        <div class="dash-navhead">Media</div>
+        <div class="dash-nav"><span>&#9632;</span> Slideshows</div>
+        <div class="dash-nav"><span>&#9632;</span> Screens</div>
+        <div class="dash-navhead">People</div>
+        <div class="dash-nav"><span>&#9632;</span> Employees</div>
+        <div class="dash-nav"><span>&#9632;</span> Audit Logs</div>
+      </div>
+      <div class="dash-main">
+        <div class="dash-topbar">
+          <div><div style="font-size:1rem;font-weight:700">Executive Overview</div><div style="color:var(--fdim);font-size:.72rem">Live operating picture &middot; refreshed 30s ago</div></div>
+          <span class="fpill" style="margin-left:auto">&#9210; Live</span><span class="fpill">+ Add widget</span>
+        </div>
+        <div class="dash-kpis">
+          <div class="fcard"><div class="fk-label">Live Sources</div><div class="fk-val good">7</div><div class="fk-trend"><b>&#9650; all synced</b></div></div>
+          <div class="fcard"><div class="fk-label">Revenue (MTD)</div><div class="fk-val">&#163;284k</div><div class="fk-trend"><b>&#9650; 12%</b> vs target</div><div class="fk-prog"><i style="width:78%"></i></div></div>
+          <div class="fcard warn"><div class="fk-label">Win Rate</div><div class="fk-val warn">41%</div><div class="fk-trend">target 48%</div><div class="fk-prog"><i style="width:41%;background:#fbbf24"></i></div></div>
+          <div class="fcard crit"><div class="fk-label">Overdue Tasks</div><div class="fk-val crit">23</div><div class="fk-trend">SLA breach risk</div></div>
+        </div>
+        <div class="dash-row" style="grid-template-columns:1.4fr 1fr">
+          <div class="fcard">
+            <div class="ftitle">Revenue by month <small>2025</small></div>
+            <div class="dash-bars">
+              <i style="height:40%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:62%"></i><i style="height:70%"></i><i style="height:58%"></i><i style="height:80%"></i><i style="height:74%"></i><i style="height:90%"></i><i style="height:85%"></i><i style="height:96%"></i><i style="height:100%"></i>
+            </div>
+            <div class="axis"><span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span></div>
+          </div>
+          <div class="fcard">
+            <div class="ftitle">Integration health</div>
+            <div style="display:grid;gap:7px">
+              <div style="display:flex;justify-content:space-between"><span>HubSpot</span><span class="fchip">fresh &middot; 2m</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Xero</span><span class="fchip">fresh &middot; 5m</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Google Sheets</span><span class="fchip">fresh &middot; 1m</span></div>
+              <div style="display:flex;justify-content:space-between"><span>SQL Warehouse</span><span class="fchip" style="background:rgba(251,191,36,.12);color:#fbbf24;border-color:rgba(251,191,36,.25)">syncing</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="fcard">
+          <div class="ftitle">Sales leaderboard <small>this quarter</small></div>
+          <div class="lb">
+            <div class="lb-card"><span class="lb-rank g">1</span><div class="lb-av" style="background:linear-gradient(135deg,#facc15,#f59e0b)">SK</div><div class="lb-name">Sara K.</div><div class="lb-val">&#163;92k</div></div>
+            <div class="lb-card"><span class="lb-rank s">2</span><div class="lb-av" style="background:linear-gradient(135deg,#38bdf8,#4ade80)">MA</div><div class="lb-name">Mo A.</div><div class="lb-val">&#163;81k</div></div>
+            <div class="lb-card"><span class="lb-rank b">3</span><div class="lb-av" style="background:linear-gradient(135deg,#a78bfa,#38bdf8)">LR</div><div class="lb-name">Lina R.</div><div class="lb-val">&#163;77k</div></div>
+            <div class="lb-card"><span class="lb-rank">4</span><div class="lb-av" style="background:linear-gradient(135deg,#34d399,#10b981)">JD</div><div class="lb-name">James D.</div><div class="lb-val">&#163;64k</div></div>
+            <div class="lb-card"><span class="lb-rank">5</span><div class="lb-av" style="background:linear-gradient(135deg,#60a5fa,#818cf8)">YN</div><div class="lb-name">Yara N.</div><div class="lb-val">&#163;59k</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="readme" style="margin-top:20px">
+      <p style="text-align:center;color:var(--text2)">Self-hosted KPI dashboard platform &middot; proprietary DSL formula engine &middot; HubSpot / Zoho / Xero / Sheets / SQL connectors &middot; auto-rotating TV slideshows. <strong style="color:var(--accent2)">React 18 &middot; FastAPI &middot; PostgreSQL 16 &middot; ECharts &middot; Docker</strong></p>
+    </div>
+  </div>
+
+  <!-- ===== Cashflows App ===== -->
+  <div id="tpl-cashflows">
+    <div class="dash cf">
+      <div class="dash-side">
+        <div class="dash-brand"><div class="dbm">B&amp;C</div><div><b>Baron &amp; Cabot</b><small style="color:rgba(255,255,255,.6)">Investment Calculator</small></div></div>
+        <div class="dash-navhead">Property</div>
+        <div class="cf-field" style="margin-bottom:6px">Project <span class="v">Marina Vista</span></div>
+        <div class="cf-field" style="margin-bottom:6px">Unit <span class="v">B-1204</span></div>
+        <div class="dash-navhead">Financial Inputs</div>
+        <div style="display:grid;gap:6px">
+          <div class="cf-field">LTV <span class="v">65%</span></div>
+          <div class="cf-field">Interest Rate <span class="v">5.25%</span></div>
+          <div class="cf-field">Loan Term <span class="v">25 yrs</span></div>
+          <div class="cf-field">Nationality <span class="v">Non-resident</span></div>
+          <div class="cf-field">First-Time Buyer <span class="cf-toggle"></span></div>
+          <div class="cf-field">Include Parking <span class="cf-toggle"></span></div>
+        </div>
+      </div>
+      <div class="dash-main">
+        <div class="dash-topbar">
+          <div><div style="font-size:.95rem;font-weight:700">Marina Vista &middot; Unit B-1204</div></div>
+          <span style="margin-left:auto;display:flex;gap:6px">
+            <span class="cbtn">Brochure</span><span class="cbtn">Fact Sheet</span><span class="cbadge">GBP</span>
+          </span>
+        </div>
+        <div class="dash-kpis">
+          <div class="ccard"><div class="ck-label">5yr ROI</div><div class="ck-val pos">+62.4%</div></div>
+          <div class="ccard"><div class="ck-label">10yr ROI</div><div class="ck-val pos">+148%</div></div>
+          <div class="ccard"><div class="ck-label">Net / mo</div><div class="ck-val neg">-&#163;340</div></div>
+          <div class="ccard"><div class="ck-label">Equity In</div><div class="ck-val">&#163;182k</div></div>
+        </div>
+        <div class="dash-row" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="ccard" style="padding:0;overflow:hidden">
+            <div class="ctitle">Exchange</div>
+            <table><tr><td>Deposit</td><td class="r neg">-&#163;105,000</td></tr><tr><td>Fees</td><td class="r neg">-&#163;6,300</td></tr><tr style="background:#f1f5f9"><td><b>Total</b></td><td class="r neg"><b>-&#163;111,300</b></td></tr></table>
+          </div>
+          <div class="ccard" style="padding:0;overflow:hidden">
+            <div class="ctitle">Completion</div>
+            <table><tr><td>Balance</td><td class="r neg">-&#163;245,000</td></tr><tr><td>Mortgage</td><td class="r pos">+&#163;195,000</td></tr><tr style="background:#f1f5f9"><td><b>Total</b></td><td class="r neg"><b>-&#163;50,000</b></td></tr></table>
+          </div>
+          <div class="ccard" style="padding:0;overflow:hidden">
+            <div class="ctitle">Income (Yr 1)</div>
+            <table><tr><td>Rent</td><td class="r pos">+&#163;28,000</td></tr><tr><td>Mortgage</td><td class="r neg">-&#163;14,100</td></tr><tr style="background:#f1f5f9"><td><b>Net</b></td><td class="r pos"><b>+&#163;9,920</b></td></tr></table>
+          </div>
+        </div>
+        <div class="ccard" style="padding:0;overflow:hidden;margin-bottom:12px">
+          <div class="ctitle">10-Year Forecast <span style="font-weight:500;color:var(--cmut)">5yr: +&#163;114k &middot; 10yr: +&#163;271k</span></div>
+          <table>
+            <tr class="fc-th"><td>Year</td><td class="r">Y1</td><td class="r">Y2</td><td class="r">Y3</td><td class="r">Y4</td><td class="r fc-hl">Y5</td><td class="r">Y6</td><td class="r">Y7</td><td class="r">Y8</td><td class="r">Y9</td><td class="r fc-hl">Y10</td></tr>
+            <tr><td>Value</td><td class="r">287k</td><td class="r">301k</td><td class="r">316k</td><td class="r">332k</td><td class="r fc-hl">349k</td><td class="r">366k</td><td class="r">385k</td><td class="r">404k</td><td class="r">424k</td><td class="r fc-hl">445k</td></tr>
+            <tr><td>Net/mo</td><td class="r neg">-340</td><td class="r neg">-120</td><td class="r pos">+90</td><td class="r pos">+310</td><td class="r pos fc-hl">+540</td><td class="r pos">+780</td><td class="r pos">+1.0k</td><td class="r pos">+1.3k</td><td class="r pos">+1.6k</td><td class="r pos fc-hl">+1.9k</td></tr>
+          </table>
+        </div>
+        <div class="dash-row" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="ccard"><div class="ck-label" style="margin-bottom:8px">Equity vs Profit</div><div class="dash-bars" style="height:74px"><i style="height:55%"></i><i class="pos" style="height:90%"></i><i style="height:100%;background:#64748b"></i></div></div>
+          <div class="ccard"><div class="ck-label" style="margin-bottom:8px">Monthly Net Cash</div><div class="dash-bars" style="height:74px"><i class="neg" style="height:30%"></i><i class="neg" style="height:14%"></i><i class="pos" style="height:20%"></i><i class="pos" style="height:45%"></i><i class="pos" style="height:70%"></i><i class="pos" style="height:100%"></i></div></div>
+          <div class="ccard"><div class="ck-label" style="margin-bottom:8px">Capital Growth</div>
+            <svg viewBox="0 0 120 60" style="width:100%;height:74px"><defs><linearGradient id="cfg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4af37" stop-opacity=".5"/><stop offset="1" stop-color="#d4af37" stop-opacity="0"/></linearGradient></defs><path d="M0,52 L24,44 L48,38 L72,28 L96,16 L120,6 L120,60 L0,60 Z" fill="url(#cfg)"/><path d="M0,52 L24,44 L48,38 L72,28 L96,16 L120,6" fill="none" stroke="#d4af37" stroke-width="2"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="readme" style="margin-top:20px">
+      <p style="text-align:center;color:var(--text2)">Property investment cashflow visualization &middot; CSV import &middot; real-time ROI, forecast &amp; disposal modeling across GBP / AED / THB. <strong style="color:var(--accent2)">Next.js 16 &middot; React 19 &middot; tRPC &middot; Drizzle ORM &middot; Recharts</strong></p>
+    </div>
+  </div>
+
+  <!-- ===== Cashflow Automation ===== -->
+  <div id="tpl-cashflowauto">
+    <div class="cf" style="border-radius:14px;padding:24px;border:1px solid var(--cbord)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <b style="font-size:1rem;color:var(--ctext)">Monthly Cash Statement &rarr; structured data</b><span class="cbadge" style="margin-left:auto">Python automation</span>
+      </div>
+      <div class="cfa-flow">
+        <div class="cfa-node"><div class="ic" style="background:#16a34a;color:#fff">XLS</div><b>Workbook</b><span>multi-sheet .xlsx</span></div>
+        <div class="cfa-arrow">&rarr;</div>
+        <div class="cfa-node"><div class="ic" style="background:var(--cnavy);color:var(--cgold)">&#8776;</div><b>Fuzzy match</b><span>field extraction</span></div>
+        <div class="cfa-arrow">&rarr;</div>
+        <div class="cfa-node"><div class="ic" style="background:var(--cgold);color:var(--cnavy)">&#10003;</div><b>Validate</b><span>normalize + check</span></div>
+      </div>
+      <div class="ccard" style="padding:0;overflow:hidden">
+        <div class="ctitle">Extracted fields <span style="font-weight:500;color:var(--cmut)">confidence</span></div>
+        <table>
+          <tr><td>Opening Balance</td><td class="r">&#163;1,284,500</td><td class="r pos">98%</td></tr>
+          <tr><td>Total Inflows</td><td class="r pos">+&#163;642,100</td><td class="r pos">96%</td></tr>
+          <tr><td>Total Outflows</td><td class="r neg">-&#163;511,380</td><td class="r pos">95%</td></tr>
+          <tr><td>"Misc. Recievables"</td><td class="r">&#163;18,200</td><td class="r" style="color:var(--cgold)">81% &middot; fuzzy</td></tr>
+          <tr style="background:#f1f5f9"><td><b>Closing Balance</b></td><td class="r pos"><b>+&#163;1,415,220</b></td><td class="r pos"><b>99%</b></td></tr>
+        </table>
+      </div>
+      <p style="margin-top:16px;color:var(--cmut);font-size:.8rem">Fuzzy field matching tolerates renamed, misspelled and reordered columns across months, so finance never re-maps a template by hand. Cleaned output feeds the Cashflows App dashboards.</p>
+    </div>
+    <div class="readme" style="margin-top:18px"><p style="text-align:center;color:var(--text2)"><strong style="color:var(--accent2)">Python &middot; openpyxl &middot; RapidFuzz</strong></p></div>
+  </div>
+
+  <!-- ===== Attendance ===== -->
+  <div id="tpl-attendance">
+    <video class="sc-video" src="videos/attendance.mp4" controls autoplay loop playsinline></video>
+    <div class="readme" style="margin-top:18px">
+      <p>One-shot face-recognition attendance pipeline (<strong>graduation thesis</strong>): YOLO detects faces, RetinaFace + MTCNN align them, and DeepFace embeddings match against a single enrollment photo per person &mdash; no retraining needed to add someone. Marked attendance streams to MySQL via MS SSIS and a live Power BI dashboard.</p>
+      <div class="rm-flow">
+        <span class="rm-step">Camera</span><span class="rm-arrow">&rarr;</span>
+        <span class="rm-step">YOLO detect</span><span class="rm-arrow">&rarr;</span>
+        <span class="rm-step">RetinaFace + MTCNN</span><span class="rm-arrow">&rarr;</span>
+        <span class="rm-step">DeepFace match</span><span class="rm-arrow">&rarr;</span>
+        <span class="rm-step">MySQL / Power BI</span>
+      </div>
+      <p style="text-align:center"><a href="https://github.com/eyadelfar/Attendance-System" target="_blank" rel="noopener" style="color:var(--accent2);font-weight:600">301 commits &middot; View on GitHub &#8599;</a></p>
+    </div>
+  </div>
+
+  <!-- ===== Creativity ===== -->
+  <div id="tpl-creativity">
+    <div class="cre-wrap">
+      <div>
+        <div class="cre-stage" id="creStage"></div>
+        <div class="cre-thumbs" id="creThumbs"></div>
+      </div>
+      <div class="cre-scores" id="creScores"></div>
+    </div>
+    <div class="readme" style="margin-top:18px"><p style="text-align:center;color:var(--text2)">Custom TensorFlow RCNN &mdash; FocalLoss, PatchExtractor &amp; PositionalEmbedding &mdash; scoring children's artwork across 6 creativity dimensions. <strong style="color:var(--accent2)">TensorFlow &middot; Custom Layers &middot; FastAPI</strong></p></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const SHOWCASES = {
+    keepquill:    { title:'KeepQuill',                  tag:'AI-Powered Memory Book Generator', color:'#D4A574' },
+    favisra:      { title:'Favisra',                    tag:'Self-Hosted KPI Dashboard Platform', color:'#38bdf8' },
+    cashflows:    { title:'Cashflows App',              tag:'Baron & Cabot · Investment Calculator', color:'#d4af37' },
+    cashflowauto: { title:'Cashflow Automation',        tag:'Excel → structured data', color:'#16a34a' },
+    attendance:   { title:'One-Shot Attendance System', tag:'Graduation Thesis · Face Recognition', color:'#f472b6' },
+    creativity:   { title:'Creativity Assessment System', tag:'Custom RCNN · 6 dimensions', color:'#22d3ee' },
+  };
+  const modal = document.getElementById('sc-modal');
+  const body  = document.getElementById('sc-body');
+
+  window.openShowcase = function(key){
+    const cfg = SHOWCASES[key]; if(!cfg) return;
+    const tpl = document.getElementById('tpl-'+key); if(!tpl) return;
+    document.getElementById('sc-dot').style.background = cfg.color;
+    document.getElementById('sc-title').textContent = cfg.title;
+    document.getElementById('sc-tag').textContent = cfg.tag;
+    body.innerHTML = tpl.innerHTML;
+    body.scrollTop = 0;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if(key === 'keepquill')  initFlip(body);
+    if(key === 'creativity') initCreativity(body);
+  };
+  window.closeShowcase = function(){
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function(){ body.innerHTML = ''; }, 350); // stop video / reset
+  };
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) closeShowcase(); });
+
+  // Open previews via keyboard (Enter/Space) for accessibility
+  document.addEventListener('keydown', function(e){
+    if((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.classList.contains('preview')){
+      e.preventDefault(); document.activeElement.click();
+    }
+  });
+
+  // ---- KeepQuill flip book ----
+  window.kqTab = function(btn, name){
+    const root = btn.closest('#sc-body') || document;
+    root.querySelectorAll('[data-kqtab]').forEach(function(b){ b.classList.toggle('active', b===btn); });
+    root.querySelectorAll('[data-kqpane]').forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-kqpane')===name); });
+  };
+  function initFlip(root){
+    const bookEl = root.querySelector('.kq-book'); if(!bookEl) return;
+    const leaves = Array.prototype.slice.call(bookEl.querySelectorAll('.kq-leaf'));
+    const total = leaves.length;
+    let cur = 0;
+    const counter = root.querySelector('.kq-counter');
+    const prev = root.querySelector('.kq-prev');
+    const next = root.querySelector('.kq-next');
+    function render(){
+      leaves.forEach(function(lf,i){
+        const flipped = i < cur;
+        lf.classList.toggle('flipped', flipped);
+        lf.style.zIndex = flipped ? i : (total - i);
+      });
+      counter.textContent = (cur === 0) ? 'Cover' : (cur + ' / ' + (total - 1));
+      prev.disabled = (cur === 0);
+      next.disabled = (cur >= total - 1);
+    }
+    next.addEventListener('click', function(){ if(cur < total-1){ cur++; render(); } });
+    prev.addEventListener('click', function(){ if(cur > 0){ cur--; render(); } });
+    bookEl.addEventListener('click', function(e){
+      if(e.target.closest('.kq-controls')) return;
+      if(cur < total-1){ cur++; render(); }
+    });
+    render();
+  }
+
+  // ---- Creativity scorer ----
+  const CRE = [
+    { img:'assets/ar/sample1.png', overall:78, dims:[['Fluency',82],['Flexibility',74],['Elaboration',80],['Readability',71],['Uniqueness',88],['Mindfulness',73]] },
+    { img:'assets/ar/sample2.png', overall:85, dims:[['Fluency',88],['Flexibility',83],['Elaboration',86],['Readability',79],['Uniqueness',90],['Mindfulness',84]] },
+    { img:'assets/ar/sample3.png', overall:69, dims:[['Fluency',72],['Flexibility',65],['Elaboration',68],['Readability',74],['Uniqueness',63],['Mindfulness',71]] },
+    { img:'assets/ar/sample4.png', overall:91, dims:[['Fluency',93],['Flexibility',89],['Elaboration',94],['Readability',86],['Uniqueness',95],['Mindfulness',88]] },
+  ];
+  const CRE_BOXES = [
+    [[12,14,32,30],[55,20,30,34],[30,55,40,30]],
+    [[18,16,40,36],[58,52,28,30]],
+    [[20,22,46,40]],
+    [[10,12,34,32],[52,16,34,30],[20,54,30,32],[58,56,28,28]],
+  ];
+  function ringColor(v){ return v>=85 ? '#4ade9e' : v>=70 ? '#7c74ff' : '#fb923c'; }
+  function initCreativity(root){
+    const stage  = root.querySelector('#creStage');
+    const thumbs = root.querySelector('#creThumbs');
+    const scores = root.querySelector('#creScores');
+    let active = 0;
+    thumbs.innerHTML = CRE.map(function(c,i){
+      return '<img src="'+c.img+'" alt="Artwork sample '+(i+1)+'" data-i="'+i+'"'+(i===0?' class="on"':'')+'>';
+    }).join('');
+    function paint(i){
+      active = i;
+      const c = CRE[i];
+      const boxes = CRE_BOXES[i].map(function(b){
+        return '<div class="cre-bbox" style="left:'+b[0]+'%;top:'+b[1]+'%;width:'+b[2]+'%;height:'+b[3]+'%"><span>patch</span></div>';
+      }).join('');
+      stage.innerHTML = '<img src="'+c.img+'" alt="Selected artwork">' + boxes;
+      scores.innerHTML =
+        '<div class="cre-overall"><div class="cre-ring" style="color:'+ringColor(c.overall)+';border:4px solid '+ringColor(c.overall)+'">'+c.overall+'</div>'+
+        '<div><div style="font-weight:700;font-size:1.05rem">Creativity Score</div><div style="color:var(--text2);font-size:.84rem">weighted across 6 dimensions</div></div></div>' +
+        c.dims.map(function(d){
+          return '<div class="cre-dim"><b>'+d[0]+'<span>'+d[1]+'</span></b><div class="cre-track"><i style="width:'+d[1]+'%"></i></div></div>';
+        }).join('');
+      thumbs.querySelectorAll('img').forEach(function(im){ im.classList.toggle('on', +im.getAttribute('data-i')===i); });
+    }
+    thumbs.addEventListener('click', function(e){ const im = e.target.closest('img'); if(im) paint(+im.getAttribute('data-i')); });
+    paint(0);
+  }
+})();
+</script>
+
 <script data-goatcounter="https://eyadelfar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
