@@ -1,5 +1,6 @@
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
     import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
     import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer.js';
@@ -775,12 +776,12 @@
       return fg;
     }
 
-    createFrame(-6.92, 2.45, -3.4, Math.PI / 2, 'me.jpeg', 1.05, 1.3, 'Eyad Elfar');
-    createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.png', 0.78, 0.5, 'KeepQuill');
-    createFrame(6.92, 2.5, -3.0, -Math.PI / 2, 'images/mental_health.png', 0.78, 0.5, 'Mental Health NLP');
-    createFrame(6.92, 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.png', 0.78, 0.5, 'YOLOv8 Detection');
-    createFrame(6.92, 2.55, 11.2, -Math.PI / 2, 'images/favisra.png', 0.78, 0.5, 'Favisra');
-    createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/voice_agent.png', 0.78, 0.5, 'Voice Agents');
+    createFrame(-6.92, 2.45, -3.4, Math.PI / 2, 'me.webp', 1.05, 1.3, 'Eyad Elfar');
+    createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill');
+    createFrame(6.92, 2.5, -3.0, -Math.PI / 2, 'images/mental_health.webp', 0.78, 0.5, 'Mental Health NLP');
+    createFrame(6.92, 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.webp', 0.78, 0.5, 'YOLOv8 Detection');
+    createFrame(6.92, 2.55, 11.2, -Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra');
+    createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/voice_agent.webp', 0.78, 0.5, 'Voice Agents');
 
     function createDocFrame(x, y, z, rotY, title, subtitle, src, accent, w = 0.62, h = 0.82) {
       const fg = new THREE.Group(); fg.position.set(x, y, z); fg.rotation.y = rotY; scene.add(fg);
@@ -1250,7 +1251,7 @@
       faceCenter(group, 4.6, 6.2);
       const cy = topY + 1.1, W = 1.75, H = 1.18;
       box('CVback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
-      plane('CVimg', W, H, [0, cy, 0.0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: loadTex('images/cigarette_detection.png') }), group);
+      plane('CVimg', W, H, [0, cy, 0.0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: loadTex('images/cigarette_detection.webp') }), group);
       const oc = document.createElement('canvas'); oc.width = 700; oc.height = 470; const ox = oc.getContext('2d');
       const oTex = new THREE.CanvasTexture(oc); oTex.colorSpace = THREE.SRGBColorSpace;
       plane('CVbox', W, H, [0, cy, 0.02], [0, 0, 0], new THREE.MeshBasicMaterial({ map: oTex, transparent: true }), group);
@@ -1417,6 +1418,7 @@
     }
 
     const gltfLoader = new GLTFLoader();
+    gltfLoader.setMeshoptDecoder(MeshoptDecoder);
     gltfLoader.load(
       'eyad_elfar.glb',
       (gltf) => {
@@ -2463,8 +2465,11 @@
       contactShadow.material.opacity = THREE.MathUtils.clamp(0.9 - lift * 3, 0.4, 0.9);
     }
 
+    const _specPos = new THREE.Vector3();
+    const _specLook = new THREE.Vector3();
     function mainRenderLoop() {
       requestAnimationFrame(mainRenderLoop);
+      if (document.hidden) return;   // skip rendering work while tab is backgrounded
       const delta = Math.min(clock.getDelta(), 0.04);
       const elapsed = clock.getElapsedTime();
 
@@ -2481,8 +2486,8 @@
         const camX = cx + Math.sin(spectatorAzimuth) * Math.cos(spectatorElevation) * spectatorDistance;
         const camY = focusY + Math.sin(spectatorElevation) * spectatorDistance;
         const camZ = cz - Math.cos(spectatorAzimuth) * Math.cos(spectatorElevation) * spectatorDistance;
-        camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 0.15);
-        camera.lookAt(new THREE.Vector3(cx, focusY, cz));
+        camera.position.lerp(_specPos.set(camX, camY, camZ), 0.15);
+        camera.lookAt(_specLook.set(cx, focusY, cz));
         cameraYaw = spectatorAzimuth + Math.PI;
         cameraPitch = -spectatorElevation;
       }
@@ -2568,14 +2573,21 @@
     canvas.focus();
     mainRenderLoop();
 
+    let _resizeT = null;
     window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      composer.setSize(window.innerWidth, window.innerHeight);
-      bloomPass.setSize(window.innerWidth, window.innerHeight);
-      css3dRenderer.setSize(window.innerWidth, window.innerHeight);
-      redrawWorkstationMonitor();
+      clearTimeout(_resizeT);
+      _resizeT = setTimeout(() => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+        bloomPass.setSize(window.innerWidth, window.innerHeight);
+        css3dRenderer.setSize(window.innerWidth, window.innerHeight);
+        redrawWorkstationMonitor();
+      }, 120);
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) videoScreens.forEach(vs => { if (!vs.video.paused) vs.video.pause(); });
     });
 
     function updateStateIndicators() {
