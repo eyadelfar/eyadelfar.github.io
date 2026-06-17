@@ -1412,6 +1412,9 @@
     let characterReady = false;
     let loadedCharacterModel = null;
     let characterBaseHeight = 1.7;
+    // Rig support — auto-activates when the loaded GLB is rigged/animated (e.g. Mixamo / Ready Player Me)
+    let charMixer = null, actIdle = null, actWalk = null, walkWeight = 0;
+    const blinkMorphs = [];
 
     function finishLoad() {
       const loaderEl = document.getElementById('loader');
@@ -1455,6 +1458,25 @@
         characterPivot.add(model);
         loadedCharacterModel = model;
         characterReady = true;
+
+        // If the GLB ships animation clips (Mixamo/RPM), drive real articulated motion.
+        if (gltf.animations && gltf.animations.length) {
+          charMixer = new THREE.AnimationMixer(model);
+          const pick = (re) => gltf.animations.find(a => re.test(a.name || ''));
+          const idleClip = pick(/idle|breath|stand/i) || gltf.animations[0];
+          const walkClip = pick(/walk|run|jog|locomot/i) || idleClip;
+          actIdle = charMixer.clipAction(idleClip); actIdle.play();
+          if (walkClip !== idleClip) { actWalk = charMixer.clipAction(walkClip); actWalk.play(); actWalk.setEffectiveWeight(0); }
+        }
+        // If the face has blink blendshapes (RPM: eyeBlinkLeft/Right), use real morph blinking.
+        model.traverse((o) => {
+          if (o.isMesh && o.morphTargetDictionary) {
+            for (const key in o.morphTargetDictionary) {
+              if (/blink|eyesclosed|eye_?close/i.test(key)) blinkMorphs.push({ mesh: o, idx: o.morphTargetDictionary[key] });
+            }
+          }
+        });
+
         buildEyelids();
         finishLoad();
       },
@@ -2459,6 +2481,7 @@
     const EYE = { y: 1.55, x: 0.085, z: 0.17, w: 0.075, h: 0.05, depth: 0.06, color: 0xc99a74 };
     let lidL = null, lidR = null, blinkWait = 1.5, blinkTimer = 0, blinkAnim = -1;
     function buildEyelids() {
+      if (blinkMorphs.length) return;            // real blendshape blink — overlay not needed
       const mat = new THREE.MeshStandardMaterial({ color: EYE.color, roughness: 0.85 });
       const geo = new THREE.SphereGeometry(1, 18, 12);
       [-1, 1].forEach((sx, i) => {
@@ -2471,20 +2494,24 @@
       });
     }
     function updateBlink(dt) {
-      if (!lidL) return;
+      // shared scheduler -> "closed" amount c in [0,1]
       blinkTimer += dt;
       if (blinkAnim < 0 && blinkTimer >= blinkWait) blinkAnim = 0;
+      let c = 0;
       if (blinkAnim >= 0) {
         blinkAnim += dt;
         const T = 0.18, closeT = 0.07;
         const closed = blinkAnim < closeT ? blinkAnim / closeT : 1 - (blinkAnim - closeT) / (T - closeT);
-        const c = THREE.MathUtils.clamp(closed, 0, 1);
-        const sy = THREE.MathUtils.lerp(0.002, EYE.h, c);
-        lidL.scale.y = sy; lidR.scale.y = sy;
-        const vis = c > 0.04;
-        lidL.visible = vis; lidR.visible = vis;
-        if (blinkAnim >= T) { blinkAnim = -1; blinkTimer = 0; blinkWait = 2.5 + Math.random() * 4; lidL.visible = false; lidR.visible = false; }
+        c = THREE.MathUtils.clamp(closed, 0, 1);
+        if (blinkAnim >= T) { blinkAnim = -1; blinkTimer = 0; blinkWait = 2.5 + Math.random() * 4; c = 0; }
       }
+      if (blinkMorphs.length) {                  // real blendshape blink
+        for (const b of blinkMorphs) if (b.mesh.morphTargetInfluences) b.mesh.morphTargetInfluences[b.idx] = c;
+        return;
+      }
+      if (!lidL) return;                         // procedural overlay fallback
+      lidL.scale.y = lidR.scale.y = THREE.MathUtils.lerp(0.002, EYE.h, c);
+      lidL.visible = lidR.visible = c > 0.04;
     }
 
     // ---- Procedural locomotion physics (spring-damped: static mesh has no skeleton) ----
@@ -2498,6 +2525,20 @@
       dt = Math.min(dt, 0.04);
       if (prevYaw === null) prevYaw = characterYaw;
       const sp = THREE.MathUtils.clamp(speed / 3.5, 0, 1);
+
+      // Real rig path: animation clips drive the limbs; we only crossfade idle<->walk + blink.
+      if (charMixer) {
+        const target = sp > 0.06 ? 1 : 0;
+        walkWeight += (target - walkWeight) * Math.min(1, dt * 8);
+        if (actWalk) { actWalk.setEffectiveWeight(walkWeight); actWalk.timeScale = 0.85 + sp * 0.8; }
+        if (actIdle) actIdle.setEffectiveWeight(1 - walkWeight);
+        charMixer.update(dt);
+        characterPivot.position.y = 0;
+        characterPivot.rotation.set(0, 0, 0);
+        updateBlink(dt);
+        return;
+      }
+
       const cadence = 7 + sp * 4.5;
       stepPhase += dt * cadence * (0.25 + sp);
 
