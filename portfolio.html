@@ -1920,7 +1920,7 @@
     </div>
 
     <div class="github-heatmap-wrapper reveal">
-      <h3>Contribution Graph · April 2025 - April 2026</h3>
+      <h3>Contribution Graph · <span id="ghRange"></span></h3>
       <img
         src="https://ghchart.rshah.org/7c74ff/eyadelfar"
         alt="Eyad Elfar's GitHub contribution graph"
@@ -2334,6 +2334,16 @@ document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, 
 const nav = document.querySelector('nav');
 const navLinks = document.querySelectorAll('nav .nav-links a');
 const sections = document.querySelectorAll('section[id]');
+
+// Keep the contribution-graph heading in sync with the live rolling-12-months window
+(function () {
+  const el = document.getElementById('ghRange');
+  if (!el) return;
+  const now = new Date();
+  const start = new Date(now); start.setFullYear(now.getFullYear() - 1);
+  const fmt = d => d.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+  el.textContent = `${fmt(start)} – ${fmt(now)}`;
+})();
 
 const backToTop = document.querySelector('.back-to-top');
 const heroBg = document.querySelector('.hero-bg');
