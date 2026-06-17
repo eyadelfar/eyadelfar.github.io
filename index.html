@@ -1278,9 +1278,13 @@
   .cre-track i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), var(--cyan)); transition: width .8s var(--ease); }
   .cre-dim small { color: var(--text2); font-size: .76rem; }
 
-  /* Embedded showcase (opened inside the 3D room via iframe) — show only the modal */
+  /* Embedded showcase (opened inside the 3D room via iframe) — fill the frame, drop modal chrome */
+  body.sc-embed { background: var(--bg2); overflow: hidden; }
   body.sc-embed > *:not(#sc-modal):not(#sc-templates) { display: none !important; }
-  body.sc-embed { background: var(--bg); }
+  body.sc-embed .sc-modal { position: static; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; opacity: 1; visibility: visible; padding: 0; }
+  body.sc-embed .sc-dialog { width: 100%; height: 100vh; max-height: none; border: 0; border-radius: 0; box-shadow: none; transform: none; background: var(--bg2); }
+  body.sc-embed .sc-head { display: none; }            /* the room's lightbox bar already shows title + close */
+  body.sc-embed .sc-body { height: 100vh; max-height: none; padding: 20px; }
 
   @media (max-width: 720px) {
     .dash { grid-template-columns: 1fr; }
