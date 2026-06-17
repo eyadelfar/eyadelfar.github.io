@@ -1455,6 +1455,7 @@
         characterPivot.add(model);
         loadedCharacterModel = model;
         characterReady = true;
+        buildEyelids();
         finishLoad();
       },
       (xhr) => {
@@ -2451,19 +2452,82 @@
       document.querySelectorAll('.pc-open').forEach(b => b.addEventListener('click', () => window.open(b.dataset.href, '_blank', 'noopener')));
     }
 
-    function animateCharacter(elapsed, speed) {
+    // ---- Procedural blink (eyelid overlay; the model has no morph targets) ----
+    // TUNE these to your model if the lids don't sit on the eyes (spectator view, press V):
+    //   y = height of eyes, x = half eye-spacing, z = how far forward the face is,
+    //   w/depth = lid size, h = how far the lid drops when closed, color = skin tone.
+    const EYE = { y: 1.55, x: 0.085, z: 0.17, w: 0.075, h: 0.05, depth: 0.06, color: 0xc99a74 };
+    let lidL = null, lidR = null, blinkWait = 1.5, blinkTimer = 0, blinkAnim = -1;
+    function buildEyelids() {
+      const mat = new THREE.MeshStandardMaterial({ color: EYE.color, roughness: 0.85 });
+      const geo = new THREE.SphereGeometry(1, 18, 12);
+      [-1, 1].forEach((sx, i) => {
+        const lid = new THREE.Mesh(geo, mat);
+        lid.scale.set(EYE.w, 0.002, EYE.depth);
+        lid.position.set(sx * EYE.x, EYE.y, EYE.z);
+        lid.visible = false; lid.castShadow = false; lid.receiveShadow = false;
+        characterPivot.add(lid);
+        if (i === 0) lidL = lid; else lidR = lid;
+      });
+    }
+    function updateBlink(dt) {
+      if (!lidL) return;
+      blinkTimer += dt;
+      if (blinkAnim < 0 && blinkTimer >= blinkWait) blinkAnim = 0;
+      if (blinkAnim >= 0) {
+        blinkAnim += dt;
+        const T = 0.18, closeT = 0.07;
+        const closed = blinkAnim < closeT ? blinkAnim / closeT : 1 - (blinkAnim - closeT) / (T - closeT);
+        const c = THREE.MathUtils.clamp(closed, 0, 1);
+        const sy = THREE.MathUtils.lerp(0.002, EYE.h, c);
+        lidL.scale.y = sy; lidR.scale.y = sy;
+        const vis = c > 0.04;
+        lidL.visible = vis; lidR.visible = vis;
+        if (blinkAnim >= T) { blinkAnim = -1; blinkTimer = 0; blinkWait = 2.5 + Math.random() * 4; lidL.visible = false; lidR.visible = false; }
+      }
+    }
+
+    // ---- Procedural locomotion physics (spring-damped: static mesh has no skeleton) ----
+    let bobY = 0, bobVy = 0, leanX = 0, leanVx = 0, bankZ = 0, bankVz = 0, stepPhase = 0, prevSpeed = 0, prevYaw = null;
+    function spring(cur, vel, target, k, damp, dt) {
+      const v = vel + ((target - cur) * k - vel * damp) * dt;
+      return [cur + v * dt, v];
+    }
+    function animateCharacter(dt, elapsed, speed) {
       if (!characterReady) return;
+      dt = Math.min(dt, 0.04);
+      if (prevYaw === null) prevYaw = characterYaw;
       const sp = THREE.MathUtils.clamp(speed / 3.5, 0, 1);
-      const cadence = 9.5;
-      const idleBob = Math.sin(elapsed * 1.7) * 0.012;
-      const walkBob = Math.abs(Math.sin(elapsed * cadence)) * 0.07 * sp;
-      characterPivot.position.y = idleBob + walkBob;
-      characterPivot.rotation.x = -0.14 * sp;
-      characterPivot.rotation.z = Math.sin(elapsed * cadence) * 0.05 * sp + Math.sin(elapsed * 1.3) * 0.006;
-      characterPivot.rotation.y = Math.sin(elapsed * (sp > 0.05 ? cadence * 0.5 : 1.1)) * 0.02 * (0.4 + sp);
-      const lift = characterPivot.position.y;
+      const cadence = 7 + sp * 4.5;
+      stepPhase += dt * cadence * (0.25 + sp);
+
+      // vertical bob — spring gives weighty squash/settle per footfall
+      const targetBob = Math.abs(Math.sin(stepPhase)) * 0.085 * sp;
+      [bobY, bobVy] = spring(bobY, bobVy, targetBob, 130, 13, dt);
+      const breathe = Math.sin(elapsed * 1.6) * 0.012 * (1 - sp);
+      characterPivot.position.y = bobY + breathe;
+
+      // forward lean: steady lean while moving + inertia from acceleration
+      const accel = (speed - prevSpeed) / Math.max(dt, 1e-3); prevSpeed = speed;
+      const targetLean = -0.12 * sp + THREE.MathUtils.clamp(-0.015 * accel, -0.06, 0.06);
+      [leanX, leanVx] = spring(leanX, leanVx, targetLean, 90, 14, dt);
+      characterPivot.rotation.x = leanX;
+
+      // bank into turns + gait roll
+      let dyaw = characterYaw - prevYaw; prevYaw = characterYaw;
+      if (dyaw > Math.PI) dyaw -= 2 * Math.PI; else if (dyaw < -Math.PI) dyaw += 2 * Math.PI;
+      const turnRate = dyaw / Math.max(dt, 1e-3);
+      const targetBank = THREE.MathUtils.clamp(-turnRate * 0.05, -0.2, 0.2) + Math.sin(stepPhase) * 0.045 * sp;
+      [bankZ, bankVz] = spring(bankZ, bankVz, targetBank, 90, 13, dt);
+      characterPivot.rotation.z = bankZ;
+
+      characterPivot.rotation.y = Math.sin(stepPhase * 0.5) * 0.022 * (0.4 + sp);
+
+      const lift = Math.max(0, characterPivot.position.y);
       contactShadow.scale.setScalar(THREE.MathUtils.clamp(1 - lift * 1.4, 0.8, 1.05));
       contactShadow.material.opacity = THREE.MathUtils.clamp(0.9 - lift * 3, 0.4, 0.9);
+
+      updateBlink(dt);
     }
 
     const _specPos = new THREE.Vector3();
@@ -2511,7 +2575,7 @@
         }
       }
 
-      animateCharacter(elapsed, charSpeed);
+      animateCharacter(delta, elapsed, charSpeed);
       for (let i = 0; i < aiAnimators.length; i++) aiAnimators[i](elapsed, camera.position);
       for (let i = 0; i < propAnimators.length; i++) propAnimators[i](elapsed);
 
