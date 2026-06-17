@@ -31,7 +31,7 @@
     --cyan:    #22d3ee;
 
     --border:  rgba(255, 255, 255, .10);
-    --glass:   rgba(22, 22, 42, .65);
+    --glass:   rgba(24, 24, 46, .94);
     --radius:  16px;
 
     --ease:    cubic-bezier(.4, 0, .2, 1);
@@ -104,8 +104,8 @@
     z-index: 100;
     padding: 14px 0;
     background: rgba(15, 15, 30, .80);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(10px) saturate(1.4);
+    -webkit-backdrop-filter: blur(10px) saturate(1.4);
     border-bottom: 1px solid var(--border);
     transition: all .4s var(--ease);
   }
@@ -204,7 +204,6 @@
     color: var(--text2);
     background: rgba(255, 255, 255, .05);
     border: 1px solid var(--border);
-    backdrop-filter: blur(8px);
   }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
@@ -218,14 +217,9 @@
   }
   .hero h1 span {
     background: linear-gradient(135deg, var(--accent), var(--accent2), var(--cyan), var(--accent));
-    background-size: 300% 300%;
+    background-size: 100% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gradient-shift 6s ease infinite;
-  }
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50%       { background-position: 100% 50%; }
   }
   .hero .subtitle {
     font-size: 1.3rem;
@@ -265,7 +259,6 @@
     color: var(--text);
     background: rgba(124, 116, 255, .10);
     border: 1px solid rgba(124, 116, 255, .22);
-    backdrop-filter: blur(12px);
     transition: all .35s var(--ease);
   }
   .hero-links a:hover {
@@ -336,7 +329,6 @@
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backdrop-filter: blur(12px);
     transition: all .4s var(--ease);
   }
   .stat:hover {
@@ -380,7 +372,6 @@
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backdrop-filter: blur(12px);
     transition: all .4s var(--ease);
   }
   .card::before {
@@ -566,7 +557,6 @@
     color: var(--text);
     background: var(--glass);
     border: 1px solid var(--border);
-    backdrop-filter: blur(12px);
     transition: all .35s var(--ease);
   }
   .carousel-btn:hover {
@@ -706,7 +696,6 @@
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backdrop-filter: blur(12px);
     transition: border-color .3s var(--ease);
   }
   .skill-row:hover { border-color: rgba(124, 116, 255, .30); }
@@ -788,7 +777,6 @@
     border-radius: var(--radius);
     background: var(--glass);
     border: 1px solid var(--border);
-    backdrop-filter: blur(12px);
     color: var(--text);
     text-decoration: none;
     cursor: pointer;
@@ -886,7 +874,6 @@
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backdrop-filter: blur(12px);
     transition: all .4s var(--ease);
   }
   .github-stat-card:hover {
@@ -910,7 +897,6 @@
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backdrop-filter: blur(12px);
   }
   .github-heatmap-wrapper h3 {
     font-size: 1rem;
@@ -934,7 +920,6 @@
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    backdrop-filter: blur(12px);
     transition: all .4s var(--ease);
   }
   .github-repo-card:hover {
@@ -1044,7 +1029,7 @@
     padding: 6px 12px; border-radius: 20px;
     font-size: .74rem; font-weight: 600; letter-spacing: .01em;
     color: #fff; background: rgba(15,15,30,.72);
-    border: 1px solid var(--border); backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
     pointer-events: none; transition: background .3s, border-color .3s;
   }
   .preview:hover .preview-hint { background: var(--accent); border-color: transparent; }
@@ -2355,26 +2340,34 @@ const sections = document.querySelectorAll('section[id]');
 const backToTop = document.querySelector('.back-to-top');
 const heroBg = document.querySelector('.hero-bg');
 let ticking = false;
+// Cache section offsets + nav links once (avoid per-frame layout reads); rebuild on resize/load.
+let secCache = [];
+function rebuildSecCache() {
+  secCache = Array.prototype.map.call(sections, s => {
+    const top = s.offsetTop - 100;
+    return { top, bottom: top + s.offsetHeight, link: document.querySelector(`nav a[href="#${s.getAttribute('id')}"]`) };
+  });
+}
 function onScroll() {
   const y = window.scrollY;
   nav.classList.toggle('scrolled', y > 60);
   if (backToTop) backToTop.classList.toggle('show', y > 500);
   const scrollY = y + 140;
-  sections.forEach(s => {
-    const top = s.offsetTop - 100;
-    const bottom = top + s.offsetHeight;
-    const link = document.querySelector(`nav a[href="#${s.getAttribute('id')}"]`);
-    if (link && scrollY >= top && scrollY < bottom) {
+  for (const s of secCache) {
+    if (s.link && scrollY >= s.top && scrollY < s.bottom) {
       navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
+      s.link.classList.add('active');
     }
-  });
+  }
   if (heroBg && y < window.innerHeight) heroBg.style.transform = `translateY(${y * 0.35}px)`;
   ticking = false;
 }
 window.addEventListener('scroll', () => {
   if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
 }, { passive: true });
+window.addEventListener('resize', rebuildSecCache, { passive: true });
+window.addEventListener('load', rebuildSecCache);
+rebuildSecCache();
 
 const countObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
@@ -2853,17 +2846,13 @@ function expGoto(idx) {
   openFromHash();
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && modal.classList.contains('open')) closeShowcase(); });
 
-  // In-card attendance video: preload=none until scrolled into view, then play/pause with visibility
+  // In-card attendance video: play only on hover (no video decode on the landing page)
   (function(){
     const v = document.querySelector('.att-card-vid');
     if(!v) return;
-    const io = new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if(e.isIntersecting){ v.preload = 'auto'; const p = v.play(); if(p && p.catch) p.catch(function(){}); }
-        else { v.pause(); }
-      });
-    }, { threshold: 0.25 });
-    io.observe(v);
+    const host = v.closest('.preview') || v.parentElement;
+    host.addEventListener('pointerenter', function(){ v.preload = 'auto'; const p = v.play(); if(p && p.catch) p.catch(function(){}); });
+    host.addEventListener('pointerleave', function(){ v.pause(); });
   })();
 
   // Open previews via keyboard (Enter/Space) for accessibility
