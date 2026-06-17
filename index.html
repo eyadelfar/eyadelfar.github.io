@@ -30,6 +30,14 @@
     --blue:    #60a5fa;
     --cyan:    #22d3ee;
 
+    /* per-color RGB triples — single source for every tinted background/border */
+    --rgb-accent: 124, 116, 255;
+    --rgb-green:  74, 222, 158;
+    --rgb-orange: 251, 146, 60;
+    --rgb-pink:   244, 114, 182;
+    --rgb-blue:   96, 165, 250;
+    --rgb-cyan:   34, 211, 238;
+
     --border:  rgba(255, 255, 255, .10);
     --glass:   rgba(24, 24, 46, .94);
     --radius:  16px;
@@ -414,15 +422,15 @@
     border: 1px solid rgba(124, 116, 255, .16);
     transition: all .3s var(--ease);
   }
-  .badge:hover { background: rgba(124, 116, 255, .20); transform: translateY(-2px); }
-  .badge.green  { color: var(--green);  background: rgba(74, 222, 158, .08);  border-color: rgba(74, 222, 158, .16); }
-  .badge.green:hover  { background: rgba(74, 222, 158, .18); }
-  .badge.orange { color: var(--orange); background: rgba(251, 146, 60, .08);  border-color: rgba(251, 146, 60, .16); }
-  .badge.orange:hover { background: rgba(251, 146, 60, .18); }
-  .badge.pink   { color: var(--pink);   background: rgba(244, 114, 182, .08); border-color: rgba(244, 114, 182, .16); }
-  .badge.pink:hover   { background: rgba(244, 114, 182, .18); }
-  .badge.blue   { color: var(--blue);   background: rgba(96, 165, 250, .08);  border-color: rgba(96, 165, 250, .16); }
-  .badge.blue:hover   { background: rgba(96, 165, 250, .18); }
+  .badge:hover { background: rgba(var(--rgb-accent), .20); transform: translateY(-2px); }
+  .badge.green  { color: var(--green);  background: rgba(var(--rgb-green), .08);  border-color: rgba(var(--rgb-green), .16); }
+  .badge.green:hover  { background: rgba(var(--rgb-green), .18); }
+  .badge.orange { color: var(--orange); background: rgba(var(--rgb-orange), .08); border-color: rgba(var(--rgb-orange), .16); }
+  .badge.orange:hover { background: rgba(var(--rgb-orange), .18); }
+  .badge.pink   { color: var(--pink);   background: rgba(var(--rgb-pink), .08);   border-color: rgba(var(--rgb-pink), .16); }
+  .badge.pink:hover   { background: rgba(var(--rgb-pink), .18); }
+  .badge.blue   { color: var(--blue);   background: rgba(var(--rgb-blue), .08);   border-color: rgba(var(--rgb-blue), .16); }
+  .badge.blue:hover   { background: rgba(var(--rgb-blue), .18); }
 
   .impacts { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
   .impact {
@@ -717,12 +725,12 @@
     justify-content: center;
     flex-shrink: 0;
   }
-  .sic-purple { background: rgba(124, 116, 255, .14); color: var(--accent2); }
-  .sic-blue   { background: rgba(96, 165, 250, .14);  color: var(--blue); }
-  .sic-green  { background: rgba(74, 222, 158, .14);  color: var(--green); }
-  .sic-orange { background: rgba(251, 146, 60, .14);  color: var(--orange); }
-  .sic-cyan   { background: rgba(34, 211, 238, .14);  color: var(--cyan); }
-  .sic-pink   { background: rgba(244, 114, 182, .14); color: var(--pink); }
+  .sic-purple { background: rgba(var(--rgb-accent), .14); color: var(--accent2); }
+  .sic-blue   { background: rgba(var(--rgb-blue), .14);  color: var(--blue); }
+  .sic-green  { background: rgba(var(--rgb-green), .14);  color: var(--green); }
+  .sic-orange { background: rgba(var(--rgb-orange), .14);  color: var(--orange); }
+  .sic-cyan   { background: rgba(var(--rgb-cyan), .14);  color: var(--cyan); }
+  .sic-pink   { background: rgba(var(--rgb-pink), .14); color: var(--pink); }
   .skill-row-name {
     font-family: 'Space Grotesk', system-ui, sans-serif;
     font-size: .78rem;
@@ -757,16 +765,16 @@
   }
   .skill-chip:hover { background: rgba(124, 116, 255, .16); color: var(--text); transform: translateY(-1px); }
   .skill-chip-e { font-size: .82rem; line-height: 1; }
-  .skill-chip.blue   { color: var(--blue);   background: rgba(96,165,250,.07);   border-color: rgba(96,165,250,.16); }
-  .skill-chip.blue:hover   { background: rgba(96,165,250,.16); color: var(--blue); }
-  .skill-chip.green  { color: var(--green);  background: rgba(74,222,158,.07);   border-color: rgba(74,222,158,.16); }
-  .skill-chip.green:hover  { background: rgba(74,222,158,.16); color: var(--green); }
-  .skill-chip.orange { color: var(--orange); background: rgba(251,146,60,.07);   border-color: rgba(251,146,60,.16); }
-  .skill-chip.orange:hover { background: rgba(251,146,60,.16); color: var(--orange); }
-  .skill-chip.cyan   { color: var(--cyan);   background: rgba(34,211,238,.07);   border-color: rgba(34,211,238,.16); }
-  .skill-chip.cyan:hover   { background: rgba(34,211,238,.16); color: var(--cyan); }
-  .skill-chip.pink   { color: var(--pink);   background: rgba(244,114,182,.07);  border-color: rgba(244,114,182,.16); }
-  .skill-chip.pink:hover   { background: rgba(244,114,182,.16); color: var(--pink); }
+  .skill-chip.blue   { color: var(--blue);   background: rgba(var(--rgb-blue),.07);   border-color: rgba(var(--rgb-blue),.16); }
+  .skill-chip.blue:hover   { background: rgba(var(--rgb-blue),.16); color: var(--blue); }
+  .skill-chip.green  { color: var(--green);  background: rgba(var(--rgb-green),.07);   border-color: rgba(var(--rgb-green),.16); }
+  .skill-chip.green:hover  { background: rgba(var(--rgb-green),.16); color: var(--green); }
+  .skill-chip.orange { color: var(--orange); background: rgba(var(--rgb-orange),.07);   border-color: rgba(var(--rgb-orange),.16); }
+  .skill-chip.orange:hover { background: rgba(var(--rgb-orange),.16); color: var(--orange); }
+  .skill-chip.cyan   { color: var(--cyan);   background: rgba(var(--rgb-cyan),.07);   border-color: rgba(var(--rgb-cyan),.16); }
+  .skill-chip.cyan:hover   { background: rgba(var(--rgb-cyan),.16); color: var(--cyan); }
+  .skill-chip.pink   { color: var(--pink);   background: rgba(var(--rgb-pink),.07);  border-color: rgba(var(--rgb-pink),.16); }
+  .skill-chip.pink:hover   { background: rgba(var(--rgb-pink),.16); color: var(--pink); }
 
   .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
   .cert-card {
@@ -801,11 +809,11 @@
   .cert-icon.mckinsey,
   .cert-icon.coursera,
   .cert-icon.ericsson,
-  .cert-icon.samsung  { background: rgba(96, 165, 250, .12); color: var(--blue); }
-  .cert-icon.orange   { background: rgba(251, 146, 60, .12);  color: var(--orange); }
-  .cert-icon.udacity  { background: rgba(124, 116, 255, .12); color: var(--accent2); }
-  .cert-icon.kaggle   { background: rgba(34, 211, 238, .12);  color: var(--cyan); }
-  .cert-icon.techno   { background: rgba(74, 222, 158, .12);  color: var(--green); }
+  .cert-icon.samsung  { background: rgba(var(--rgb-blue), .12); color: var(--blue); }
+  .cert-icon.orange   { background: rgba(var(--rgb-orange), .12);  color: var(--orange); }
+  .cert-icon.udacity  { background: rgba(var(--rgb-accent), .12); color: var(--accent2); }
+  .cert-icon.kaggle   { background: rgba(var(--rgb-cyan), .12);  color: var(--cyan); }
+  .cert-icon.techno   { background: rgba(var(--rgb-green), .12);  color: var(--green); }
   .cert-info { flex: 1; min-width: 0; }
   .cert-name     { font-weight: 700; font-size: .95rem; line-height: 1.3; }
   .cert-provider { font-size: .82rem; color: var(--text2); }
