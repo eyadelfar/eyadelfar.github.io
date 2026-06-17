@@ -825,12 +825,17 @@
      ['samsung', 'Samsung Innovation Campus']
     ].forEach(([file, cap], i) => createFrame(LX, 3.02, ZC[i], LR, `certificates/${file}.png`, 0.66, 0.42, cap));
 
-    [['Résumé', 'Eyad Elfar · AI Engineer', 'resume.pdf', '#7c74ff'],
-     ['Udacity', 'ML Nanodegree (EGFWD)', 'certificates/udacity.pdf', '#02b3e4'],
+    const DOCS = [
+     ['Résumé', 'Eyad Elfar · AI Engineer', 'resume.pdf', '#7c74ff'],
+     ['Udacity', 'ML Nanodegree (EGFWD)', 'certificates/udacity.svg', '#02b3e4'],
+     ['Ericsson', 'Secure Intelligence Training', 'certificates/ericsson.pdf', '#0082f0'],
+     ['Orange', 'Data Science Diploma', 'certificates/orange_diploma.pdf', '#ff7900'],
      ['Technocolabs', 'DS Internship Certificate', 'certificates/technocolabs_internship.pdf', '#ff6b6b'],
      ['Technocolabs', 'Project Completion Letter', 'certificates/technocolabs_completion.pdf', '#ff6b6b'],
      ['Technocolabs', 'Recommendation Letter', 'certificates/technocolabs_recommendation.pdf', '#ff6b6b']
-    ].forEach(([t, s, src, c], i) => createDocFrame(LX, 1.92, ZC[i], LR, t, s, src, c));
+    ];
+    const DZ0 = 6.2, DZ1 = 12.0;
+    DOCS.forEach(([t, s, src, c], i) => createDocFrame(LX, 1.92, DZ0 + (DZ1 - DZ0) * i / (DOCS.length - 1), LR, t, s, src, c, 0.52, 0.7));
 
     const videoScreens = [];
     function createVideoScreen(x, y, z, rotY, src, title, w = 1.7, h = 1.05) {
