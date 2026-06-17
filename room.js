@@ -1421,7 +1421,7 @@
     const gltfLoader = new GLTFLoader();
     gltfLoader.setMeshoptDecoder(MeshoptDecoder);
     gltfLoader.load(
-      'eyad_elfar.glb',
+      'eyad.glb',
       (gltf) => {
         const model = gltf.scene;
         model.traverse((o) => {
