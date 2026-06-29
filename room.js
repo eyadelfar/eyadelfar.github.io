@@ -33,6 +33,7 @@
     const fpsText = document.getElementById('fpsText');
     const entry = document.getElementById('entry');
     const enterBtn = document.getElementById('enterBtn');
+    const autoPlay = new URLSearchParams(location.search).has('play');
     const reticle = document.getElementById('reticle');
     const controlsEl = document.getElementById('controls');
 
@@ -1255,6 +1256,11 @@
     function finishLoad() {
       const loaderEl = document.getElementById('loader');
       if (loaderEl) loaderEl.classList.add('hidden');
+      if (autoPlay) {
+        entered = true;
+        entry.classList.add('hidden');
+        showNotice('Click anywhere to look around · WASD to walk · V for spectator.');
+      }
     }
 
     const gltfLoader = new GLTFLoader();
