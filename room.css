@@ -708,26 +708,6 @@
 
   #browser .browser-body { cursor: crosshair; }
 
-  #egg {
-    position: fixed; inset: 0; z-index: 95; display: none; pointer-events: none;
-    align-items: center; justify-content: center; text-align: center;
-  }
-  #egg.show { display: flex; animation: eggPop 0.6s cubic-bezier(0.16,1,0.3,1); }
-  @keyframes eggPop { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
-  #egg .egg-inner {
-    background: rgba(8,11,18,0.55); backdrop-filter: blur(6px);
-    padding: 22px 46px; border-radius: 22px; border: 2px solid rgba(255,255,255,0.18);
-    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-  }
-  #egg .egg-sub { font: 700 14px/1 ui-monospace, monospace; letter-spacing: 0.2em; text-transform: uppercase; color: #9fd0ff; margin-bottom: 12px; }
-  #egg .egg-title {
-    font: 800 clamp(28px, 5vw, 56px)/1.05 "Space Grotesk", Inter, sans-serif; letter-spacing: -0.02em;
-    background: linear-gradient(90deg, #ffd166, #ff8a65, #6366f1); -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; text-shadow: 0 0 40px rgba(99,102,241,0.3);
-    animation: eggShake 0.5s ease-in-out 3;
-  }
-  @keyframes eggShake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-1.5deg); } 75% { transform: rotate(1.5deg); } }
-
   body.touch #canvas { touch-action: none; }
   #panel, .browser-pane, .gh-content, .lb-stage { -webkit-overflow-scrolling: touch; }
   body.touch .browser-pane, body.touch #panel, body.touch .lb-stage { touch-action: pan-y; }

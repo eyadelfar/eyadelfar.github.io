@@ -176,7 +176,6 @@
     document.body.appendChild(css3dEl);
     const cssScene = new THREE.Scene();
     let css3dActive = false;
-    let drosteMode = false, drosteZoom = 1;
     const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
     if (isTouch) document.body.classList.add('touch');
     const joyVec = { x: 0, y: 0 };
@@ -607,10 +606,12 @@
 
     createFrame(-6.92, 2.45, -3.4, Math.PI / 2, 'me.webp', 1.05, 1.3, 'Eyad Elfar');
     createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill', { kind: 'page', src: 'index.html?v=4#keepquill', title: 'KeepQuill - Sample Book & Readme', prompt: 'Press <b>E</b> to read the KeepQuill sample book' });
+    createFrame(-6.92, 2.4, 2.0, Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'index.html?v=4#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
     createFrame(6.92, 2.5, -3.0, -Math.PI / 2, 'images/mental_health.webp', 0.78, 0.5, 'Mental Health NLP');
     createFrame(6.92, 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.webp', 0.78, 0.5, 'YOLOv8 Detection');
-    createFrame(6.92, 2.55, 11.2, -Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'index.html?v=4#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
     createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/voice_agent.webp', 0.78, 0.5, 'Voice Agents');
+    wallSign(-6.88, 3.32, 1.2, Math.PI / 2, 'Proof of Concept', '#4f46e5', 2.8, 0.46);
+    wallSign(6.88, 3.32, -0.2, -Math.PI / 2, 'Featured Projects', '#4f46e5', 3.4, 0.46);
 
     function createDocFrame(x, y, z, rotY, title, subtitle, src, accent, w = 0.62, h = 0.82) {
       const fg = new THREE.Group(); fg.position.set(x, y, z); fg.rotation.y = rotY; scene.add(fg);
@@ -733,7 +734,7 @@
         [pos[0] - nx * 0.015, pos[1], pos[2] - nz * 0.015], backFrameM);
       shadowFrame.rotation.y = rotY;
     }
-    buildWallBoard('impact', [0, 2.3, -4.98], 0);
+    buildWallBoard('impact', [0, 3.05, -4.98], 0);
     buildWallBoard('journey', [-6.98, 2.3, -1.5], Math.PI / 2);
     buildWallBoard('projects', [6.98, 2.3, -1.5], -Math.PI / 2);
     buildWallBoard('stack', [-6.98, 2.3, 2.5], Math.PI / 2);
@@ -1538,8 +1539,7 @@
 
       if (e.code === 'Escape') {
         closePanel();
-        if (drosteMode || cloneGroup.children.length) { exitDroste(); disarmExit(); }
-        else handleEscExit();
+        handleEscExit();
       }
     });
     window.addEventListener('keyup', (e) => { pressedKeys[e.code] = false; });
@@ -1834,7 +1834,7 @@
 
     function redrawWorkstationMonitor() {
       const ctx = screenCtx;
-      if (!ctx || drosteMode) return;
+      if (!ctx) return;
       if (!pcBooted) {
         ctx.fillStyle = '#05080c';
         ctx.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
@@ -1968,7 +1968,6 @@
       iframe.style.border = '0';
       iframe.style.background = '#0f0f1e';
       iframe.style.pointerEvents = 'none';
-      iframe.addEventListener('load', () => attachStudioIntercept(iframe));
       iframe.src = 'index.html';
       const obj = new CSS3DObject(iframe);
       const scale = 2.24 / px;
@@ -2103,129 +2102,6 @@
       } catch (err) { console.warn('laser click failed', err); }
     }
 
-    const cloneGroup = new THREE.Group();
-    scene.add(cloneGroup);
-    let studioClicks = 0, eggTimer = null;
-    function exitDroste() { drosteMode = false; drosteZoom = 1; clearClones(); studioClicks = 0; redrawWorkstationMonitor(); }
-    function drawDroste() {
-      const w = screenCanvas.width, h = screenCanvas.height;
-      const sw = renderer.domElement.width, sh = renderer.domElement.height;
-      const cw = sw / drosteZoom, ch = sh / drosteZoom;
-      try { screenCtx.drawImage(renderer.domElement, (sw - cw) / 2, (sh - ch) / 2, cw, ch, 0, 0, w, h); } catch (_) { return; }
-      screenCtx.fillStyle = 'rgba(58,190,249,0.05)'; screenCtx.fillRect(0, 0, w, h);
-      screenTexture.needsUpdate = true;
-    }
-    function clearClones() {
-      while (cloneGroup.children.length) {
-        const c = cloneGroup.children[0];
-        c.traverse(o => {
-          if (o.isMesh && o.userData.ownGeo) {
-            o.geometry.dispose();
-            (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m && m.dispose());
-          }
-        });
-        cloneGroup.remove(c);
-      }
-      document.getElementById('egg').classList.remove('show');
-    }
-    function makeClone(scale) {
-      if (!loadedCharacterModel) return null;
-      const inner = loadedCharacterModel.clone(true);
-      inner.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
-      const g = new THREE.Group();
-      g.add(inner);
-      g.scale.setScalar(scale);
-      g.userData.isClone = true;
-      return g;
-    }
-    function cloneStage(n) {
-      if (!loadedCharacterModel) { showNotice('Playground still loading…'); return; }
-      clearClones();
-      const fwd = new THREE.Vector3(); camera.getWorldDirection(fwd); fwd.y = 0; if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, -1); fwd.normalize();
-      const cx = camera.position.x, cz = camera.position.z;
-      if (n === 1) {
-        for (let i = 0; i < 14; i++) {
-          const c = makeClone(0.5); if (!c) break;
-          const a = (i / 14) * Math.PI * 2 + Math.random() * 0.45, r = 2.0 + Math.random() * 2.6;
-          c.position.set(THREE.MathUtils.clamp(cx + Math.cos(a) * r, -6, 6), 0, THREE.MathUtils.clamp(cz + Math.sin(a) * r, -4.5, 12));
-          c.rotation.y = Math.random() * Math.PI * 2; c.userData.spin = (Math.random() - 0.5) * 2.2;
-          cloneGroup.add(c);
-        }
-        showNotice("You're already inside… (×14 of you)");
-      } else if (n === 2) {
-        for (let i = 0; i < 8; i++) {
-          const c = makeClone(0.62); if (!c) break;
-          const a = i / 8 * Math.PI * 2;
-          c.position.set(cx + Math.cos(a) * 2.6, 0, cz + Math.sin(a) * 2.6);
-          c.rotation.y = Math.atan2(cx - c.position.x, -(cz - c.position.z)); c.userData.spin = 0;
-          cloneGroup.add(c);
-        }
-        showNotice('The clones are narrowing down…');
-      } else {
-        const center = new THREE.Vector3(
-          THREE.MathUtils.clamp(cx + fwd.x * 3.4, -4.5, 4.5), 0, THREE.MathUtils.clamp(cz + fwd.z * 3.4, -3.5, 10.3));
-        const angs = [-Math.PI / 2, Math.PI / 6, Math.PI * 5 / 6];
-        const pos = angs.map(a => new THREE.Vector3(center.x + Math.cos(a) * 2.0, 0, center.z + Math.sin(a) * 2.0));
-        const up = new THREE.Vector3(0, 1, 0);
-        const sleeveM = physMat(0xccd2da, { roughness: 0.6, clearcoat: 0.12 });
-        const skinM = mat(0xe6bd99, { roughness: 0.6 });
-        for (let i = 0; i < 3; i++) {
-          const c = makeClone(0.85); if (!c) break;
-          c.position.copy(pos[i]);
-          const tgt = pos[(i + 1) % 3];
-          c.rotation.y = Math.atan2(tgt.x - pos[i].x, -(tgt.z - pos[i].z));
-          cloneGroup.add(c);
-
-          const dir = tgt.clone().sub(pos[i]); dir.y = 0; dir.normalize();
-          const side = new THREE.Vector3().crossVectors(dir, up).normalize();
-          const armDir = dir.clone().add(up.clone().multiplyScalar(0.1)).normalize();
-          const shoulder = pos[i].clone().add(up.clone().multiplyScalar(1.12)).add(side.multiplyScalar(0.17)).add(dir.clone().multiplyScalar(0.08));
-          const len = 0.66;
-          const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.042, len, 12), sleeveM);
-          sleeve.quaternion.setFromUnitVectors(up, armDir);
-          sleeve.position.copy(shoulder).add(armDir.clone().multiplyScalar(len / 2));
-          sleeve.castShadow = true; sleeve.userData.ownGeo = true; cloneGroup.add(sleeve);
-          const end = shoulder.clone().add(armDir.clone().multiplyScalar(len));
-
-          const hand = new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 12), skinM);
-          hand.scale.set(1.15, 0.62, 1.0); hand.position.copy(end); hand.castShadow = true; hand.userData.ownGeo = true; cloneGroup.add(hand);
-          const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.017, 0.14, 8), skinM);
-          finger.quaternion.setFromUnitVectors(up, armDir);
-          finger.position.copy(end).add(armDir.clone().multiplyScalar(0.09)); finger.userData.ownGeo = true; cloneGroup.add(finger);
-          const thumbDir = armDir.clone().add(up.clone().multiplyScalar(0.7)).normalize();
-          const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.013, 0.06, 8), skinM);
-          thumb.quaternion.setFromUnitVectors(up, thumbDir);
-          thumb.position.copy(end).add(thumbDir.clone().multiplyScalar(0.03)).add(side.clone().multiplyScalar(0.02));
-          thumb.userData.ownGeo = true; cloneGroup.add(thumb);
-        }
-        document.getElementById('egg').classList.add('show');
-        if (eggTimer) clearTimeout(eggTimer);
-        eggTimer = setTimeout(exitDroste, 9000);
-        showNotice('Finally, a worthy opponent.');
-      }
-    }
-    function studioClick(e) {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      if (browserEl.classList.contains('active')) closeBrowser();
-      studioClicks++;
-      drosteMode = true;
-      drosteZoom = Math.min(2.4, 1 + studioClicks * 0.2);
-      if (studioClicks >= 3) cloneStage(3);
-      else showNotice(studioClicks === 1 ? 'The Playground… inside the Playground.' : 'Going deeper…');
-    }
-
-    function attachStudioIntercept(iframe) {
-      try {
-        const doc = iframe.contentDocument; if (!doc) return;
-        doc.querySelectorAll('a[href]').forEach(a => {
-          if (/interactive_room\.html(?:[#?].*)?$/.test(a.getAttribute('href') || '')) {
-            a.removeEventListener('click', studioClick);
-            a.addEventListener('click', studioClick);
-          }
-        });
-      } catch (_) {  }
-    }
-    portfolioFrame.addEventListener('load', () => attachStudioIntercept(portfolioFrame));
 
     function esc(s) {
       return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -2452,16 +2328,6 @@
         mickeyModel.rotation.y = characterYaw;
       }
 
-      if (cloneGroup.children.length) {
-        for (let i = 0; i < cloneGroup.children.length; i++) {
-          const c = cloneGroup.children[i];
-          if (c.userData.spin) {
-            c.rotation.y += c.userData.spin * 0.012;
-            c.position.y = Math.abs(Math.sin(elapsed * 2 + i)) * 0.04;
-          }
-        }
-      }
-
       animateCharacter(delta, elapsed, charSpeed);
       for (let i = 0; i < aiAnimators.length; i++) aiAnimators[i](elapsed, camera.position);
       for (let i = 0; i < propAnimators.length; i++) propAnimators[i](elapsed);
@@ -2502,10 +2368,9 @@
       }
       composer.render();
 
-      if (drosteMode) drawDroste();
 
       let nearMonitor = false;
-      if (!drosteMode && pcBooted && !spectatorMode && !uiOpen && !typingMode) {
+      if (pcBooted && !spectatorMode && !uiOpen && !typingMode) {
         const dToMon = camera.position.distanceTo(MONITOR_POS);
         if (dToMon < 4.3) {
           _camFwd.set(0, 0, 0); camera.getWorldDirection(_camFwd);
