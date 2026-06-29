@@ -90,7 +90,7 @@
     transition: color .25s ease;
   }
   a:hover { color: var(--accent2); }
-  .container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  .container { max-width: 1320px; margin: 0 auto; padding: 0 28px; }
   img { max-width: 100%; border-radius: var(--radius); }
 
   nav {
@@ -247,9 +247,9 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 26px;
-    border-radius: 28px;
-    font-size: .95rem;
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: .88rem;
     font-weight: 600;
     color: var(--text);
     background: rgba(79, 70, 229, .10);
@@ -434,9 +434,10 @@
   .impact:hover { background: rgba(74, 222, 158, .12); transform: translateY(-2px); }
   .impact strong { color: var(--green); font-weight: 800; }
 
+  .venture-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .venture-card {
     overflow: hidden;
-    margin-bottom: 32px;
+    margin-bottom: 0;
     border-radius: 20px;
     background: linear-gradient(135deg, var(--bg2), var(--bg3));
     border: 1px solid rgba(79, 70, 229, .18);
@@ -453,11 +454,11 @@
     transition: transform .6s var(--ease);
   }
   .venture-card:hover .venture-img { transform: scale(1.03); }
-  .venture-body { padding: 36px; }
+  .venture-body { padding: 26px; }
   .venture-body h3      { font-size: 1.7rem; font-weight: 800; color: var(--accent2); margin-bottom: 4px; }
   .venture-body .tagline { font-size: 1rem; color: var(--text2); font-style: italic; margin-bottom: 20px; }
   .venture-body p        { margin-bottom: 14px; }
-  .venture-features { columns: 2; column-gap: 24px; margin: 14px 0; }
+  .venture-features { columns: 1; column-gap: 24px; margin: 14px 0; }
   .venture-features li       { margin-bottom: 6px; break-inside: avoid; font-size: .95rem; }
   .venture-features li strong { color: var(--accent2); }
 
@@ -986,6 +987,7 @@
     .cert-grid              { grid-template-columns: 1fr; }
     nav .nav-links          { display: none; }
     .venture-img            { height: 200px; }
+    .venture-grid           { grid-template-columns: 1fr; }
     .venture-features       { columns: 1; }
     .carousel-track .card   { flex: 0 0 calc(100vw - 80px); }
     .journey-card           { flex: 0 0 calc(100vw - 80px); }
@@ -1006,7 +1008,7 @@
     transition: transform .5s var(--ease), border-color .3s;
   }
   .card:hover .preview { transform: scale(1.02); }
-  .preview--venture { height: 300px; border-radius: 0; border: 0; margin: 0; }
+  .preview--venture { height: 200px; border-radius: 0; border: 0; margin: 0; }
   .preview > * { pointer-events: none; }
   .preview-glass {
     position: absolute; inset: 0; z-index: 6;
