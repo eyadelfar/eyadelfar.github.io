@@ -461,6 +461,9 @@
   .venture-features { columns: 1; column-gap: 24px; margin: 14px 0; }
   .venture-features li       { margin-bottom: 6px; break-inside: avoid; font-size: .95rem; }
   .venture-features li strong { color: var(--accent2); }
+  .venture-blurb { color: var(--text2); font-size: .95rem; margin-bottom: 16px; }
+  .venture-open { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 9px; font-size: .9rem; font-weight: 600; color: #fff; background: var(--accent); border: none; cursor: pointer; transition: background .25s, transform .25s; }
+  .venture-open:hover { background: var(--accent2); transform: translateY(-1px); }
 
   .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; }
   .project-grid .card { margin-bottom: 0; }
@@ -1008,7 +1011,7 @@
     transition: transform .5s var(--ease), border-color .3s;
   }
   .card:hover .preview { transform: scale(1.02); }
-  .preview--venture { height: 200px; border-radius: 0; border: 0; margin: 0; }
+  .preview--venture { aspect-ratio: 4 / 3; height: auto; border-radius: 0; border: 0; margin: 0; }
   .preview > * { pointer-events: none; }
   .preview-glass {
     position: absolute; inset: 0; z-index: 6;

@@ -176,7 +176,18 @@ const SC_TEMPLATES = `
       </div>
     </div>
     <div class="readme" style="margin-top:20px">
-      <p style="text-align:center;color:var(--text2)">Self-hosted KPI dashboard platform &middot; proprietary DSL formula engine &middot; HubSpot / Zoho / Xero / Sheets / SQL connectors &middot; auto-rotating TV slideshows. <strong style="color:var(--accent2)">React 18 &middot; FastAPI &middot; PostgreSQL 16 &middot; ECharts &middot; Docker</strong></p>
+      <h4>About</h4>
+      <p>Self-hosted platform that centralizes KPI dashboards and operational metrics. Runs on your own infrastructure and displays on office TVs, kiosk screens, or the web. Core innovation: a proprietary DSL formula engine for reusable, auditable KPI definitions with aggregations, conditional filtering, version history, and circular-reference detection.</p>
+      <h4>Highlights</h4>
+      <ul>
+        <li>25+ widget types: charts, gauges, KPIs, forecasts</li>
+        <li>Auto-rotating TV slideshow &amp; kiosk mode</li>
+        <li>Connectors: HubSpot, Zoho, Xero, Sheets, SQL, REST, CSV</li>
+        <li>Multi-tenancy with a 5-level role hierarchy</li>
+        <li>Fernet-encrypted OAuth &amp; RS256-signed JWT licensing</li>
+        <li>Auto PostgreSQL backups + Let's Encrypt SSL, full audit trail</li>
+      </ul>
+      <p style="color:var(--text2)"><strong style="color:var(--accent2)">React 18 &middot; TypeScript &middot; FastAPI &middot; PostgreSQL 16 &middot; Celery &middot; Redis &middot; ECharts &middot; Docker &middot; Turborepo</strong></p>
     </div>
   </div>
 
