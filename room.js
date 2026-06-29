@@ -869,6 +869,14 @@
 
     function faceCenter(obj, x, z) { obj.rotation.y = Math.atan2(-x, -z); }
     function aiBoard(x, z, glow) { const b = aiPedestal(x, z, glow); faceCenter(b.group, x, z); return b; }
+    function aiCanvasPanel(group, topY, key, { offset = 1.05, w = 1.95, h = 1.18, cw = 760, ch = 460 } = {}) {
+      const cy = topY + offset;
+      box(key + 'back', [w + 0.12, h + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
+      const c = document.createElement('canvas'); c.width = cw; c.height = ch; const ctx = c.getContext('2d');
+      const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+      plane(key + 'scr', w, h, [0, cy, 0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: tex }), group);
+      return { cy, w, h, ctx, tex };
+    }
 
     function aiPedestal(x, z, glow) {
       const g = new THREE.Group();
@@ -1114,11 +1122,7 @@
 
     (function buildRAG() {
       const { group, topY } = aiBoard(-4.6, 9.4, 0x6366f1);
-      const cy = topY + 1.05, W = 1.95, H = 1.18;
-      box('RAGback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
-      const c = document.createElement('canvas'); c.width = 760; c.height = 460; const x = c.getContext('2d');
-      const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
-      plane('RAGscr', W, H, [0, cy, 0.0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: tex }), group);
+      const { cy, ctx: x, tex } = aiCanvasPanel(group, topY, 'RAG');
       const nodes = [{ x: 60, y: 110, w: 160, h: 64, t: 'Live Transcript', c: '#3abef9' }, { x: 300, y: 110, w: 150, h: 64, t: 'RAG Retrieve', c: '#818cf8' }, { x: 540, y: 110, w: 160, h: 64, t: 'LLM · Vertex', c: '#b09afa' }, { x: 300, y: 300, w: 150, h: 64, t: 'Voice Agent', c: '#ffd166' }, { x: 540, y: 300, w: 160, h: 64, t: 'Booked Meeting', c: '#4ade9e' }];
       const edges = [[0, 1], [1, 2], [2, 3], [3, 4]];
       aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_rag', 'ai', 'Press <b>E</b> to explore the RAG + Voice pipeline');
@@ -1144,11 +1148,7 @@
 
     (function buildForecast() {
       const { group, topY } = aiBoard(4.6, 9.4, 0x4ade9e);
-      const cy = topY + 1.05, W = 1.95, H = 1.18;
-      box('FCback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
-      const c = document.createElement('canvas'); c.width = 760; c.height = 460; const x = c.getContext('2d');
-      const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
-      plane('FCscr', W, H, [0, cy, 0.0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: tex }), group);
+      const { cy, ctx: x, tex } = aiCanvasPanel(group, topY, 'FC');
       const NH = 42, NF = 22, X0 = 50, X1 = 720, Y0 = 90, Y1 = 400;
       const hist = []; for (let i = 0; i < NH; i++) hist.push(0.5 + 0.28 * Math.sin(i * 0.35) + i * 0.006 + Math.sin(i * 1.7) * 0.05);
       const fut = []; for (let i = 0; i < NF; i++) fut.push(hist[NH - 1] + i * 0.009 + 0.18 * Math.sin((NH + i) * 0.35));
