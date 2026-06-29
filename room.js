@@ -2128,7 +2128,7 @@
       iframe.style.background = '#0f0f1e';
       iframe.style.pointerEvents = 'none';
       iframe.addEventListener('load', () => attachStudioIntercept(iframe));
-      iframe.src = 'portfolio.html';
+      iframe.src = 'index.html';
       const obj = new CSS3DObject(iframe);
       const scale = 2.24 / px;
       obj.scale.set(scale, scale, scale);
@@ -2152,7 +2152,7 @@
       uiOpen = true;
       if (document.pointerLockElement) document.exitPointerLock();
       browserEl.classList.add('active');
-      if (!portfolioLoaded) { portfolioFrame.src = 'portfolio.html'; portfolioLoaded = true; }
+      if (!portfolioLoaded) { portfolioFrame.src = 'index.html'; portfolioLoaded = true; }
       if (!cardsBuilt) { buildProfileCards(); cardsBuilt = true; }
       switchTab(tab || 'portfolio');
       reticle.classList.add('hidden');
