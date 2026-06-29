@@ -20,7 +20,7 @@
       impact: {
         title: 'Impact Snapshot',
         short: 'Business metrics, production results, measurable wins.',
-        color: '#179bd7',
+        color: '#4f46e5',
         lines: [
           'sub-500ms real-time AI guidance with Vertex AI + RAG',
           '30+ CRM stages automated on Google Cloud Run',
@@ -35,7 +35,7 @@
       journey: {
         title: 'Professional Journey',
         short: 'From data analysis to production AI systems.',
-        color: '#179bd7',
+        color: '#4f46e5',
         lines: ['2025-Now · AI Engineer · Baron & Cabot', '2024-2025 · Data Scientist · MENRV.AI', '2024-2025 · AI Engineer (Contract) · NEOMI', '2023-2024 · AI Instructor · iSchool', '2023 · Data Analyst · e-finance'],
         html: `<h3>AI Engineer · Baron & Cabot · 2025-Now</h3><p>Architected a FastAPI/React copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-500ms guidance. Built ElevenLabs voice agents and a Cloud Run automation platform for 30+ CRM stages.</p><h3>Data Scientist · MENRV.AI · 2024-2025</h3><p>Launched a vLLM merchandising suite, AI deck assistant, forecasting pipeline, and multilingual TTS across 50+ languages.</p><h3>AI Engineer (Contract) · NEOMI · 2024-2025</h3><p>Built the core AI engine for an AR learning platform serving 15,000+ students, with handwriting recognition and LLM evaluation.</p><h3>AI Instructor · iSchool · 2023-2024</h3><p>Mentored 70+ students and guided 36 AI-driven reinforcement-learning game projects.</p>`
       },
@@ -477,7 +477,7 @@
     deskLampLight.castShadow = true;
     deskLampLight.shadow.mapSize.set(512, 512);
     scene.add(deskLampLight);
-    const blueMonitorGlow = new THREE.PointLight(0x3abef9, 0, 6, 2);
+    const blueMonitorGlow = new THREE.PointLight(0x6366f1, 0, 6, 2);
     blueMonitorGlow.position.set(0, 1.6, -3.1);
     scene.add(blueMonitorGlow);
 
@@ -616,7 +616,7 @@
     const monMetalM = mat(0x20262e, { roughness: 0.3, metalness: 0.8 });
     rbox('Mon Panel', [2.32, 1.16, 0.045], [0, 0.82, -0.05], monBodyM, monitorGroup, 0.02);
     rbox('Mon Chin', [2.32, 0.09, 0.05], [0, 0.235, -0.03], mat(0x161b22, { roughness: 0.45, metalness: 0.4 }), monitorGroup, 0.018);
-    cylinder('Mon Brand', 0.012, 0.012, 0.006, 14, [0, 0.30, 0.0], mat(0xffffff, { emissive: 0x3abef9, emissiveIntensity: 0.6 }), monitorGroup).rotation.x = Math.PI / 2;
+    cylinder('Mon Brand', 0.012, 0.012, 0.006, 14, [0, 0.30, 0.0], mat(0xffffff, { emissive: 0x6366f1, emissiveIntensity: 0.6 }), monitorGroup).rotation.x = Math.PI / 2;
     cylinder('Mon Neck', 0.045, 0.06, 0.24, 20, [0, 0.12, -0.06], monMetalM, monitorGroup);
     rbox('Mon Foot', [0.62, 0.025, 0.4], [0, 0.012, 0.0], monMetalM, monitorGroup, 0.02);
 
@@ -664,7 +664,7 @@
     const mBody = new THREE.Mesh(new THREE.SphereGeometry(0.058, 28, 20), mouseShellM);
     mBody.scale.set(1, 0.52, 1.55); mBody.position.y = 0.03; mBody.castShadow = true; mouseGroup.add(mBody);
     box('Mouse Seam', [0.002, 0.02, 0.09], [0, 0.062, -0.03], mat(0x05070a, { roughness: 0.6 }), mouseGroup);
-    const mWheel = cylinder('Mouse Wheel', 0.011, 0.011, 0.012, 14, [0, 0.07, -0.04], mat(0x3abef9, { emissive: 0x3abef9, emissiveIntensity: 0.6 }), mouseGroup);
+    const mWheel = cylinder('Mouse Wheel', 0.011, 0.011, 0.012, 14, [0, 0.07, -0.04], mat(0x6366f1, { emissive: 0x6366f1, emissiveIntensity: 0.6 }), mouseGroup);
     mWheel.rotation.z = Math.PI / 2;
 
     box('Notebook', [0.55, 0.04, 0.38], [-1.15, 0.84, -3.18], mat(0xfffef5, { roughness: 0.6 }));
@@ -701,7 +701,7 @@
     glassPanel.position.set(-0.252, 0.5, 0); glassPanel.rotation.y = Math.PI / 2; towerGroup.add(glassPanel);
 
     rbox('FrontPanel', [0.46, 0.9, 0.03], [0, 0.48, 0.45], mat(0x1b2129, { roughness: 0.4, metalness: 0.3 }), towerGroup, 0.012);
-    box('Front RGB', [0.025, 0.82, 0.012], [-0.205, 0.48, 0.47], mat(0xffffff, { emissive: 0x3abef9, emissiveIntensity: 1.6 }), towerGroup);
+    box('Front RGB', [0.025, 0.82, 0.012], [-0.205, 0.48, 0.47], mat(0xffffff, { emissive: 0x6366f1, emissiveIntensity: 1.6 }), towerGroup);
     for (let v = 0; v < 7; v++) box(`Vent ${v}`, [0.26, 0.006, 0.008], [0.06, 0.18 + v * 0.06, 0.47], mat(0x080808, { roughness: 0.9 }), towerGroup);
     const fanMat = mat(0xffffff, { emissive: 0x3aa0ff, emissiveIntensity: 1.3 });
     const frontFans = [];
@@ -709,7 +709,7 @@
       const fan = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.009, 8, 26), fanMat);
       fan.position.set(0.07, 0.21 + i * 0.2, 0.47); towerGroup.add(fan); frontFans.push(fan);
     }
-    const pwrButton = cylinder('PowerBtn', 0.02, 0.02, 0.016, 16, [0.16, 0.9, 0.47], mat(0x3abef9, { emissive: 0x3abef9, emissiveIntensity: 0.9 }), towerGroup);
+    const pwrButton = cylinder('PowerBtn', 0.02, 0.02, 0.016, 16, [0.16, 0.9, 0.47], mat(0x6366f1, { emissive: 0x6366f1, emissiveIntensity: 0.9 }), towerGroup);
     pwrButton.rotation.x = Math.PI / 2;
     propAnimators.push((t) => {
       const col = new THREE.Color().setHSL((t * 0.08) % 1, 0.85, 0.55);
@@ -818,7 +818,7 @@
     }
 
     const LX = -6.92, LR = Math.PI / 2, ZC = [6.4, 7.7, 9.0, 10.3, 11.6];
-    wallSign(-6.88, 3.85, 9.0, Math.PI / 2, 'Certifications & Honors', '#179bd7', 3.6, 0.5);
+    wallSign(-6.88, 3.85, 9.0, Math.PI / 2, 'Certifications & Honors', '#4f46e5', 3.6, 0.5);
 
     [['kaggle_pandas', 'Kaggle · Pandas'], ['kaggle_data_cleaning', 'Kaggle · Data Cleaning'],
      ['kaggle_intro_ml', 'Kaggle · Intro to ML'], ['kaggle_intermediate_ml', 'Kaggle · Intermediate ML'],
@@ -853,7 +853,7 @@
       videoScreens.push({ video, glow, pos: worldPos });
       return fg;
     }
-    wallSign(0, 3.62, 12.84, Math.PI, 'Live Demos', '#56d8c9', 3.4, 0.5);
+    wallSign(0, 3.62, 12.84, Math.PI, 'Live Demos', '#818cf8', 3.4, 0.5);
     createVideoScreen(-1.75, 2.45, 12.84, Math.PI, 'videos/graphs.mp4', 'Signal Graphs', 2.0, 1.25);
     createVideoScreen(1.75, 2.45, 12.84, Math.PI, 'videos/attendance.mp4', 'Attendance System', 2.0, 1.25);
 
@@ -918,7 +918,7 @@
       ctx.lineWidth = 6;
       roundRect(ctx, 10, 10, w - 20, h - 20, 12);
       ctx.stroke();
-      ctx.fillStyle = '#179bd7';
+      ctx.fillStyle = '#4f46e5';
       ctx.font = 'bold 36px sans-serif';
       ctx.fillText('Production System Topology Grid', 40, 70);
       ctx.strokeStyle = '#ff8a65';
@@ -927,7 +927,7 @@
       ctx.moveTo(60, 200);
       ctx.lineTo(400, 200);
       ctx.stroke();
-      ctx.fillStyle = '#56d8c9';
+      ctx.fillStyle = '#818cf8';
       roundRect(ctx, 400, 150, 220, 90, 8);
       ctx.fill();
       ctx.fillStyle = '#fff';
@@ -977,7 +977,7 @@
       html: `<p>Transformers replaced recurrence with <strong>self-attention</strong>: each token attends to all others, learning context-rich representations in parallel.</p><p>The lit links here show one query token attending across the sequence. In production Eyad combines these with <strong>RAG</strong>, semantic caching, and evaluation pipelines for sub-500ms guidance.</p><span class="tag">Attention</span><span class="tag">RAG</span><span class="tag">Fine-tuning</span><span class="tag">Vertex AI</span><span class="tag">vLLM</span>`
     };
     DATA.ai_overfit = {
-      title: 'Overfitting & the Bias–Variance Tradeoff', short: 'Why the "best" model on training data can fail in the wild.', color: '#56d8c9',
+      title: 'Overfitting & the Bias–Variance Tradeoff', short: 'Why the "best" model on training data can fail in the wild.', color: '#818cf8',
       lines: [
         'Underfit: too simple → high bias, misses the signal',
         'Good fit: captures the trend, ignores the noise',
@@ -1068,7 +1068,7 @@
     }
 
     (function buildNeuralNet() {
-      const { group, topY } = aiPedestal(4.8, -1.5, 0x3abef9);
+      const { group, topY } = aiPedestal(4.8, -1.5, 0x6366f1);
       faceCenter(group, 4.8, -1.5);
       const viz = new THREE.Group(); viz.position.set(0, topY + 0.95, 0); group.add(viz);
       const layers = [4, 6, 6, 3], spanX = 1.25, spanY = 1.1;
@@ -1079,7 +1079,7 @@
         const arr = [];
         for (let n = 0; n < cnt; n++) {
           const ny = cnt === 1 ? 0 : (-spanY / 2 + (n / (cnt - 1)) * spanY);
-          const m = new THREE.Mesh(nodeGeo, new THREE.MeshStandardMaterial({ color: 0x0a1f2e, emissive: 0x3abef9, emissiveIntensity: 0.6, roughness: 0.3 }));
+          const m = new THREE.Mesh(nodeGeo, new THREE.MeshStandardMaterial({ color: 0x0a1f2e, emissive: 0x6366f1, emissiveIntensity: 0.6, roughness: 0.3 }));
           m.position.set(lx, ny, 0); viz.add(m); arr.push(m.position.clone()); nodeMeshes.push(m);
         }
         nodePos.push(arr);
@@ -1089,9 +1089,9 @@
         nodePos[li].forEach(a => nodePos[li + 1].forEach(b => { edgePts.push(a.x, a.y, a.z, b.x, b.y, b.z); edges.push([a, b]); }));
       const eGeo = new THREE.BufferGeometry();
       eGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
-      viz.add(new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: 0x1d6f9c, transparent: true, opacity: 0.22 })));
+      viz.add(new THREE.LineSegments(eGeo, new THREE.LineBasicMaterial({ color: 0x4338ca, transparent: true, opacity: 0.22 })));
       const sigGeo = new THREE.SphereGeometry(0.03, 8, 8);
-      const sigMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x9be7ff, emissiveIntensity: 3 });
+      const sigMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xc7d2fe, emissiveIntensity: 3 });
       const signals = [];
       for (let i = 0; i < 16; i++) signals.push({ mesh: (() => { const s = new THREE.Mesh(sigGeo, sigMat); viz.add(s); return s; })(), edge: Math.floor((i * 53) % edges.length), t: (i / 16) });
       aiProxy(group, viz, 'ai_nn', 'ai', 'Press <b>E</b> to explore Neural Networks');
@@ -1154,7 +1154,7 @@
           ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
         }
-        ctx.fillStyle = '#56d8c9'; ctx.font = 'bold 34px Inter, sans-serif'; ctx.fillText('Bias - Variance', 24, 48);
+        ctx.fillStyle = '#818cf8'; ctx.font = 'bold 34px Inter, sans-serif'; ctx.fillText('Bias - Variance', 24, 48);
       }, 560, 400).tex;
       viz.add(new THREE.Mesh(new THREE.PlaneGeometry(W + 0.12, H + 0.12),
         new THREE.MeshStandardMaterial({ map: gridTex, emissive: 0xffffff, emissiveMap: gridTex, emissiveIntensity: 0.4, roughness: 0.4 })));
@@ -1280,14 +1280,14 @@
     })();
 
     (function buildRAG() {
-      const { group, topY } = aiPedestal(-4.6, 9.4, 0x3abef9);
+      const { group, topY } = aiPedestal(-4.6, 9.4, 0x6366f1);
       faceCenter(group, -4.6, 9.4);
       const cy = topY + 1.05, W = 1.95, H = 1.18;
       box('RAGback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
       const c = document.createElement('canvas'); c.width = 760; c.height = 460; const x = c.getContext('2d');
       const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
       plane('RAGscr', W, H, [0, cy, 0.0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: tex }), group);
-      const nodes = [{ x: 60, y: 110, w: 160, h: 64, t: 'Live Transcript', c: '#3abef9' }, { x: 300, y: 110, w: 150, h: 64, t: 'RAG Retrieve', c: '#56d8c9' }, { x: 540, y: 110, w: 160, h: 64, t: 'LLM · Vertex', c: '#b09afa' }, { x: 300, y: 300, w: 150, h: 64, t: 'Voice Agent', c: '#ffd166' }, { x: 540, y: 300, w: 160, h: 64, t: 'Booked Meeting', c: '#4ade9e' }];
+      const nodes = [{ x: 60, y: 110, w: 160, h: 64, t: 'Live Transcript', c: '#3abef9' }, { x: 300, y: 110, w: 150, h: 64, t: 'RAG Retrieve', c: '#818cf8' }, { x: 540, y: 110, w: 160, h: 64, t: 'LLM · Vertex', c: '#b09afa' }, { x: 300, y: 300, w: 150, h: 64, t: 'Voice Agent', c: '#ffd166' }, { x: 540, y: 300, w: 160, h: 64, t: 'Booked Meeting', c: '#4ade9e' }];
       const edges = [[0, 1], [1, 2], [2, 3], [3, 4]];
       aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_rag', 'ai', 'Press <b>E</b> to explore the RAG + Voice pipeline');
       aiAnimators.push((t, cam) => {
@@ -1909,10 +1909,10 @@
       }
       if (node.interact === 'whiteboard') {
         const panel = document.getElementById('panel');
-        panel.style.setProperty('--accent2', '#179bd7');
+        panel.style.setProperty('--accent2', '#4f46e5');
         document.getElementById('panelTitle').textContent = 'Production Architecture';
         document.getElementById('panelBody').innerHTML =
-          panelBanner('flow', '#179bd7', 'System Topology') +
+          panelBanner('flow', '#4f46e5', 'System Topology') +
           `<p>How the real-time sales copilot fits together end-to-end.</p>
            <h3>Pipeline</h3><p>Live call audio → transcript over WebSockets → RAG retrieval &amp; semantic caching → Vertex AI reasoning → sub-500ms guidance back to the agent.</p>
            <h3>Automation Layer</h3><p>Cloud Run services orchestrate 30+ CRM lifecycle stages with Gemini Vision document checks, n8n coaching scorecards, and a Twilio WhatsApp outreach bot.</p>
@@ -1967,7 +1967,7 @@
         ctx.moveTo(0, j);
         ctx.lineTo(w, j);
         ctx.stroke(); }
-      ctx.fillStyle = '#179bd7';
+      ctx.fillStyle = '#4f46e5';
       ctx.font = 'bold 54px sans-serif';
       ctx.fillText(title, 60, 90);
       ctx.fillStyle = '#7895a3';
@@ -1982,10 +1982,10 @@
       ctx.fillStyle = 'rgba(15,28,38,0.9)';
       roundRect(ctx, 60, h - 160, w - 120, 110, 12);
       ctx.fill();
-      ctx.strokeStyle = typingMode ? '#56d8c9' : '#179bd7';
+      ctx.strokeStyle = typingMode ? '#818cf8' : '#4f46e5';
       ctx.lineWidth = 2;
       ctx.stroke();
-      ctx.fillStyle = '#56d8c9';
+      ctx.fillStyle = '#818cf8';
       ctx.font = 'bold 24px monospace';
       const tick = typingMode && Math.floor(clock.getElapsedTime() * 3) % 2 === 0 ? '_' : '';
       ctx.fillText(`eyad@playground:~$ ${screenInput}${tick}`, 90, h - 110);
@@ -2000,7 +2000,7 @@
       if (!pcBooted) {
         ctx.fillStyle = '#05080c';
         ctx.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
-        ctx.fillStyle = '#179bd7';
+        ctx.fillStyle = '#4f46e5';
         ctx.font = 'bold 44px monospace';
         ctx.fillText('SYSTEM INACTIVE', 100, 200);
         ctx.fillStyle = '#465d70';
@@ -2048,7 +2048,7 @@
       ctx.fillStyle = '#070d12';
       roundRect(ctx, screenCanvas.width - 480, 20, 420, 120, 6);
       ctx.fill();
-      ctx.fillStyle = '#56d8c9';
+      ctx.fillStyle = '#818cf8';
       ctx.font = '14px monospace';
       const tl = terminalLog.slice(-4);
       tl.forEach((l, i) => ctx.fillText(l, screenCanvas.width - 460, 45 + i * 24));
@@ -2405,7 +2405,7 @@
       ghUrl.textContent = `github.com/${GH_USER}`;
       ghContent.innerHTML = '<div class="gh-msg"><div class="gh-spinner"></div>Loading profile…</div>';
       try {
-        if (!ghProfileCache) ghProfileCache = await (await ghFetch(`https:
+        if (!ghProfileCache) ghProfileCache = await (await ghFetch(`https://api.github.com/users/${GH_USER}`)).json();
         if (!ghReposCache) ghReposCache = await (await ghFetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`)).json();
         const u = ghProfileCache;
         const repos = [...ghReposCache].sort((a, b) => (b.stargazers_count - a.stargazers_count) || (new Date(b.updated_at) - new Date(a.updated_at)));
@@ -2450,30 +2450,28 @@
     }
 
     function buildProfileCards() {
-      document.querySelector('[data-pane="linkedin"]').innerHTML = `
-        <div class="profile-card linkedin">
-          <div class="pc-head"><div class="pc-logo"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg></div>
-            <div><h2>Eyad Elfar</h2><div class="pc-sub">AI Engineer · Dubai, UAE</div></div></div>
-          <ul>
-            <li>Architecting production LLM/RAG copilots with sub-500ms real-time guidance.</li>
-            <li>ElevenLabs voice agents and Cloud Run automation across 30+ CRM stages.</li>
-            <li>Built KeepQuill & Favisra (personal POCs); ex-MENRV.AI, NEOMI, iSchool, e-finance.</li>
-          </ul>
-          <button class="pc-open" data-href="https://www.linkedin.com/in/eyadelfar/">Open LinkedIn profile ↗</button>
-          <div class="pc-note">LinkedIn blocks in-page embedding, so it opens in a new tab.</div>
-        </div>`;
-      document.querySelector('[data-pane="kaggle"]').innerHTML = `
-        <div class="profile-card kaggle">
-          <div class="pc-head"><div class="pc-logo"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.1025 7.3475c-.0681 0-.1022.0341-.1022.102v6.752c0 .0681.034.1022.1022.1022h.7049c.068 0 .1022-.034.1022-.1023v-1.481l.4187-.3985 1.5016 1.91c.041.0477.0884.0716.143.0716h.9091c.0476 0 .0748-.0135.0817-.0407.0135-.041.0066-.075-.0206-.1023l-1.9816-2.4618 1.9002-1.8384c.0204-.0205.0237-.051.01-.092-.0137-.0339-.0408-.051-.0816-.051h-.9398c-.0477 0-.0953.024-.143.0716L.9096 11.607V7.4496c0-.0679-.0342-.102-.1022-.102zm18.0417 0c-.068 0-.102.0341-.102.102v6.752c0 .0681.034.102.102.102h.705c.068 0 .102-.034.102-.102v-6.752c0-.068-.034-.102-.102-.102zM5.961 9.6254c-.5653 0-1.11.1806-1.6343.5415-.0545.0545-.0648.102-.0307.143l.3676.5208c.0272.0477.0717.0545.133.0204.3948-.2722.783-.4086 1.1644-.4086.2927 0 .5158.0886.669.2656.1532.1771.2197.3917.1992.6436-.6606.0681-1.1545.1495-1.4813.245-.8308.2383-1.2461.6913-1.2461 1.3586 0 .4222.1533.7695.4598 1.0419.3132.2654.6845.3982 1.1134.3982.4698 0 .8545-.1125 1.1542-.3372v.1432c0 .0682.0374.102.1123.102h.7048c.068 0 .102-.0338.102-.102V11.372c0-.6604-.2245-1.1406-.6739-1.4403-.3065-.2043-.6776-.3063-1.1134-.3063zm4.3225 0c-.6742 0-1.195.2622-1.5627.7865-.3133.4359-.4699.9671-.4699 1.5936 0 .6604.1634 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5313 0 .9567-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1132-.572a.098.098 0 00-.0716-.0306c-.034 0-.0613.0102-.0817.0307l-.4802.48c-.0408.0613-.0375.1124.0103.1532.1361.1157.2554.2129.3576.2911.102.0783.1905.1413.2656.189.354.1975.7284.2961 1.1235.2961.6808 0 1.207-.1925 1.5781-.577.3711-.3848.5567-.9484.5567-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.705c-.0682 0-.1021.034-.1021.102v.2043c-.3471-.2657-.7763-.3985-1.287-.3985zm4.8021 0c-.6742 0-1.195.2622-1.5627.7865-.3132.4359-.4699.9671-.4699 1.5936 0 .6604.1633 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5311 0 .9566-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1133-.572a.098.098 0 00-.0716-.0306c-.034 0-.0612.0102-.0816.0307l-.48.48c-.0409.0613-.0376.1124.01.1532.1363.1157.2555.2129.3576.2911.1021.0783.1906.1413.2657.189.354.1975.7285.2961 1.1237.2961.6808 0 1.2068-.1925 1.5781-.577.371-.3848.5565-.9484.5565-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.7049c-.0682 0-.1022.034-.1022.102v.2043c-.3474-.2657-.7763-.3985-1.287-.3985zm6.7457 0c-.6537 0-1.185.211-1.5936.6332-.4427.4632-.664 1.0283-.664 1.6956 0 .7083.225 1.2905.6743 1.7467.463.463 1.042.6945 1.7366.6945.6467 0 1.2154-.1838 1.7057-.5515.0545-.041.0545-.0884 0-.143l-.4802-.4903c-.041-.0409-.0919-.0409-.1533 0-.2998.2112-.6368.3167-1.0112.3167-.4222 0-.7729-.119-1.052-.3576-.2452-.2248-.3882-.5038-.429-.8375h3.3197c.0679 0 .1022-.0341.1022-.1023l.01-.2244c.0341-.6878-.1668-1.26-.6025-1.7162-.4224-.4426-.9432-.664-1.5627-.664zm-.0206.7865c.3268 0 .6062.1056.8377.3166.2452.211.371.4734.378.7865h-2.4618c.0613-.3269.2077-.5925.4392-.7968.2313-.2042.5004-.3063.8069-.3063zm-11.4249.102c.6196 0 1.0146.2181 1.1848.6538v1.6854c-.1702.4358-.5755.6538-1.2155.6538-.3133 0-.5687-.0986-.7661-.2963-.2656-.2518-.3983-.6538-.3983-1.2053 0-.9941.3984-1.4914 1.1951-1.4914zm4.802 0c.6196 0 1.0148.2181 1.1851.6538h-.0002v1.6854c-.1703.4358-.5755.6538-1.2155.6538-.3132 0-.5686-.0986-.7661-.2963-.2655-.2518-.3983-.6538-.3983-1.2053 0-.9941.3983-1.4914 1.195-1.4914zm-8.3586 1.6547v1.0215c-.286.286-.6675.412-1.1441.3779-.1703-.0135-.32-.0663-.4493-.1582-.1294-.0919-.2045-.2129-.2249-.3627-.0341-.2657.1158-.47.4495-.6129.2452-.1088.7013-.1974 1.3688-.2656z"/></svg></div>
-            <div><h2>Eyad Amin</h2><div class="pc-sub">Kaggle · Notebooks & Competitions</div></div></div>
-          <ul>
-            <li>Gamers Mental Health NLP classifier — 94% accuracy with SHAP explainability.</li>
-            <li>Certified across Pandas, Data Cleaning, Intro & Intermediate Machine Learning.</li>
-            <li>Computer vision, OCR, and NLP notebooks with reproducible pipelines.</li>
-          </ul>
-          <button class="pc-open" data-href="https://www.kaggle.com/eyadamin1233">Open Kaggle profile ↗</button>
-          <div class="pc-note">Kaggle blocks in-page embedding, so it opens in a new tab.</div>
-        </div>`;
+      const LINKEDIN_LOGO = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>';
+      const KAGGLE_LOGO = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.1025 7.3475c-.0681 0-.1022.0341-.1022.102v6.752c0 .0681.034.1022.1022.1022h.7049c.068 0 .1022-.034.1022-.1023v-1.481l.4187-.3985 1.5016 1.91c.041.0477.0884.0716.143.0716h.9091c.0476 0 .0748-.0135.0817-.0407.0135-.041.0066-.075-.0206-.1023l-1.9816-2.4618 1.9002-1.8384c.0204-.0205.0237-.051.01-.092-.0137-.0339-.0408-.051-.0816-.051h-.9398c-.0477 0-.0953.024-.143.0716L.9096 11.607V7.4496c0-.0679-.0342-.102-.1022-.102zm18.0417 0c-.068 0-.102.0341-.102.102v6.752c0 .0681.034.102.102.102h.705c.068 0 .102-.034.102-.102v-6.752c0-.068-.034-.102-.102-.102zM5.961 9.6254c-.5653 0-1.11.1806-1.6343.5415-.0545.0545-.0648.102-.0307.143l.3676.5208c.0272.0477.0717.0545.133.0204.3948-.2722.783-.4086 1.1644-.4086.2927 0 .5158.0886.669.2656.1532.1771.2197.3917.1992.6436-.6606.0681-1.1545.1495-1.4813.245-.8308.2383-1.2461.6913-1.2461 1.3586 0 .4222.1533.7695.4598 1.0419.3132.2654.6845.3982 1.1134.3982.4698 0 .8545-.1125 1.1542-.3372v.1432c0 .0682.0374.102.1123.102h.7048c.068 0 .102-.0338.102-.102V11.372c0-.6604-.2245-1.1406-.6739-1.4403-.3065-.2043-.6776-.3063-1.1134-.3063zm4.3225 0c-.6742 0-1.195.2622-1.5627.7865-.3133.4359-.4699.9671-.4699 1.5936 0 .6604.1634 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5313 0 .9567-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1132-.572a.098.098 0 00-.0716-.0306c-.034 0-.0613.0102-.0817.0307l-.4802.48c-.0408.0613-.0375.1124.0103.1532.1361.1157.2554.2129.3576.2911.102.0783.1905.1413.2656.189.354.1975.7284.2961 1.1235.2961.6808 0 1.207-.1925 1.5781-.577.3711-.3848.5567-.9484.5567-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.705c-.0682 0-.1021.034-.1021.102v.2043c-.3471-.2657-.7763-.3985-1.287-.3985zm4.8021 0c-.6742 0-1.195.2622-1.5627.7865-.3132.4359-.4699.9671-.4699 1.5936 0 .6604.1633 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5311 0 .9566-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1133-.572a.098.098 0 00-.0716-.0306c-.034 0-.0612.0102-.0816.0307l-.48.48c-.0409.0613-.0376.1124.01.1532.1363.1157.2555.2129.3576.2911.1021.0783.1906.1413.2657.189.354.1975.7285.2961 1.1237.2961.6808 0 1.2068-.1925 1.5781-.577.371-.3848.5565-.9484.5565-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.7049c-.0682 0-.1022.034-.1022.102v.2043c-.3474-.2657-.7763-.3985-1.287-.3985zm6.7457 0c-.6537 0-1.185.211-1.5936.6332-.4427.4632-.664 1.0283-.664 1.6956 0 .7083.225 1.2905.6743 1.7467.463.463 1.042.6945 1.7366.6945.6467 0 1.2154-.1838 1.7057-.5515.0545-.041.0545-.0884 0-.143l-.4802-.4903c-.041-.0409-.0919-.0409-.1533 0-.2998.2112-.6368.3167-1.0112.3167-.4222 0-.7729-.119-1.052-.3576-.2452-.2248-.3882-.5038-.429-.8375h3.3197c.0679 0 .1022-.0341.1022-.1023l.01-.2244c.0341-.6878-.1668-1.26-.6025-1.7162-.4224-.4426-.9432-.664-1.5627-.664zm-.0206.7865c.3268 0 .6062.1056.8377.3166.2452.211.371.4734.378.7865h-2.4618c.0613-.3269.2077-.5925.4392-.7968.2313-.2042.5004-.3063.8069-.3063zm-11.4249.102c.6196 0 1.0146.2181 1.1848.6538v1.6854c-.1702.4358-.5755.6538-1.2155.6538-.3133 0-.5687-.0986-.7661-.2963-.2656-.2518-.3983-.6538-.3983-1.2053 0-.9941.3984-1.4914 1.1951-1.4914zm4.802 0c.6196 0 1.0148.2181 1.1851.6538h-.0002v1.6854c-.1703.4358-.5755.6538-1.2155.6538-.3132 0-.5686-.0986-.7661-.2963-.2655-.2518-.3983-.6538-.3983-1.2053 0-.9941.3983-1.4914 1.195-1.4914zm-8.3586 1.6547v1.0215c-.286.286-.6675.412-1.1441.3779-.1703-.0135-.32-.0663-.4493-.1582-.1294-.0919-.2045-.2129-.2249-.3627-.0341-.2657.1158-.47.4495-.6129.2452-.1088.7013-.1974 1.3688-.2656z"/></svg>';
+      const PROFILES = [
+        { pane: 'linkedin', site: 'LinkedIn', logo: LINKEDIN_LOGO, name: 'Eyad Elfar', sub: 'AI Engineer · Dubai, UAE', href: 'https://www.linkedin.com/in/eyadelfar/', items: [
+          'Architecting production LLM/RAG copilots with sub-500ms real-time guidance.',
+          'ElevenLabs voice agents and Cloud Run automation across 30+ CRM stages.',
+          'Built KeepQuill & Favisra (personal POCs); ex-MENRV.AI, NEOMI, iSchool, e-finance.'] },
+        { pane: 'kaggle', site: 'Kaggle', logo: KAGGLE_LOGO, name: 'Eyad Amin', sub: 'Kaggle · Notebooks & Competitions', href: 'https://www.kaggle.com/eyadamin1233', items: [
+          'Gamers Mental Health NLP classifier — 94% accuracy with SHAP explainability.',
+          'Certified across Pandas, Data Cleaning, Intro & Intermediate Machine Learning.',
+          'Computer vision, OCR, and NLP notebooks with reproducible pipelines.'] },
+      ];
+      PROFILES.forEach(p => {
+        document.querySelector(`[data-pane="${p.pane}"]`).innerHTML = `
+          <div class="profile-card ${p.pane}">
+            <div class="pc-head"><div class="pc-logo">${p.logo}</div>
+              <div><h2>${p.name}</h2><div class="pc-sub">${p.sub}</div></div></div>
+            <ul>${p.items.map(i => `<li>${i}</li>`).join('')}</ul>
+            <button class="pc-open" data-href="${p.href}">Open ${p.site} profile ↗</button>
+            <div class="pc-note">${p.site} blocks in-page embedding, so it opens in a new tab.</div>
+          </div>`;
+      });
       document.querySelectorAll('.pc-open').forEach(b => b.addEventListener('click', () => window.open(b.dataset.href, '_blank', 'noopener')));
     }
 
