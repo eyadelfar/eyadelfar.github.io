@@ -8,6 +8,8 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+    import { makeHelpers } from './room.helpers.js';
+    import { DATA } from './room.data.js';
 
     if (window.self !== window.top) {
       document.documentElement.innerHTML =
@@ -15,59 +17,6 @@
         '<a href="interactive_room.html" target="_top" style="color:#3abef9;text-decoration:none">↗ Open the Playground</a></body>';
       throw new Error('The Playground runs at top level only (prevents recursion).');
     }
-
-    const DATA = {
-      impact: {
-        title: 'Impact Snapshot',
-        short: 'Business metrics, production results, measurable wins.',
-        color: '#4f46e5',
-        lines: [
-          'sub-500ms real-time AI guidance with Vertex AI + RAG',
-          '30+ CRM stages automated on Google Cloud Run',
-          '21+ n8n workflows deployed for coaching scorecards',
-          '14-factor ML lead scoring for sales prioritization',
-          '500M+ transactional records analyzed at e-finance',
-          '15K+ students served through AR learning AI engine',
-          '50+ languages supported in multilingual TTS systems'
-        ],
-        html: `<ul><li><strong>sub-500ms</strong> real-time AI guidance using Vertex AI, RAG, and semantic caching.</li><li><strong>30+</strong> CRM stages automated with Google Cloud Run and Gemini Vision.</li><li><strong>21+</strong> n8n workflows deployed for coaching, reporting, scheduling, and scorecards.</li><li><strong>14-factor</strong> ML lead scoring model for higher-quality sales prioritization.</li><li><strong>500M+</strong> transactional records analyzed in digital payments.</li><li><strong>15K+</strong> students served by an AR learning AI engine.</li></ul><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">FastAPI</span><span class="tag">Cloud Run</span><span class="tag">n8n</span>`
-      },
-      journey: {
-        title: 'Professional Journey',
-        short: 'From data analysis to production AI systems.',
-        color: '#4f46e5',
-        lines: ['2025-Now · AI Engineer · Baron & Cabot', '2024-2025 · Data Scientist · MENRV.AI', '2024-2025 · AI Engineer (Contract) · NEOMI', '2023-2024 · AI Instructor · iSchool', '2023 · Data Analyst · e-finance'],
-        html: `<h3>AI Engineer · Baron & Cabot · 2025-Now</h3><p>Architected a FastAPI/React copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-500ms guidance. Built ElevenLabs voice agents and a Cloud Run automation platform for 30+ CRM stages.</p><h3>Data Scientist · MENRV.AI · 2024-2025</h3><p>Launched a vLLM merchandising suite, AI deck assistant, forecasting pipeline, and multilingual TTS across 50+ languages.</p><h3>AI Engineer (Contract) · NEOMI · 2024-2025</h3><p>Built the core AI engine for an AR learning platform serving 15,000+ students, with handwriting recognition and LLM evaluation.</p><h3>AI Instructor · iSchool · 2023-2024</h3><p>Mentored 70+ students and guided 36 AI-driven reinforcement-learning game projects.</p>`
-      },
-      projects: {
-        title: 'Featured Projects',
-        short: 'NLP, computer vision, OCR, and face recognition.',
-        color: '#ff8a65',
-        lines: ['Gamers Mental Health NLP Classifier · 94% accuracy', 'Cigarette Butt Detection · YOLOv8 + FastAPI · 92%', 'English Character OCR Engine · 96% accuracy', 'One-Shot Attendance System · YOLO + RetinaFace + MTCNN'],
-        html: `<h3>Gamers Mental Health NLP Classifier</h3><p>Classified mental-health risk signals from gaming community posts with 94% accuracy and SHAP explainability.</p><h3>Cigarette Butt Detection System</h3><p>YOLOv8 + OpenCV + FastAPI system for real-time detection with 92% detection accuracy and reduced manual monitoring effort.</p><h3>English Character OCR Engine</h3><p>TensorFlow/Keras OCR pipeline with robust preprocessing and 96% character recognition accuracy on noisy documents.</p><h3>One-Shot Attendance System</h3><p>Graduation thesis combining YOLO, RetinaFace, MTCNN, MySQL, SSIS, and Power BI dashboards.</p>`
-      },
-      stack: {
-        title: 'Technical Arsenal',
-        short: 'The practical stack behind the room.',
-        color: '#66c9b7',
-        lines: ['LLMs · Fine-tuning · RAG · Evaluation · Distillation', 'Agentic Systems · CrewAI · LangChain · Tools · Memory', 'Python · SQL · FastAPI · WebSockets · Docker · K8s', 'Google Cloud · Vertex AI · BigQuery · Cloud Run', 'ElevenLabs · n8n · Twilio · Selenium', 'Computer Vision · OCR · Multimodal AI'],
-        html: `<h3>AI / ML</h3><p>LLMs, RAG, semantic caching, tool-using agents, evaluation pipelines, computer vision, OCR, and multimodal systems.</p><h3>Engineering</h3><p>Python, SQL, FastAPI, WebSockets, React, Docker, Kubernetes, CI/CD, and production deployment workflows.</p><h3>Cloud, Data & Automation</h3><p>Google Cloud, Vertex AI, BigQuery, Cloud Run, MLflow, Airflow, Kafka, n8n, Twilio, Selenium, and ElevenLabs.</p>`
-      },
-      education: {
-        title: 'Education & Certifications',
-        short: 'Computer Science, AI, and professional certificates.',
-        color: '#9aa7ff',
-        lines: ['BSc Computer Science & Artificial Intelligence', 'Helwan University · Excellent with Honors', 'McKinsey Forward Program · 2024', 'NLP Specialization · Coursera · 2024', 'Data Science Diploma · Orange Digital Center · 2023', 'Machine Learning Nanodegree · Udacity & EGFWD · 2023'],
-        html: `<h3>BSc in Computer Science & Artificial Intelligence</h3><p>Helwan University, Egypt · 2020-2024 · Excellent with Honors.</p><h3>Certifications</h3><ul><li>McKinsey Forward Program, 2024</li><li>NLP Specialization, Coursera, 2024</li><li>Secure Intelligence Training, Ericsson, 2023</li><li>Data Science Diploma, Orange Digital Center, 2023</li><li>Machine Learning Nanodegree, Udacity & EGFWD, 2023</li></ul>`
-      },
-      contact: {
-        title: 'Let\'s Collaborate',
-        short: 'Open to LLM, voice, RAG, automation, and data products.',
-        color: '#f2b94b',
-        lines: ['Email · eyadamen588@gmail.com', 'LinkedIn · linkedin.com/in/eyadelfar', 'Kaggle · kaggle.com/eyadamin1233', 'GitHub · github.com/eyadelfar', 'Focus · LLM systems · Voice agents · RAG · AI automation'],
-        html: `<p>I'm open to collaboration around LLM systems, voice agents, RAG, AI automation, data products, computer vision, and production ML workflows.</p><h3>Links</h3><ul><li>Email: eyadamen588@gmail.com</li><li>LinkedIn: linkedin.com/in/eyadelfar</li><li>Kaggle: kaggle.com/eyadamin1233</li><li>GitHub: github.com/eyadelfar</li></ul>`
-      }
-    };
 
     const screenSections = ['home', 'impact', 'journey', 'projects', 'stack', 'education', 'contact'];
     let currentSectionIndex = 0;
@@ -242,90 +191,8 @@
     const centerPoint = new THREE.Vector2(0, 0);
     const clock = new THREE.Clock();
 
-    function mat(color, opts = {}) {
-      return new THREE.MeshStandardMaterial({
-        color,
-        roughness: opts.roughness ?? 0.5,
-        metalness: opts.metalness ?? 0.0,
-        transparent: opts.transparent ?? false,
-        opacity: opts.opacity ?? 1,
-        emissive: opts.emissive ?? 0x000000,
-        emissiveIntensity: opts.emissiveIntensity ?? 0,
-        side: opts.side ?? THREE.FrontSide
-      });
-    }
 
-    function physMat(color, opts = {}) {
-      return new THREE.MeshPhysicalMaterial({
-        color,
-        roughness: opts.roughness ?? 0.4,
-        metalness: opts.metalness ?? 0.0,
-        clearcoat: opts.clearcoat ?? 0.0,
-        clearcoatRoughness: opts.clearcoatRoughness ?? 0.2,
-        transmission: opts.transmission ?? 0,
-        thickness: opts.thickness ?? 0,
-        ior: opts.ior ?? 1.45,
-        transparent: opts.transparent ?? false,
-        opacity: opts.opacity ?? 1,
-        emissive: opts.emissive ?? 0x000000,
-        emissiveIntensity: opts.emissiveIntensity ?? 0,
-        side: opts.side ?? THREE.FrontSide
-      });
-    }
-
-    function rbox(name, size, pos, material, parent = scene, radius = 0.02, segs = 4) {
-      const r = Math.min(radius, Math.min(...size) / 2 - 0.001);
-      const m = new THREE.Mesh(new RoundedBoxGeometry(size[0], size[1], size[2], segs, Math.max(r, 0.001)), material);
-      m.name = name;
-      m.position.set(...pos);
-      m.castShadow = true;
-      m.receiveShadow = true;
-      parent.add(m);
-      return m;
-    }
-
-    function roundedCanvasTexture(draw, w = 1024, h = 512) {
-      const c = document.createElement('canvas');
-      c.width = w;
-      c.height = h;
-      const ctx = c.getContext('2d');
-      draw(ctx, w, h);
-      const tex = new THREE.CanvasTexture(c);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
-      tex.magFilter = THREE.LinearFilter;
-      tex.generateMipmaps = true;
-      return { canvas: c, ctx, tex };
-    }
-
-    function roundRect(ctx, x, y, w, h, r) {
-      const rr = Math.min(r, w / 2, h / 2);
-      ctx.beginPath();
-      ctx.moveTo(x + rr, y);
-      ctx.arcTo(x + w, y, x + w, y + h, rr);
-      ctx.arcTo(x + w, y + h, x, y + h, rr);
-      ctx.arcTo(x, y + h, x, y, rr);
-      ctx.arcTo(x, y, x + w, y, rr);
-      ctx.closePath();
-    }
-
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 99) {
-      const words = String(text).split(' ');
-      let line = '';
-      let lines = 0;
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        if (ctx.measureText(testLine).width > maxWidth && n > 0) {
-          ctx.fillText(line.trim(), x, y);
-          line = words[n] + ' ';
-          y += lineHeight;
-          lines++;
-          if (lines >= maxLines - 1) return y;
-        } else { line = testLine; }
-      }
-      ctx.fillText(line.trim(), x, y);
-      return y + lineHeight;
-    }
+    const { mat, physMat, box, rbox, cylinder, plane, sphere, roundedCanvasTexture, roundRect, wrapText } = makeHelpers(scene);
 
     const floorTexture = roundedCanvasTexture((ctx, w, h) => {
       ctx.fillStyle = '#c8a87c';
@@ -414,45 +281,6 @@
     wallPlasterTex.wrapS = wallPlasterTex.wrapT = THREE.RepeatWrapping;
     wallPlasterTex.repeat.set(4, 2.4);
 
-    function box(name, size, pos, material, parent = scene) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
-      m.name = name;
-      m.position.set(...pos);
-      m.castShadow = true;
-      m.receiveShadow = true;
-      parent.add(m);
-      return m;
-    }
-
-    function cylinder(name, rTop, rBot, h, segs, pos, material, parent = scene) {
-      const m = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, segs), material);
-      m.name = name;
-      m.position.set(...pos);
-      m.castShadow = true;
-      m.receiveShadow = true;
-      parent.add(m);
-      return m;
-    }
-
-    function plane(name, w, h, pos, rot, material, parent = scene) {
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
-      m.name = name;
-      m.position.set(...pos);
-      m.rotation.set(...rot);
-      m.receiveShadow = true;
-      parent.add(m);
-      return m;
-    }
-
-    function sphere(name, r, segs, pos, material, parent = scene) {
-      const m = new THREE.Mesh(new THREE.SphereGeometry(r, segs, segs), material);
-      m.name = name;
-      m.position.set(...pos);
-      m.castShadow = true;
-      m.receiveShadow = true;
-      parent.add(m);
-      return m;
-    }
 
     const hemiLight = new THREE.HemisphereLight(0xd6eaff, 0xb8a080, 0.26);
     scene.add(hemiLight);
@@ -711,9 +539,10 @@
     }
     const pwrButton = cylinder('PowerBtn', 0.02, 0.02, 0.016, 16, [0.16, 0.9, 0.47], mat(0x6366f1, { emissive: 0x6366f1, emissiveIntensity: 0.9 }), towerGroup);
     pwrButton.rotation.x = Math.PI / 2;
+    const _towerCol = new THREE.Color();
     propAnimators.push((t) => {
-      const col = new THREE.Color().setHSL((t * 0.08) % 1, 0.85, 0.55);
-      gpuRgbM.emissive.copy(col); fanMat.emissive.copy(col);
+      _towerCol.setHSL((t * 0.08) % 1, 0.85, 0.55);
+      gpuRgbM.emissive.copy(_towerCol); fanMat.emissive.copy(_towerCol);
       for (let i = 0; i < frontFans.length; i++) frontFans[i].rotation.z = t * 4 + i;
     });
 
@@ -1039,6 +868,7 @@
     };
 
     function faceCenter(obj, x, z) { obj.rotation.y = Math.atan2(-x, -z); }
+    function aiBoard(x, z, glow) { const b = aiPedestal(x, z, glow); faceCenter(b.group, x, z); return b; }
 
     function aiPedestal(x, z, glow) {
       const g = new THREE.Group();
@@ -1068,8 +898,7 @@
     }
 
     (function buildNeuralNet() {
-      const { group, topY } = aiPedestal(4.8, -1.5, 0x6366f1);
-      faceCenter(group, 4.8, -1.5);
+      const { group, topY } = aiBoard(4.8, -1.5, 0x6366f1);
       const viz = new THREE.Group(); viz.position.set(0, topY + 0.95, 0); group.add(viz);
       const layers = [4, 6, 6, 3], spanX = 1.25, spanY = 1.1;
       const nodeGeo = new THREE.SphereGeometry(0.045, 16, 16);
@@ -1095,7 +924,8 @@
       const signals = [];
       for (let i = 0; i < 16; i++) signals.push({ mesh: (() => { const s = new THREE.Mesh(sigGeo, sigMat); viz.add(s); return s; })(), edge: Math.floor((i * 53) % edges.length), t: (i / 16) });
       aiProxy(group, viz, 'ai_nn', 'ai', 'Press <b>E</b> to explore Neural Networks');
-      aiAnimators.push((t) => {
+      aiAnimators.push((t, cam) => {
+        if (!aiNear(group, cam)) return;
         for (let i = 0; i < nodeMeshes.length; i++) nodeMeshes[i].material.emissiveIntensity = 0.5 + Math.abs(Math.sin(t * 2 + i * 0.5)) * 1.3;
         for (const sg of signals) { sg.t += 0.022; if (sg.t >= 1) { sg.t = 0; sg.edge = Math.floor(Math.random() * edges.length); } const e = edges[sg.edge]; sg.mesh.position.lerpVectors(e[0], e[1], sg.t); }
         viz.rotation.y = Math.sin(t * 0.2) * 0.18;
@@ -1103,8 +933,7 @@
     })();
 
     (function buildTransformer() {
-      const { group, topY } = aiPedestal(-4.6, 0.5, 0x9b8cff);
-      faceCenter(group, -4.6, 0.5);
+      const { group, topY } = aiBoard(-4.6, 0.5, 0x9b8cff);
       const viz = new THREE.Group(); viz.position.set(0, topY + 0.85, 0); group.add(viz);
       const N = 8, R = 0.62;
       const tokenPos = [], tokens = [];
@@ -1126,7 +955,8 @@
       const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.16, 1), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xb09afa, emissiveIntensity: 2.6, roughness: 0.2 }));
       viz.add(core);
       aiProxy(group, viz, 'ai_llm', 'ai', 'Press <b>E</b> to explore LLMs &amp; Transformers');
-      aiAnimators.push((t) => {
+      aiAnimators.push((t, cam) => {
+        if (!aiNear(group, cam)) return;
         const q = Math.floor(t * 1.3) % N;
         const col = links.geometry.attributes.color.array;
         for (let k = 0; k < linkPairs.length; k++) {
@@ -1142,8 +972,7 @@
     })();
 
     (function buildOverfit() {
-      const { group, topY } = aiPedestal(3.2, 4.2, 0x56d8c9);
-      faceCenter(group, 3.2, 4.2);
+      const { group, topY } = aiBoard(3.2, 4.2, 0x818cf8);
       const viz = new THREE.Group(); viz.position.set(0, topY + 0.85, 0); group.add(viz);
       const W = 1.3, H = 0.92;
       const gridTex = roundedCanvasTexture((ctx, w, h) => {
@@ -1175,12 +1004,13 @@
       const overfit = sampleX.map(x => curve.getPoint(THREE.MathUtils.clamp((x + 1) / 2, 0, 1)).y);
       const regimes = [underfit, good, overfit];
       const colorsR = [0x60a5fa, 0x4ade9e, 0xf472b6];
+      const _ofA = new THREE.Color(), _ofB = new THREE.Color();
       const cGeo = new THREE.BufferGeometry();
       const cPos = new Float32Array(S * 3);
       cGeo.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
       const cMat = new THREE.LineBasicMaterial({ color: 0x4ade9e });
       cGeo.setDrawRange(0, S);
-      viz.add(new THREE.Line(cGeo, cMat));
+      const cLine = new THREE.Line(cGeo, cMat); cLine.frustumCulled = false; viz.add(cLine);
       const labCanvas = document.createElement('canvas'); labCanvas.width = 560; labCanvas.height = 90;
       const labCtx = labCanvas.getContext('2d'); const labTex = new THREE.CanvasTexture(labCanvas);
       const lab = new THREE.Mesh(new THREE.PlaneGeometry(W, 0.18), new THREE.MeshBasicMaterial({ map: labTex, transparent: true }));
@@ -1200,13 +1030,14 @@
           cPos[i * 3 + 1] = THREE.MathUtils.clamp(y, -1, 1) * H / 2;
           cPos[i * 3 + 2] = 0.05;
         }
-        cGeo.attributes.position.needsUpdate = true; cGeo.computeBoundingSphere();
-        cMat.color.copy(new THREE.Color().lerpColors(new THREE.Color(colorsR[a]), new THREE.Color(colorsR[b]), f));
+        cGeo.attributes.position.needsUpdate = true;
+        cMat.color.lerpColors(_ofA.set(colorsR[a]), _ofB.set(colorsR[b]), f);
       }
       overfitApply = () => { setCurve(overfitRegime, overfitRegime, 0); drawLabel(overfitRegime); };
       drawLabel(1); setCurve(1, 1, 0);
       aiProxy(group, viz, 'ai_overfit', 'aiOverfit', 'Press <b>E</b> to cycle Underfit / Good / Overfit');
-      aiAnimators.push((t) => {
+      aiAnimators.push((t, cam) => {
+        if (!aiNear(group, cam)) return;
         if (overfitFrozen) { setCurve(overfitRegime, overfitRegime, 0); drawLabel(overfitRegime); return; }
         const phase = (t * 0.16) % 3, a = Math.floor(phase), b = (a + 1) % 3, f = phase - a;
         setCurve(a, b, f); drawLabel(f < 0.5 ? a : b);
@@ -1217,8 +1048,7 @@
     function aiNear(group, cam) { return !cam || group.position.distanceTo(cam) < FAR2; }
 
     (function buildAR() {
-      const { group, topY } = aiPedestal(-4.6, 6.2, 0xffd166);
-      faceCenter(group, -4.6, 6.2);
+      const { group, topY } = aiBoard(-4.6, 6.2, 0xffd166);
       const cy = topY + 1.15;
       box('ARpanel', [2.75, 1.75, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3, emissive: 0x060a0f, emissiveIntensity: 0.2 }), group);
       const sTex = ['assets/ar/sample1.webp', 'assets/ar/sample2.webp', 'assets/ar/sample3.webp', 'assets/ar/sample4.webp'].map(s => loadTex(s));
@@ -1247,14 +1077,14 @@
       aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_arscore', 'aiAR', 'Press <b>E</b> to score the next drawing');
       aiAnimators.push((t, cam) => {
         if (!aiNear(group, cam)) return;
-        for (let i = 0; i < 6; i++) cur[i] += (targets[idx][i] - cur[i]) * 0.08;
-        draw();
+        let moving = false;
+        for (let i = 0; i < 6; i++) { const d = targets[idx][i] - cur[i]; if (Math.abs(d) > 0.1) moving = true; cur[i] += d * 0.08; }
+        if (moving) draw();
       });
     })();
 
     (function buildCV() {
-      const { group, topY } = aiPedestal(4.6, 6.2, 0xff6b6b);
-      faceCenter(group, 4.6, 6.2);
+      const { group, topY } = aiBoard(4.6, 6.2, 0xff6b6b);
       const cy = topY + 1.1, W = 1.75, H = 1.18;
       box('CVback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
       plane('CVimg', W, H, [0, cy, 0.0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: loadTex('images/cigarette_detection.webp') }), group);
@@ -1263,10 +1093,13 @@
       plane('CVbox', W, H, [0, cy, 0.02], [0, 0, 0], new THREE.MeshBasicMaterial({ map: oTex, transparent: true }), group);
       const boxes = [{ x: .14, y: .52, w: .16, h: .2, l: 'litter 0.94' }, { x: .54, y: .28, w: .18, h: .2, l: 'litter 0.88' }, { x: .7, y: .6, w: .15, h: .17, l: 'litter 0.91' }, { x: .34, y: .18, w: .14, h: .16, l: 'litter 0.86' }];
       aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_cv', 'ai', 'Press <b>E</b> to explore Computer Vision');
+      let lastReveal = -1;
       aiAnimators.push((t, cam) => {
         if (!aiNear(group, cam)) return;
-        ox.clearRect(0, 0, 700, 470);
         const reveal = Math.floor((t * 1.1) % (boxes.length + 2));
+        if (reveal === lastReveal) return;
+        lastReveal = reveal;
+        ox.clearRect(0, 0, 700, 470);
         ox.font = 'bold 16px monospace';
         for (let i = 0; i < boxes.length && i < reveal; i++) {
           const b = boxes[i], X = b.x * 700, Y = b.y * 470, BW = b.w * 700, BH = b.h * 470;
@@ -1280,8 +1113,7 @@
     })();
 
     (function buildRAG() {
-      const { group, topY } = aiPedestal(-4.6, 9.4, 0x6366f1);
-      faceCenter(group, -4.6, 9.4);
+      const { group, topY } = aiBoard(-4.6, 9.4, 0x6366f1);
       const cy = topY + 1.05, W = 1.95, H = 1.18;
       box('RAGback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
       const c = document.createElement('canvas'); c.width = 760; c.height = 460; const x = c.getContext('2d');
@@ -1311,8 +1143,7 @@
     })();
 
     (function buildForecast() {
-      const { group, topY } = aiPedestal(4.6, 9.4, 0x4ade9e);
-      faceCenter(group, 4.6, 9.4);
+      const { group, topY } = aiBoard(4.6, 9.4, 0x4ade9e);
       const cy = topY + 1.05, W = 1.95, H = 1.18;
       box('FCback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
       const c = document.createElement('canvas'); c.width = 760; c.height = 460; const x = c.getContext('2d');
@@ -1350,8 +1181,7 @@
     })();
 
     (function buildTTS() {
-      const { group, topY } = aiPedestal(-4.6, 12.0, 0xb09afa);
-      faceCenter(group, -4.6, 12.0);
+      const { group, topY } = aiBoard(-4.6, 12.0, 0xb09afa);
       const cy = topY + 1.0;
       const globe = new THREE.Mesh(new THREE.SphereGeometry(0.52, 22, 16), new THREE.MeshBasicMaterial({ color: 0xb09afa, wireframe: true, transparent: true, opacity: 0.5 }));
       globe.position.set(0, cy, 0); group.add(globe);
@@ -1580,6 +1410,9 @@
     }
     synchronizeTransformationRotation();
 
+    const _chairProbe = new THREE.Vector3(0, 0, -1.8);
+    const _monProbe = new THREE.Vector3(0, 0.82, -4.05);
+    let _lastControls = '';
     function updateControlsDisplay() {
       let parts = [];
       if (spectatorMode) {
@@ -1606,14 +1439,15 @@
           else if (ud.interact === 'aiOverfit') parts.push('<b>E</b> Cycle Fit');
           else if (ud.interact === 'aiAR') parts.push('<b>E</b> Score Next');
         } else {
-          const distToChair = camera.position.distanceTo(new THREE.Vector3(0, 0, -1.8));
+          const distToChair = camera.position.distanceTo(_chairProbe);
           if (distToChair < 2.8) parts.push('<b>E</b> Sit');
-          const distToMonitor = camera.position.distanceTo(new THREE.Vector3(0, 0.82, -4.05));
+          const distToMonitor = camera.position.distanceTo(_monProbe);
           if (distToMonitor < 3.2 && !pcBooted) parts.push('<b>E</b> Boot PC');
         }
         parts.push('<b>V</b> Spectator');
       }
-      controlsEl.innerHTML = parts.join(' · ');
+      const html = parts.join(' · ');
+      if (html !== _lastControls) { controlsEl.innerHTML = html; _lastControls = html; }
     }
 
     function triggerLockProcess() {
@@ -1876,6 +1710,7 @@
         currentSectionIndex = screenSections.indexOf(target);
         terminalLog.push(`Routing data context branch: ${target}`);
       } else { terminalLog.push(`Shell parsing error: Command match failed for "${str}"`); }
+      if (terminalLog.length > 50) terminalLog.splice(0, terminalLog.length - 50);
     }
 
     function cyclePCInterfaceModes() {
@@ -1922,6 +1757,8 @@
     }
 
     let currentHit = null;
+    let _lastPrompt = '';
+    function setPrompt(html) { if (html !== _lastPrompt) { promptEl.innerHTML = html; _lastPrompt = html; } }
 
     function refreshTargetRayIntersections() {
       if (spectatorMode || uiOpen) {
@@ -1932,20 +1769,21 @@
       }
       reticle.classList.remove('hidden');
       raycaster.setFromCamera(centerPoint, camera);
-      const elements = raycaster.intersectObjects(interactables, false).filter(item => item.distance < 3.8);
-      if (elements.length > 0) {
-        currentHit = elements[0];
-        let tp = currentHit.object.userData.prompt;
-        if (currentHit.object.userData.interact === 'monitor' && pcBooted) {
+      const hits = raycaster.intersectObjects(interactables, false);
+      const hit = (hits.length && hits[0].distance < 3.8) ? hits[0] : null;
+      if (hit) {
+        currentHit = hit;
+        let tp = hit.object.userData.prompt;
+        if (hit.object.userData.interact === 'monitor' && pcBooted) {
           tp = 'Workstation online · Press <b>E</b> to open the browser' + (isSeatedState ? ' · <b>T</b> shell · <b>Tab</b> pages' : '');
         }
-        promptEl.innerHTML = touchify(tp);
+        setPrompt(touchify(tp));
         promptEl.classList.add('active');
         reticle.classList.add('active');
       } else {
         currentHit = null;
         if (isSeatedState && pcBooted && !typingMode) {
-          promptEl.innerHTML = touchify('Console monitoring · Press <b>T</b> to write · <b>F</b> to stand');
+          setPrompt(touchify('Console monitoring · Press <b>T</b> to write · <b>F</b> to stand'));
           promptEl.classList.add('active');
         } else { promptEl.classList.remove('active'); }
         reticle.classList.remove('active');
@@ -2056,6 +1894,9 @@
     }
     redrawWorkstationMonitor();
 
+    const _moveDir = new THREE.Vector3();
+    const _forward = new THREE.Vector3();
+    const _right = new THREE.Vector3();
     function runSpatialLocomotion(delta, elapsed) {
       if (isSeatedState || typingMode || uiOpen) return;
 
@@ -2063,21 +1904,21 @@
       const acceleration = 14.0;
       const deceleration = 10.0;
 
-      const moveDir = new THREE.Vector3();
+      const moveDir = _moveDir.set(0, 0, 0);
       let inputMag = 0;
 
-      const forward = new THREE.Vector3();
+      const forward = _forward;
       camera.getWorldDirection(forward);
       forward.y = 0;
       if (forward.lengthSq() < 1e-6) forward.set(0, 0, -1); else forward.normalize();
-      const right = new THREE.Vector3(-forward.z, 0, forward.x);
+      const right = _right.set(-forward.z, 0, forward.x);
       if (pressedKeys['KeyW']) moveDir.add(forward);
       if (pressedKeys['KeyS']) moveDir.sub(forward);
       if (pressedKeys['KeyD']) moveDir.add(right);
       if (pressedKeys['KeyA']) moveDir.sub(right);
       if (joyVec.x || joyVec.y) {
-        moveDir.add(forward.clone().multiplyScalar(-joyVec.y));
-        moveDir.add(right.clone().multiplyScalar(joyVec.x));
+        moveDir.addScaledVector(forward, -joyVec.y);
+        moveDir.addScaledVector(right, joyVec.x);
       }
       inputMag = Math.min(moveDir.length(), 1.0);
 
@@ -2212,6 +2053,10 @@
     function closeLightbox() {
       uiOpen = false;
       lightboxEl.classList.remove('active');
+      const v = lbStage.querySelector('video');
+      if (v) { v.pause(); v.removeAttribute('src'); v.load(); }
+      const f = lbStage.querySelector('iframe');
+      if (f) f.src = 'about:blank';
       lbStage.innerHTML = '';
       reticle.classList.remove('hidden');
       if (!spectatorMode) triggerLockProcess();
@@ -2271,7 +2116,16 @@
       screenTexture.needsUpdate = true;
     }
     function clearClones() {
-      while (cloneGroup.children.length) cloneGroup.remove(cloneGroup.children[0]);
+      while (cloneGroup.children.length) {
+        const c = cloneGroup.children[0];
+        c.traverse(o => {
+          if (o.isMesh && o.userData.ownGeo) {
+            o.geometry.dispose();
+            (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m && m.dispose());
+          }
+        });
+        cloneGroup.remove(c);
+      }
       document.getElementById('egg').classList.remove('show');
     }
     function makeClone(scale) {
@@ -2330,19 +2184,19 @@
           const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.042, len, 12), sleeveM);
           sleeve.quaternion.setFromUnitVectors(up, armDir);
           sleeve.position.copy(shoulder).add(armDir.clone().multiplyScalar(len / 2));
-          sleeve.castShadow = true; cloneGroup.add(sleeve);
+          sleeve.castShadow = true; sleeve.userData.ownGeo = true; cloneGroup.add(sleeve);
           const end = shoulder.clone().add(armDir.clone().multiplyScalar(len));
 
           const hand = new THREE.Mesh(new THREE.SphereGeometry(0.055, 16, 12), skinM);
-          hand.scale.set(1.15, 0.62, 1.0); hand.position.copy(end); hand.castShadow = true; cloneGroup.add(hand);
+          hand.scale.set(1.15, 0.62, 1.0); hand.position.copy(end); hand.castShadow = true; hand.userData.ownGeo = true; cloneGroup.add(hand);
           const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.013, 0.017, 0.14, 8), skinM);
           finger.quaternion.setFromUnitVectors(up, armDir);
-          finger.position.copy(end).add(armDir.clone().multiplyScalar(0.09)); cloneGroup.add(finger);
+          finger.position.copy(end).add(armDir.clone().multiplyScalar(0.09)); finger.userData.ownGeo = true; cloneGroup.add(finger);
           const thumbDir = armDir.clone().add(up.clone().multiplyScalar(0.7)).normalize();
           const thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.013, 0.06, 8), skinM);
           thumb.quaternion.setFromUnitVectors(up, thumbDir);
           thumb.position.copy(end).add(thumbDir.clone().multiplyScalar(0.03)).add(side.clone().multiplyScalar(0.02));
-          cloneGroup.add(thumb);
+          thumb.userData.ownGeo = true; cloneGroup.add(thumb);
         }
         document.getElementById('egg').classList.add('show');
         if (eggTimer) clearTimeout(eggTimer);
