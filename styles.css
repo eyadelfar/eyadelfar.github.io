@@ -247,9 +247,9 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 18px;
+    padding: 11px 24px;
     border-radius: 10px;
-    font-size: .88rem;
+    font-size: .9rem;
     font-weight: 600;
     color: var(--text);
     background: rgba(79, 70, 229, .10);
@@ -263,6 +263,16 @@
     transform: translateY(-3px);
     box-shadow: 0 8px 32px rgba(79, 70, 229, .22);
   }
+  .hero-cta { display: flex; justify-content: center; margin-top: 16px; }
+  .hero-playground {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 13px 34px; border-radius: 12px;
+    font-size: .98rem; font-weight: 700;
+    color: #fff; background: var(--accent); border: 1px solid var(--accent);
+    white-space: nowrap;
+    transition: background .25s, transform .25s, box-shadow .25s;
+  }
+  .hero-playground:hover { background: var(--accent2); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 34px rgba(79, 70, 229, .3); }
 
   .reveal {
     opacity: 0;
@@ -334,14 +344,14 @@
   .stat .num   { font-size: 2.2rem; font-weight: 900; color: var(--accent2); }
   .stat .label { font-size: .85rem; color: var(--text2); margin-top: 4px; }
 
-  section { padding: 72px 0; }
+  section { padding: 44px 0; }
   .section-title {
     display: flex;
     align-items: center;
     gap: 16px;
     font-size: 2.1rem;
     font-weight: 800;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
   .section-title::before {
     content: '';
@@ -351,7 +361,7 @@
     border-radius: 2px;
     background: linear-gradient(180deg, var(--accent), var(--accent2));
   }
-  .section-desc { color: var(--text2); font-size: 1rem; margin-bottom: 36px; }
+  .section-desc { color: var(--text2); font-size: 1rem; margin-bottom: 22px; }
   .section-sub  { color: var(--text2); font-size: .95rem; margin-bottom: 2rem; }
   .divider {
     height: 1px;
@@ -363,7 +373,7 @@
   .card {
     position: relative;
     overflow: hidden;
-    padding: 30px;
+    padding: 22px;
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: var(--radius);

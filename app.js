@@ -86,7 +86,8 @@ function scrollCarousel(id, dir) {
   const track = document.getElementById(id);
   const card = track.querySelector('.card');
   const cardW = card.offsetWidth + 22;
-  track.scrollBy({ left: dir * cardW, behavior: 'smooth' });
+  const perView = Math.max(1, Math.floor(track.clientWidth / cardW));
+  track.scrollBy({ left: dir * cardW * perView, behavior: 'smooth' });
 }
 
 function initCarousel(trackId, dotsId, counterId) {
@@ -109,7 +110,8 @@ function initCarousel(trackId, dotsId, counterId) {
   track.addEventListener('scroll', () => {
     if (ctick) return; ctick = true;
     requestAnimationFrame(() => {
-      const clamped = Math.max(0, Math.min(Math.round(track.scrollLeft / cardW), total - 1));
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+      const clamped = atEnd ? total - 1 : Math.max(0, Math.min(Math.round(track.scrollLeft / cardW), total - 1));
       counter.textContent = (clamped + 1) + ' / ' + total;
       dots.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === clamped));
       ctick = false;
