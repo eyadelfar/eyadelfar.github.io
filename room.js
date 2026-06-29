@@ -1417,7 +1417,7 @@
     let characterReady = false;
     let loadedCharacterModel = null;
     let characterBaseHeight = 1.7;
-    // Rig support — auto-activates when the loaded GLB is rigged/animated (e.g. Mixamo / Ready Player Me)
+
     let charMixer = null, actIdle = null, actWalk = null, walkWeight = 0;
     const blinkMorphs = [];
 
@@ -1464,7 +1464,6 @@
         loadedCharacterModel = model;
         characterReady = true;
 
-        // If the GLB ships animation clips (Mixamo/RPM), drive real articulated motion.
         if (gltf.animations && gltf.animations.length) {
           charMixer = new THREE.AnimationMixer(model);
           const pick = (re) => gltf.animations.find(a => re.test(a.name || ''));
@@ -1676,7 +1675,6 @@
       }
     });
 
-    // Exit the playground back to the portfolio (Esc twice on desktop, Back button on mobile)
     let escArmed = false, escTimer = null;
     function disarmExit() { escArmed = false; clearTimeout(escTimer); }
     function exitRoom() { disarmExit(); window.location.href = 'index.html'; }
@@ -2280,7 +2278,7 @@
       if (!loadedCharacterModel) return null;
       const inner = loadedCharacterModel.clone(true);
       inner.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
-      const g = new THREE.Group();   // wrapper keeps the model's feet-on-floor offset intact under scaling
+      const g = new THREE.Group();
       g.add(inner);
       g.scale.setScalar(scale);
       g.userData.isClone = true;
@@ -2407,7 +2405,7 @@
       ghUrl.textContent = `github.com/${GH_USER}`;
       ghContent.innerHTML = '<div class="gh-msg"><div class="gh-spinner"></div>Loading profile…</div>';
       try {
-        if (!ghProfileCache) ghProfileCache = await (await ghFetch(`https://api.github.com/users/${GH_USER}`)).json();
+        if (!ghProfileCache) ghProfileCache = await (await ghFetch(`https:
         if (!ghReposCache) ghReposCache = await (await ghFetch(`https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`)).json();
         const u = ghProfileCache;
         const repos = [...ghReposCache].sort((a, b) => (b.stargazers_count - a.stargazers_count) || (new Date(b.updated_at) - new Date(a.updated_at)));
@@ -2459,7 +2457,7 @@
           <ul>
             <li>Architecting production LLM/RAG copilots with sub-500ms real-time guidance.</li>
             <li>ElevenLabs voice agents and Cloud Run automation across 30+ CRM stages.</li>
-            <li>Founder of KeepQuill & Favisra; ex-MENRV.AI, NEOMI, iSchool, e-finance.</li>
+            <li>Built KeepQuill & Favisra (personal POCs); ex-MENRV.AI, NEOMI, iSchool, e-finance.</li>
           </ul>
           <button class="pc-open" data-href="https://www.linkedin.com/in/eyadelfar/">Open LinkedIn profile ↗</button>
           <div class="pc-note">LinkedIn blocks in-page embedding, so it opens in a new tab.</div>
@@ -2479,14 +2477,10 @@
       document.querySelectorAll('.pc-open').forEach(b => b.addEventListener('click', () => window.open(b.dataset.href, '_blank', 'noopener')));
     }
 
-    // ---- Procedural blink (eyelid overlay; the model has no morph targets) ----
-    // TUNE these to your model if the lids don't sit on the eyes (spectator view, press V):
-    //   y = height of eyes, x = half eye-spacing, z = how far forward the face is,
-    //   w/depth = lid size, h = how far the lid drops when closed, color = skin tone.
     const EYE = { y: 1.55, x: 0.085, z: 0.17, w: 0.075, h: 0.05, depth: 0.06, color: 0xc99a74 };
     let lidL = null, lidR = null, blinkWait = 1.5, blinkTimer = 0, blinkAnim = -1;
     function buildEyelids() {
-      if (blinkMorphs.length) return;            // real blendshape blink — overlay not needed
+      if (blinkMorphs.length) return;
       const mat = new THREE.MeshStandardMaterial({ color: EYE.color, roughness: 0.85 });
       const geo = new THREE.SphereGeometry(1, 18, 12);
       [-1, 1].forEach((sx, i) => {
@@ -2499,7 +2493,7 @@
       });
     }
     function updateBlink(dt) {
-      // shared scheduler -> "closed" amount c in [0,1]
+
       blinkTimer += dt;
       if (blinkAnim < 0 && blinkTimer >= blinkWait) blinkAnim = 0;
       let c = 0;
@@ -2510,16 +2504,15 @@
         c = THREE.MathUtils.clamp(closed, 0, 1);
         if (blinkAnim >= T) { blinkAnim = -1; blinkTimer = 0; blinkWait = 2.5 + Math.random() * 4; c = 0; }
       }
-      if (blinkMorphs.length) {                  // real blendshape blink
+      if (blinkMorphs.length) {
         for (const b of blinkMorphs) if (b.mesh.morphTargetInfluences) b.mesh.morphTargetInfluences[b.idx] = c;
         return;
       }
-      if (!lidL) return;                         // procedural overlay fallback
+      if (!lidL) return;
       lidL.scale.y = lidR.scale.y = THREE.MathUtils.lerp(0.002, EYE.h, c);
       lidL.visible = lidR.visible = c > 0.04;
     }
 
-    // ---- Procedural locomotion physics (spring-damped: static mesh has no skeleton) ----
     let bobY = 0, bobVy = 0, leanX = 0, leanVx = 0, bankZ = 0, bankVz = 0, stepPhase = 0, prevSpeed = 0, prevYaw = null;
     function spring(cur, vel, target, k, damp, dt) {
       const v = vel + ((target - cur) * k - vel * damp) * dt;
@@ -2531,7 +2524,6 @@
       if (prevYaw === null) prevYaw = characterYaw;
       const sp = THREE.MathUtils.clamp(speed / 3.5, 0, 1);
 
-      // Real rig path: animation clips drive the limbs; we only crossfade idle<->walk + blink.
       if (charMixer) {
         const target = sp > 0.06 ? 1 : 0;
         walkWeight += (target - walkWeight) * Math.min(1, dt * 8);
@@ -2547,19 +2539,16 @@
       const cadence = 7 + sp * 4.5;
       stepPhase += dt * cadence * (0.25 + sp);
 
-      // vertical bob — spring gives weighty squash/settle per footfall
       const targetBob = Math.abs(Math.sin(stepPhase)) * 0.085 * sp;
       [bobY, bobVy] = spring(bobY, bobVy, targetBob, 130, 13, dt);
       const breathe = Math.sin(elapsed * 1.6) * 0.012 * (1 - sp);
       characterPivot.position.y = bobY + breathe;
 
-      // forward lean: steady lean while moving + inertia from acceleration
       const accel = (speed - prevSpeed) / Math.max(dt, 1e-3); prevSpeed = speed;
       const targetLean = -0.12 * sp + THREE.MathUtils.clamp(-0.015 * accel, -0.06, 0.06);
       [leanX, leanVx] = spring(leanX, leanVx, targetLean, 90, 14, dt);
       characterPivot.rotation.x = leanX;
 
-      // bank into turns + gait roll
       let dyaw = characterYaw - prevYaw; prevYaw = characterYaw;
       if (dyaw > Math.PI) dyaw -= 2 * Math.PI; else if (dyaw < -Math.PI) dyaw += 2 * Math.PI;
       const turnRate = dyaw / Math.max(dt, 1e-3);
@@ -2580,7 +2569,7 @@
     const _specLook = new THREE.Vector3();
     function mainRenderLoop() {
       requestAnimationFrame(mainRenderLoop);
-      if (document.hidden) return;   // skip rendering work while tab is backgrounded
+      if (document.hidden) return;
       const delta = Math.min(clock.getDelta(), 0.04);
       const elapsed = clock.getElapsedTime();
 
@@ -2661,7 +2650,7 @@
       }
       composer.render();
 
-      if (drosteMode) drawDroste();   // infinite-mirror feedback onto the monitor
+      if (drosteMode) drawDroste();
 
       let nearMonitor = false;
       if (!drosteMode && pcBooted && !spectatorMode && !uiOpen && !typingMode) {
@@ -2712,4 +2701,4 @@
     setInterval(updateStateIndicators, 200);
 
     console.log("Eyad's AI Playground ready.");
-  
+
