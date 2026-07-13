@@ -1,16 +1,25 @@
-/* Chat widget UI. The engine (chat.js) and its ~600MB of model weights are only
-   imported once someone actually opens the panel — the landing page must not pay
-   for a feature most visitors never touch. */
+/* Chat widget UI.
+ *
+ * The engine (chat.js) is lazy-imported on first open. It is a thin client: the
+ * model runs on Eyad's Cloudflare Worker, so opening this costs the visitor one
+ * small script and nothing else — no model download.
+ */
 (function () {
   'use strict';
 
-  var engine = null;      // the chat.js module, once imported
-  var state = 'idle';     // idle | loading | ready | nogpu | failed
+  var engine = null;
   var busy = false;
 
   var launcher = document.getElementById('askBtn');
   var panel = document.getElementById('askPanel');
   if (!launcher || !panel) return;
+
+  // Until the Worker URL is configured, the assistant has nowhere to go. Show
+  // nothing rather than a button that leads to a dead end.
+  if (!window.PORTFOLIO_API) {
+    launcher.hidden = true;
+    return;
+  }
 
   var log = document.getElementById('askLog');
   var form = document.getElementById('askForm');
@@ -18,10 +27,8 @@
   var send = document.getElementById('askSend');
   var mic = document.getElementById('askMic');
   var status = document.getElementById('askStatus');
-  var bar = document.getElementById('askBarFill');
-  var progress = document.getElementById('askProgress');
 
-  /* ------------------------------------------------------------ rendering */
+  function setStatus(text) { status.textContent = text || ''; }
 
   function bubble(who, text) {
     var el = document.createElement('div');
@@ -40,8 +47,8 @@
     if (overridden) {
       var note = document.createElement('div');
       note.className = 'ask-note';
-      // Be honest about it rather than quietly swapping the answer.
-      note.textContent = 'The model’s answer contradicted his resume, so this shows the source text instead.';
+      // Say so, rather than quietly swapping the answer out.
+      note.textContent = 'That contradicted his résumé, so this shows the source text instead.';
       wrap.appendChild(note);
     }
 
@@ -49,14 +56,11 @@
       var chip = document.createElement('span');
       chip.className = 'ask-cite';
       chip.textContent = h.title;
-      chip.title = h.text;
       wrap.appendChild(chip);
     });
     el.appendChild(wrap);
     log.scrollTop = log.scrollHeight;
   }
-
-  function setStatus(text) { status.textContent = text || ''; }
 
   /* ------------------------------------------------------------- speech */
 
@@ -81,8 +85,8 @@
       mic.classList.add('listening');
       setStatus('Listening…');
       rec.onresult = function (e) {
+        // Not auto-sent: let them fix "rag" -> "RAG" before it costs a request.
         input.value = e.results[0][0].transcript;
-        // Deliberately not auto-sent: let them fix "rag" -> "RAG" first.
         input.focus();
       };
       rec.onerror = function () { setStatus('Could not hear that.'); };
@@ -91,46 +95,10 @@
     });
   }
 
-  /* --------------------------------------------------------------- boot */
+  /* ---------------------------------------------------------------- ask */
 
-  async function boot() {
-    if (state === 'loading' || state === 'ready' || state === 'nogpu') return;
-    state = 'loading';
-    progress.hidden = false;
-    send.disabled = true;
-
-    try {
-      engine = await import('./chat.js?v=1');
-
-      if (!(await engine.webgpuAvailable())) {
-        // No WebGPU (Firefox, older Safari, some mobiles). Rather than showing a
-        // dead widget, fall back to retrieval-only: real answers, no generation.
-        state = 'nogpu';
-        progress.hidden = true;
-        send.disabled = false;
-        setStatus('Search mode — your browser has no WebGPU, so answers quote his resume directly.');
-        return;
-      }
-
-      await engine.init(function (r) {
-        bar.style.width = Math.round((r.progress || 0) * 100) + '%';
-        setStatus(r.text || 'Loading…');
-      });
-
-      state = 'ready';
-      progress.hidden = true;
-      send.disabled = false;
-      setStatus('Running Qwen3.5-0.8B locally in your browser.');
-    } catch (err) {
-      // Never leave a dead widget: retrieval-only still answers from the resume.
-      state = 'nogpu';
-      progress.hidden = true;
-      send.disabled = false;
-      setStatus('Model unavailable — answering from his résumé directly instead.');
-    }
-  }
-
-  /* --------------------------------------------------------------- ask */
+  var FALLBACK = 'I can’t reach the assistant right now. His résumé is at ' +
+    'resume.pdf, and the contact form below reaches him directly.';
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -141,31 +109,22 @@
     bubble('you', q);
     busy = true;
     send.disabled = true;
-    if (window.trackEvent) window.trackEvent('chat-message', 'Resume chat');
+    if (window.trackEvent) window.trackEvent('chat-message', 'Résumé chat');
 
     var el = bubble('bot', '');
     el.classList.add('thinking');
 
     try {
-      if (state === 'nogpu' || state === 'failed') {
-        var res = await engine.answerWithoutLLM(q);
-        el.classList.remove('thinking');
-        el.textContent = res.reply;
-        citations(el, res.hits, false);
-      } else {
-        var out = await engine.ask(q, function (partial) {
-          el.classList.remove('thinking');
-          el.textContent = partial;
-          log.scrollTop = log.scrollHeight;
-        });
-        el.classList.remove('thinking');
-        el.textContent = out.reply;
-        citations(el, out.hits, out.overridden);
-        speak(out.reply);
-      }
+      if (!engine) engine = await import('./chat.js?v=2');
+      var out = await engine.ask(q);
+      el.classList.remove('thinking');
+      el.textContent = out.reply;
+      citations(el, out.hits, out.overridden);
+      speak(out.reply);
     } catch (err) {
       el.classList.remove('thinking');
-      el.textContent = 'Something went wrong. His resume is at resume.pdf, and the contact form below reaches him directly.';
+      el.textContent = FALLBACK;
+      setStatus('');
     }
 
     busy = false;
@@ -179,17 +138,17 @@
     panel.hidden = false;
     launcher.setAttribute('aria-expanded', 'true');
     input.focus();
-    boot();
-    if (window.trackEvent) window.trackEvent('chat-open', 'Resume chat opened');
+    setStatus(window.PORTFOLIO_API
+      ? 'Llama 3.3 70B + hybrid retrieval, on my own Cloudflare Worker.'
+      : 'The assistant isn’t connected yet — use the contact form below.');
+    if (window.trackEvent) window.trackEvent('chat-open', 'Résumé chat opened');
   }
   function close() {
     panel.hidden = true;
     launcher.setAttribute('aria-expanded', 'false');
   }
 
-  launcher.addEventListener('click', function () {
-    panel.hidden ? open() : close();
-  });
+  launcher.addEventListener('click', function () { panel.hidden ? open() : close(); });
   document.getElementById('askClose').addEventListener('click', close);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !panel.hidden) close();

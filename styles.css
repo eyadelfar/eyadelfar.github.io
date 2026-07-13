@@ -499,6 +499,7 @@
     transition: transform .3s var(--ease), background .3s var(--ease);
   }
   .ask-btn:hover { background: var(--accent2); transform: translateY(-3px); }
+  .ask-btn[hidden] { display: none; }
   .ask-btn svg { width: 17px; height: 17px; }
 
   .ask-panel {
