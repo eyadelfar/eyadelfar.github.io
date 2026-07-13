@@ -118,6 +118,19 @@
     box-shadow: 0 8px 22px rgba(79, 70, 229, 0.08);
   }
 
+  .panel-cta {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: var(--brand);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .panel-cta:hover { filter: brightness(1.08); }
+
   #topbar-right {
     display: flex;
     flex-direction: column;

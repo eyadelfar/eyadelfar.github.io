@@ -744,7 +744,37 @@
 
 <button class="back-to-top" onclick="window.scrollTo({top:0});">&uarr;</button>
 
-<footer id="contact">
+<section id="contact" class="contact-section reveal">
+  <div class="container">
+    <div class="section-title">Get in touch</div>
+    <p class="contact-lead">Have a role, a project, or a question? Send it straight to my inbox.</p>
+    <form id="contactForm" class="contact-form" novalidate>
+      <div class="contact-row">
+        <label class="contact-field">
+          <span>Name</span>
+          <input type="text" name="name" required maxlength="100" autocomplete="name">
+        </label>
+        <label class="contact-field">
+          <span>Email</span>
+          <input type="email" name="email" required maxlength="200" autocomplete="email">
+        </label>
+      </div>
+      <label class="contact-field">
+        <span>Message</span>
+        <textarea name="message" required rows="5" minlength="20" maxlength="2000"
+                  placeholder="What would you like to talk about?"></textarea>
+      </label>
+      <!-- Honeypot: hidden from humans, irresistible to bots. -->
+      <div class="contact-hp" aria-hidden="true">
+        <label>Company <input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <button type="submit" id="contactSubmit" class="contact-submit">Send message</button>
+      <p id="contactStatus" class="contact-status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<footer>
   <div class="footer-links">
     <a href="mailto:eyadamen588@gmail.com">eyadamen588@gmail.com</a>
     <span class="footer-sep">&middot;</span>
@@ -780,7 +810,52 @@
 
 <script src="showcase.js?v=1" defer></script>
 
+<button id="askBtn" class="ask-btn" aria-expanded="false" aria-controls="askPanel">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <span>Ask my résumé</span>
+</button>
+
+<div id="askPanel" class="ask-panel" hidden>
+  <div class="ask-head">
+    <div>
+      <h3>Ask my résumé</h3>
+      <p>An open-weights model, running in <em>your</em> browser. Nothing is sent to a server.</p>
+    </div>
+    <button id="askClose" class="ask-close" aria-label="Close">&#10005;</button>
+  </div>
+
+  <div id="askProgress" class="ask-progress" hidden>
+    <div class="ask-bar"><div id="askBarFill" class="ask-bar-fill"></div></div>
+  </div>
+
+  <div id="askLog" class="ask-log">
+    <div class="ask-msg ask-bot">Ask me anything about Eyad's experience, projects, or skills.</div>
+    <div class="ask-suggests">
+      <button class="ask-suggest" type="button">What has he built with RAG?</button>
+      <button class="ask-suggest" type="button">Did he win any awards?</button>
+      <button class="ask-suggest" type="button">What model powers this chat?</button>
+    </div>
+  </div>
+
+  <form id="askForm" class="ask-form">
+    <button type="button" id="askMic" class="ask-mic" aria-label="Ask by voice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+    </button>
+    <input id="askInput" type="text" placeholder="Ask a question…" autocomplete="off" maxlength="500">
+    <button type="submit" id="askSend" class="ask-send">Ask</button>
+  </form>
+  <p id="askStatus" class="ask-status"></p>
+</div>
+
+<script>
+  /* Set this to your deployed Cloudflare Worker URL (see contact-worker/README.md).
+     Left empty, the contact form degrades to a pre-filled mailto: instead of failing. */
+  window.PORTFOLIO_API = '';
+</script>
+
 <script data-goatcounter="https://eyadelfar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <script src="analytics.js?v=1" defer></script>
+<script src="contact.js?v=1" defer></script>
+<script src="assistant.js?v=1" defer></script>
 </body>
 </html>

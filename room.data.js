@@ -47,7 +47,7 @@ export const DATA = {
         title: 'Let\'s Collaborate',
         short: 'Open to LLM, voice, RAG, automation, and data products.',
         color: '#f2b94b',
-        lines: ['Email · eyadamen588@gmail.com', 'LinkedIn · linkedin.com/in/eyadelfar', 'Kaggle · kaggle.com/eyadamin1233', 'GitHub · github.com/eyadelfar', 'Focus · LLM systems · Voice agents · RAG · AI automation'],
-        html: `<p>I'm open to collaboration around LLM systems, voice agents, RAG, AI automation, data products, computer vision, and production ML workflows.</p><h3>Links</h3><ul><li>Email: eyadamen588@gmail.com</li><li>LinkedIn: linkedin.com/in/eyadelfar</li><li>Kaggle: kaggle.com/eyadamin1233</li><li>GitHub: github.com/eyadelfar</li></ul>`
+        lines: ['Send a message · portfolio contact form', 'Email · eyadamen588@gmail.com', 'LinkedIn · linkedin.com/in/eyadelfar', 'Kaggle · kaggle.com/eyadamin1233', 'GitHub · github.com/eyadelfar'],
+        html: `<p>I'm open to collaboration around LLM systems, voice agents, RAG, AI automation, data products, computer vision, and production ML workflows.</p><p><a class="panel-cta" href="index.html#contact" target="_blank" rel="noopener">Send me a message &rarr;</a></p><h3>Links</h3><ul><li>Email: eyadamen588@gmail.com</li><li>LinkedIn: linkedin.com/in/eyadelfar</li><li>Kaggle: kaggle.com/eyadamin1233</li><li>GitHub: github.com/eyadelfar</li></ul>`
       }
     };
