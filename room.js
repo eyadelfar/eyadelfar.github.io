@@ -805,7 +805,7 @@
         'RAG grounds generation in retrieved context',
         'Eyad ships RAG + fine-tuned LLM systems in production'
       ],
-      html: `<p>Transformers replaced recurrence with <strong>self-attention</strong>: each token attends to all others, learning context-rich representations in parallel.</p><p>The lit links here show one query token attending across the sequence. In production Eyad combines these with <strong>RAG</strong>, semantic caching, and evaluation pipelines for sub-500ms guidance.</p><span class="tag">Attention</span><span class="tag">RAG</span><span class="tag">Fine-tuning</span><span class="tag">Vertex AI</span><span class="tag">vLLM</span>`
+      html: `<p>Transformers replaced recurrence with <strong>self-attention</strong>: each token attends to all others, learning context-rich representations in parallel.</p><p>The lit links here show one query token attending across the sequence. In production Eyad combines these with <strong>RAG</strong>, semantic caching, and evaluation pipelines for sub-second guidance.</p><span class="tag">Attention</span><span class="tag">RAG</span><span class="tag">Fine-tuning</span><span class="tag">LoRA/QLoRA</span><span class="tag">Vertex AI</span>`
     };
     DATA.ai_overfit = {
       title: 'Overfitting & the Bias–Variance Tradeoff', short: 'Why the "best" model on training data can fail in the wild.', color: '#818cf8',
@@ -819,34 +819,34 @@
     };
 
     DATA.ai_arscore = {
-      title: 'AR Creativity Scoring (NEOMI)', short: 'An AR learning engine that scores 15,000+ students’ letter drawings.', color: '#ffd166',
+      title: 'AR Creativity Scoring (NEOMI)', short: 'An AR learning engine that scores 15,000+ students’ block compositions.', color: '#ffd166',
       lines: [
-        'R-CNN models detect a valid letter, rotation, symmetry & extras',
+        'A ResNet fine-tuned in PyTorch reads spatial features from the blocks',
         'Six metrics: Readability, Flexibility, Elaboration, Uniqueness, Mindfulness, Fluency',
         'LLM-based evaluator reached 92% alignment with educators',
-        'Press [E] to score the next sample drawing'
+        'Press [E] to score the next sample composition'
       ],
-      html: `<p>For an AR learning platform serving <strong>15,000+ students</strong> across 20 German schools, I built the core engine that scores children’s letter drawings. R-CNN models classify each drawing (valid letter, rotation, symmetry, decorations), and a 5×5 grid analysis feeds six creativity metrics.</p><p>An LLM-based evaluator reached <strong>92% alignment</strong> with educator benchmarks; CI/CD + self-updating dashboards cut debugging 75% and grading time 60%.</p><span class="tag">R-CNN</span><span class="tag">TensorFlow</span><span class="tag">LLM Eval</span><span class="tag">CI/CD</span>`
+      html: `<p>For an AR learning platform serving <strong>15,000+ students</strong> across 20 German schools, I built the core engine that scores the shapes children build out of physical blocks. A <strong>ResNet fine-tuned in PyTorch</strong> extracts spatial features from each abstract block composition, feeding six creativity metrics.</p><p>An LLM-based evaluator reached <strong>92% alignment</strong> with educator creativity benchmarks. MLflow tracked experiments and model versions; CI/CD + self-updating dashboards cut debugging 75% and grading time 60%.</p><span class="tag">PyTorch</span><span class="tag">ResNet</span><span class="tag">LLM Eval</span><span class="tag">MLflow</span><span class="tag">CI/CD</span>`
     };
     DATA.ai_cv = {
       title: 'Computer Vision · Real-time Detection', short: 'YOLOv8 detection powering environmental & attendance systems.', color: '#ff6b6b',
       lines: [
-        'YOLOv8 cigarette-butt detection at 92% accuracy, real-time',
+        'YOLOv8 cigarette-butt detection · 0.70+ mAP@50, real-time',
+        'Benchmarked against Faster R-CNN before fine-tuning',
         'One-shot attendance: YOLO + RetinaFace + MTCNN',
-        'OpenCV + FastAPI + Docker, dashboard integrated',
-        'Up to 70% less manual monitoring effort'
+        'OpenCV + FastAPI + Docker, dashboard integrated'
       ],
-      html: `<p>Real-time object & face detection across two production systems: a <strong>YOLOv8</strong> cigarette-butt detector (92% accuracy, −70% manual monitoring) and a one-shot <strong>attendance</strong> system combining YOLO, RetinaFace and MTCNN with MySQL + Power BI dashboards.</p><span class="tag">YOLOv8</span><span class="tag">OpenCV</span><span class="tag">RetinaFace</span><span class="tag">FastAPI</span>`
+      html: `<p>Real-time object & face detection across two systems: a <strong>YOLOv8</strong> cigarette-butt detector fine-tuned after benchmarking Faster R-CNN, reaching <strong>0.70+ mAP@50</strong> (built for a confidential organization; won Best Project medal), and a one-shot <strong>attendance</strong> system combining YOLO, RetinaFace and MTCNN with MySQL + Power BI dashboards.</p><span class="tag">YOLOv8</span><span class="tag">Faster R-CNN</span><span class="tag">OpenCV</span><span class="tag">FastAPI</span>`
     };
     DATA.ai_rag = {
-      title: 'RAG Copilot + Voice Agent', short: 'Sub-500ms real-time sales guidance + autonomous voice calls.', color: '#3abef9',
+      title: 'RAG Copilot + Voice Agent', short: 'Sub-second real-time sales guidance + autonomous voice calls.', color: '#3abef9',
       lines: [
         'Live call transcript streamed over WebSockets',
-        'RAG + semantic caching on Vertex AI → sub-500ms guidance',
-        'ElevenLabs voice agent: 6,000+ calls/day, 100+ meetings booked',
-        'Auto-enriches the CRM and books with live availability'
+        'RAG + semantic caching on Vertex AI → sub-second guidance',
+        'Voice agents run 6,000+ qualification calls every day',
+        'Checks live availability, books meetings, and updates the CRM'
       ],
-      html: `<p>The Baron & Cabot copilot streams live call transcripts over <strong>WebSockets</strong> and returns <strong>sub-500ms</strong> objection handling and property recommendations via Vertex AI, <strong>RAG</strong>, and semantic caching. A paired <strong>ElevenLabs voice agent</strong> runs 6,000+ qualification calls/day and booked 100+ meetings in month one.</p><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">WebSockets</span><span class="tag">ElevenLabs</span>`
+      html: `<p>The Baron & Cabot copilot streams live call transcripts over <strong>WebSockets</strong> and returns <strong>sub-second</strong> objection handling and property recommendations via Vertex AI, <strong>RAG</strong>, and semantic caching. Paired <strong>AI voice agents</strong> run 6,000+ qualification calls daily — checking real-time availability, booking meetings, and updating the CRM with budget and qualification notes.</p><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">WebSockets</span><span class="tag">FastAPI</span>`
     };
     DATA.ai_forecast = {
       title: 'Financial Forecasting Engine', short: 'BiLSTM + Prophet forecasting that cut reporting 8h → 5min.', color: '#4ade9e',
@@ -859,14 +859,14 @@
       html: `<p>A financial forecasting engine combining <strong>BiLSTM</strong> and <strong>Prophet</strong> over 20+ technical indicators, with confidence intervals for risk-aware planning. It collapsed reporting cycles from <strong>8 hours to 5 minutes</strong>, freeing analysts for higher-value work.</p><span class="tag">BiLSTM</span><span class="tag">Prophet</span><span class="tag">Time Series</span><span class="tag">Forecasting</span>`
     };
     DATA.ai_tts = {
-      title: 'Multilingual TTS · 50+ Languages', short: 'Text-to-speech that 5×’d a product’s global accessibility.', color: '#b09afa',
+      title: 'Multilingual TTS · 50+ Languages', short: 'Text-to-speech that expanded a product’s global accessibility.', color: '#b09afa',
       lines: [
         'Multilingual text-to-speech across 50+ languages',
-        'Increased product accessibility fivefold',
-        'Part of a vLLM merchandising suite at MENRV.AI',
+        'Expanded product accessibility across global users',
+        'Shipped alongside the MENRV.AI merchandising suite',
         'Natural prosody for global catalog content'
       ],
-      html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, increasing product accessibility fivefold as part of a vLLM-powered merchandising suite (virtual try-on at 90% fit, −80% content time).</p><span class="tag">TTS</span><span class="tag">vLLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
+      html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, expanding product accessibility across global users. It shipped alongside the MENRV.AI computer-vision merchandising suite — YOLO segmentation and <strong>Gemini VLM</strong> workflows for image editing and virtual try-on at <strong>0.85+ mAP@50</strong>, cutting catalog content creation from hours to minutes.</p><span class="tag">TTS</span><span class="tag">Gemini VLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
     };
 
     function faceCenter(obj, x, z) { obj.rotation.y = Math.atan2(-x, -z); }
@@ -1073,7 +1073,7 @@
       function draw() {
         sx.clearRect(0, 0, 560, 540);
         sx.fillStyle = '#ffd166'; sx.font = 'bold 34px Inter, sans-serif'; sx.textAlign = 'left'; sx.fillText('Creativity Scoring', 20, 40);
-        sx.fillStyle = '#88a8bf'; sx.font = '17px monospace'; sx.fillText('AR letter-"A" · Sample ' + (idx + 1) + '/4', 20, 66);
+        sx.fillStyle = '#88a8bf'; sx.font = '17px monospace'; sx.fillText('AR block composition · Sample ' + (idx + 1) + '/4', 20, 66);
         for (let i = 0; i < 6; i++) {
           const y = 110 + i * 68, v = cur[i];
           sx.fillStyle = '#cfe0ee'; sx.font = 'bold 20px Inter, sans-serif'; sx.fillText(dims[i], 20, y - 8);
@@ -1084,7 +1084,7 @@
         scTex.needsUpdate = true;
       }
       arAdvance = () => { idx = (idx + 1) % 4; imgMat.map = sTex[idx]; imgMat.needsUpdate = true; };
-      aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_arscore', 'aiAR', 'Press <b>E</b> to score the next drawing');
+      aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_arscore', 'aiAR', 'Press <b>E</b> to score the next composition');
       aiAnimators.push((t, cam) => {
         if (!aiNear(group, cam)) return;
         let moving = false;
@@ -1143,7 +1143,7 @@
           x.strokeStyle = n.c; x.lineWidth = 2.5; roundRect(x, n.x, n.y, n.w, n.h, 10); x.stroke();
           x.fillStyle = '#e6f1fa'; x.font = 'bold 19px Inter, sans-serif'; x.textAlign = 'center'; x.fillText(n.t, n.x + n.w / 2, n.y + n.h / 2 + 7);
         });
-        x.fillStyle = '#7fa8c2'; x.font = '16px monospace'; x.textAlign = 'left'; x.fillText('sub-500ms guidance · 6,000+ calls/day', 24, 442);
+        x.fillStyle = '#7fa8c2'; x.font = '16px monospace'; x.textAlign = 'left'; x.fillText('sub-second guidance · 6,000+ calls/day', 24, 442);
         tex.needsUpdate = true;
       });
     })();
@@ -1755,9 +1755,10 @@
         document.getElementById('panelBody').innerHTML =
           panelBanner('flow', '#4f46e5', 'System Topology') +
           `<p>How the real-time sales copilot fits together end-to-end.</p>
-           <h3>Pipeline</h3><p>Live call audio → transcript over WebSockets → RAG retrieval &amp; semantic caching → Vertex AI reasoning → sub-500ms guidance back to the agent.</p>
-           <h3>Automation Layer</h3><p>Cloud Run services orchestrate 30+ CRM lifecycle stages with Gemini Vision document checks, n8n coaching scorecards, and a Twilio WhatsApp outreach bot.</p>
-           <span class="tag">Vertex AI</span><span class="tag">RAG</span><span class="tag">Cloud Run</span><span class="tag">n8n</span><span class="tag">WebSockets</span>`;
+           <h3>Pipeline</h3><p>Live call audio → transcript over WebSockets → RAG retrieval &amp; semantic caching → Vertex AI reasoning → sub-second guidance back to the agent.</p>
+           <h3>Automation Layer</h3><p>Cloud Run services orchestrate 30+ property-lifecycle stages with Gemini Vision document checks, bidirectional CRM sync, n8n coaching scorecards, and a Twilio WhatsApp outreach bot.</p>
+           <h3>Intelligence Layer</h3><p>A LangGraph, n8n, and MLflow platform covering meeting scores, call activity, team rankings, company benchmarks, and custom manager reports.</p>
+           <span class="tag">Vertex AI</span><span class="tag">RAG</span><span class="tag">Cloud Run</span><span class="tag">LangGraph</span><span class="tag">MLflow</span><span class="tag">n8n</span>`;
         openSidePanel();
       }
     }
@@ -1857,9 +1858,9 @@
         deployMonitorShellHeader(ctx, 'EYAD ELFAR // PORTFOLIO CORE SYSTEM',
           'AI Infrastructure & Automation Production Engineering');
         const mq = [
-          ['sub-500ms', 'AI Core Context Latency'],
-          ['30+ Nodes', 'Cloud CRM Automated States'],
-          ['21+ Engines', 'n8n Enterprise Operations'],
+          ['sub-second', 'AI Core Context Latency'],
+          ['6,000+ Calls', 'Voice Agent Qualification / Day'],
+          ['30+ Nodes', 'Property Lifecycle Automated States'],
           ['500M+ Rows', 'Transactional Records Analyzed']
         ];
         mq.forEach((item, idx) => {
@@ -2190,11 +2191,11 @@
       const KAGGLE_LOGO = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.1025 7.3475c-.0681 0-.1022.0341-.1022.102v6.752c0 .0681.034.1022.1022.1022h.7049c.068 0 .1022-.034.1022-.1023v-1.481l.4187-.3985 1.5016 1.91c.041.0477.0884.0716.143.0716h.9091c.0476 0 .0748-.0135.0817-.0407.0135-.041.0066-.075-.0206-.1023l-1.9816-2.4618 1.9002-1.8384c.0204-.0205.0237-.051.01-.092-.0137-.0339-.0408-.051-.0816-.051h-.9398c-.0477 0-.0953.024-.143.0716L.9096 11.607V7.4496c0-.0679-.0342-.102-.1022-.102zm18.0417 0c-.068 0-.102.0341-.102.102v6.752c0 .0681.034.102.102.102h.705c.068 0 .102-.034.102-.102v-6.752c0-.068-.034-.102-.102-.102zM5.961 9.6254c-.5653 0-1.11.1806-1.6343.5415-.0545.0545-.0648.102-.0307.143l.3676.5208c.0272.0477.0717.0545.133.0204.3948-.2722.783-.4086 1.1644-.4086.2927 0 .5158.0886.669.2656.1532.1771.2197.3917.1992.6436-.6606.0681-1.1545.1495-1.4813.245-.8308.2383-1.2461.6913-1.2461 1.3586 0 .4222.1533.7695.4598 1.0419.3132.2654.6845.3982 1.1134.3982.4698 0 .8545-.1125 1.1542-.3372v.1432c0 .0682.0374.102.1123.102h.7048c.068 0 .102-.0338.102-.102V11.372c0-.6604-.2245-1.1406-.6739-1.4403-.3065-.2043-.6776-.3063-1.1134-.3063zm4.3225 0c-.6742 0-1.195.2622-1.5627.7865-.3133.4359-.4699.9671-.4699 1.5936 0 .6604.1634 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5313 0 .9567-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1132-.572a.098.098 0 00-.0716-.0306c-.034 0-.0613.0102-.0817.0307l-.4802.48c-.0408.0613-.0375.1124.0103.1532.1361.1157.2554.2129.3576.2911.102.0783.1905.1413.2656.189.354.1975.7284.2961 1.1235.2961.6808 0 1.207-.1925 1.5781-.577.3711-.3848.5567-.9484.5567-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.705c-.0682 0-.1021.034-.1021.102v.2043c-.3471-.2657-.7763-.3985-1.287-.3985zm4.8021 0c-.6742 0-1.195.2622-1.5627.7865-.3132.4359-.4699.9671-.4699 1.5936 0 .6604.1633 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5311 0 .9566-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1133-.572a.098.098 0 00-.0716-.0306c-.034 0-.0612.0102-.0816.0307l-.48.48c-.0409.0613-.0376.1124.01.1532.1363.1157.2555.2129.3576.2911.1021.0783.1906.1413.2657.189.354.1975.7285.2961 1.1237.2961.6808 0 1.2068-.1925 1.5781-.577.371-.3848.5565-.9484.5565-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.7049c-.0682 0-.1022.034-.1022.102v.2043c-.3474-.2657-.7763-.3985-1.287-.3985zm6.7457 0c-.6537 0-1.185.211-1.5936.6332-.4427.4632-.664 1.0283-.664 1.6956 0 .7083.225 1.2905.6743 1.7467.463.463 1.042.6945 1.7366.6945.6467 0 1.2154-.1838 1.7057-.5515.0545-.041.0545-.0884 0-.143l-.4802-.4903c-.041-.0409-.0919-.0409-.1533 0-.2998.2112-.6368.3167-1.0112.3167-.4222 0-.7729-.119-1.052-.3576-.2452-.2248-.3882-.5038-.429-.8375h3.3197c.0679 0 .1022-.0341.1022-.1023l.01-.2244c.0341-.6878-.1668-1.26-.6025-1.7162-.4224-.4426-.9432-.664-1.5627-.664zm-.0206.7865c.3268 0 .6062.1056.8377.3166.2452.211.371.4734.378.7865h-2.4618c.0613-.3269.2077-.5925.4392-.7968.2313-.2042.5004-.3063.8069-.3063zm-11.4249.102c.6196 0 1.0146.2181 1.1848.6538v1.6854c-.1702.4358-.5755.6538-1.2155.6538-.3133 0-.5687-.0986-.7661-.2963-.2656-.2518-.3983-.6538-.3983-1.2053 0-.9941.3984-1.4914 1.1951-1.4914zm4.802 0c.6196 0 1.0148.2181 1.1851.6538h-.0002v1.6854c-.1703.4358-.5755.6538-1.2155.6538-.3132 0-.5686-.0986-.7661-.2963-.2655-.2518-.3983-.6538-.3983-1.2053 0-.9941.3983-1.4914 1.195-1.4914zm-8.3586 1.6547v1.0215c-.286.286-.6675.412-1.1441.3779-.1703-.0135-.32-.0663-.4493-.1582-.1294-.0919-.2045-.2129-.2249-.3627-.0341-.2657.1158-.47.4495-.6129.2452-.1088.7013-.1974 1.3688-.2656z"/></svg>';
       const PROFILES = [
         { pane: 'linkedin', site: 'LinkedIn', logo: LINKEDIN_LOGO, name: 'Eyad Elfar', sub: 'AI Engineer · Dubai, UAE', href: 'https://www.linkedin.com/in/eyadelfar/', items: [
-          'Architecting production LLM/RAG copilots with sub-500ms real-time guidance.',
-          'ElevenLabs voice agents and Cloud Run automation across 30+ CRM stages.',
+          'Architecting production LLM/RAG copilots with sub-second real-time guidance.',
+          'AI voice agents running 6,000+ calls/day and Cloud Run automation across 30+ stages.',
           'Built KeepQuill & Favisra (personal POCs); ex-MENRV.AI, NEOMI, iSchool, e-finance.'] },
         { pane: 'kaggle', site: 'Kaggle', logo: KAGGLE_LOGO, name: 'Eyad Amin', sub: 'Kaggle · Notebooks & Competitions', href: 'https://www.kaggle.com/eyadamin1233', items: [
-          'Gamers Mental Health NLP classifier — 94% accuracy with SHAP explainability.',
+          'Gamers Mental Health NLP classifier — 94% accuracy, SHAP, Bronze Notebook Medal.',
           'Certified across Pandas, Data Cleaning, Intro & Intermediate Machine Learning.',
           'Computer vision, OCR, and NLP notebooks with reproducible pipelines.'] },
       ];

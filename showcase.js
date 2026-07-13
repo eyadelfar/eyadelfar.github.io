@@ -343,6 +343,7 @@ const SC_TEMPLATES = `
     body.scrollTop = 0;
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    if (window.trackEvent) window.trackEvent('showcase-' + key, 'Showcase: ' + cfg.title);
     if(key === 'keepquill')  initFlip(body);
     if(key === 'creativity') initCreativity(body);
   };

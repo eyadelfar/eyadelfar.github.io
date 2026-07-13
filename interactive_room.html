@@ -32,9 +32,16 @@
         <div class="pill">AI Automation</div>
       </div>
     </div>
-    <div id="mode-card">
-      <div class="label">Playground Status</div>
-      <div class="value"><span id="modeText">Exploring the Playground</span><small id="fpsText">DAYLIGHT</small></div>
+    <div id="topbar-right">
+      <div id="mode-card">
+        <div class="label">Playground Status</div>
+        <div class="value"><span id="modeText">Exploring the Playground</span><small id="fpsText">DAYLIGHT</small></div>
+      </div>
+      <span class="visitor-pill ui" id="visitorPill" title="Total visitors to this site" hidden>
+        <span class="visitor-dot"></span>
+        <span class="visitor-num" id="visitorNum"></span>
+        <span class="visitor-word">visitors</span>
+      </span>
     </div>
   </div>
 
@@ -125,5 +132,6 @@
 
   <script type="module" src="room.js"></script>
   <script data-goatcounter="https://eyadelfar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script src="analytics.js?v=1" defer></script>
 </body>
 </html>
