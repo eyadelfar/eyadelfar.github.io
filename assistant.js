@@ -25,8 +25,15 @@
   var form = document.getElementById('askForm');
   var input = document.getElementById('askInput');
   var send = document.getElementById('askSend');
-  var mic = document.getElementById('askMic');
   var status = document.getElementById('askStatus');
+
+  var callBtn = document.getElementById('askCall');
+  var stage = document.getElementById('askVoice');
+  var orb = document.getElementById('voiceOrb');
+  var vState = document.getElementById('voiceState');
+  var vCaption = document.getElementById('voiceCaption');
+  var vCites = document.getElementById('voiceCites');
+  var vHang = document.getElementById('voiceHang');
 
   function setStatus(text) { status.textContent = text || ''; }
 
@@ -62,38 +69,96 @@
     log.scrollTop = log.scrollHeight;
   }
 
-  /* ------------------------------------------------------------- speech */
+  /* ------------------------------------------------------- voice call */
+  /* A live call, not text-to-speech. Audio streams both ways over a WebSocket to
+     a Durable Object; talking over the agent cuts it off mid-sentence. The old
+     version used the browser's speechSynthesis, which is a robot reading a
+     finished answer aloud — not a conversation. */
 
-  function speak(text) {
-    if (!window.speechSynthesis) return;
+  var voice = null;      // the voice.js module, imported on first call
+  var inCall = false;
+
+  var LABEL = {
+    idle: 'Ready',
+    listening: 'Listening',
+    thinking: 'Thinking',
+    speaking: 'Speaking',
+  };
+
+  function showStage(on) {
+    inCall = on;
+    stage.hidden = !on;
+    log.hidden = on;
+    form.hidden = on;
+    if (!on) {
+      orb.dataset.state = 'idle';
+      orb.style.setProperty('--level', 0);
+      vCaption.textContent = '';
+      vCites.innerHTML = '';
+    }
+  }
+
+  var ui = {
+    orb: orb,
+    onStatus: function (s) { vState.textContent = LABEL[s] || s; },
+    onConnection: function (ok) {
+      if (!ok && inCall) vState.textContent = 'Reconnecting…';
+    },
+    onInterim: function (text) {
+      if (text) vCaption.innerHTML = '<b>' + text.replace(/</g, '&lt;') + '</b>';
+    },
+    onTranscript: function (messages) {
+      var last = messages[messages.length - 1];
+      if (!last) return;
+      vCaption.textContent = last.text;
+    },
+    onSources: function (titles) {
+      vCites.innerHTML = '';
+      titles.slice(0, 3).forEach(function (t) {
+        var chip = document.createElement('span');
+        chip.className = 'ask-cite';
+        chip.textContent = t;
+        vCites.appendChild(chip);
+      });
+    },
+    onError: function (msg) {
+      console.error('[voice] error event:', msg);
+      vState.textContent = 'Call failed';
+      vCaption.textContent = msg.indexOf('permission') > -1 || msg.indexOf('denied') > -1
+        ? 'I need microphone access to talk. Allow it and press Call again.'
+        : 'Something went wrong on the call. You can still type below.';
+    },
+  };
+
+  async function hangUp() {
+    if (voice) voice.endCall();
+    showStage(false);
+    setStatus('Call ended.');
+  }
+
+  callBtn.addEventListener('click', async function () {
+    if (inCall) return hangUp();
+
     try {
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.05;
-      window.speechSynthesis.speak(u);
-    } catch (e) { /* speech is a bonus, never a blocker */ }
-  }
+      if (!voice) voice = await import('./voice.js?v=1');
+      if (!voice.isSupported()) {
+        setStatus('Your browser can’t do voice calls — type instead.');
+        callBtn.disabled = true;
+        return;
+      }
+      showStage(true);
+      vState.textContent = 'Connecting…';
+      vCaption.textContent = 'Say hello — and feel free to talk over me.';
+      if (window.trackEvent) window.trackEvent('voice-call', 'Voice call started');
+      await voice.startCall(ui);
+    } catch (err) {
+      // Log the cause: a voice feature that fails silently is one nobody fixes.
+      console.error('[voice] call failed:', err);
+      ui.onError(String(err && err.message ? err.message : err));
+    }
+  });
 
-  var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!Recognition) {
-    mic.hidden = true;
-  } else {
-    mic.addEventListener('click', function () {
-      var rec = new Recognition();
-      rec.lang = 'en-US';
-      rec.interimResults = false;
-      mic.classList.add('listening');
-      setStatus('Listening…');
-      rec.onresult = function (e) {
-        // Not auto-sent: let them fix "rag" -> "RAG" before it costs a request.
-        input.value = e.results[0][0].transcript;
-        input.focus();
-      };
-      rec.onerror = function () { setStatus('Could not hear that.'); };
-      rec.onend = function () { mic.classList.remove('listening'); setStatus(''); };
-      rec.start();
-    });
-  }
+  vHang.addEventListener('click', hangUp);
 
   /* ---------------------------------------------------------------- ask */
 
@@ -120,7 +185,6 @@
       el.classList.remove('thinking');
       el.textContent = out.reply;
       citations(el, out.hits, out.overridden);
-      speak(out.reply);
     } catch (err) {
       el.classList.remove('thinking');
       el.textContent = FALLBACK;
@@ -144,6 +208,8 @@
     if (window.trackEvent) window.trackEvent('chat-open', 'Résumé chat opened');
   }
   function close() {
+    // Never leave a call running behind a closed panel — the mic would stay hot.
+    if (inCall) hangUp();
     panel.hidden = true;
     launcher.setAttribute('aria-expanded', 'false');
   }

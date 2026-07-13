@@ -819,23 +819,38 @@
   <div class="ask-head">
     <div>
       <h3>Ask my résumé</h3>
-      <p>Open-weights <em>Llama 3.3 70B</em> with hybrid retrieval, on an API I built and host.</p>
+      <p>Open weights, hybrid retrieval, live voice — on an API I built and host. <em>Press Call and talk over me.</em></p>
     </div>
     <button id="askClose" class="ask-close" aria-label="Close">&#10005;</button>
   </div>
 
   <div id="askLog" class="ask-log">
-    <div class="ask-msg ask-bot">Ask me anything about Eyad's experience, projects, or skills.</div>
+    <div class="ask-msg ask-bot">Ask about Eyad's experience, the systems he's shipped, or how he built something. Or press <strong>Call</strong> and just talk to me.</div>
     <div class="ask-suggests">
-      <button class="ask-suggest" type="button">What has he built with RAG?</button>
-      <button class="ask-suggest" type="button">Did he win any awards?</button>
-      <button class="ask-suggest" type="button">What model powers this chat?</button>
+      <button class="ask-suggest" type="button">How does his real-time sales copilot work?</button>
+      <button class="ask-suggest" type="button">What's the hardest thing he's shipped to production?</button>
+      <button class="ask-suggest" type="button">Has he deployed computer vision at scale?</button>
+      <button class="ask-suggest" type="button">Why should I hire him?</button>
     </div>
   </div>
 
+  <!-- Voice call stage: replaces the transcript while a call is live. -->
+  <div id="askVoice" class="ask-voice" hidden>
+    <div id="voiceOrb" class="voice-orb" data-state="idle">
+      <span class="orb-ring"></span>
+      <span class="orb-ring"></span>
+      <span class="orb-core"></span>
+    </div>
+    <div id="voiceState" class="voice-state">Connecting…</div>
+    <div id="voiceCaption" class="voice-caption"></div>
+    <div id="voiceCites" class="ask-cites"></div>
+    <button type="button" id="voiceHang" class="voice-hang">End call</button>
+  </div>
+
   <form id="askForm" class="ask-form">
-    <button type="button" id="askMic" class="ask-mic" aria-label="Ask by voice">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+    <button type="button" id="askCall" class="ask-call" aria-label="Start a voice call">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span>Call</span>
     </button>
     <input id="askInput" type="text" placeholder="Ask a question…" autocomplete="off" maxlength="500">
     <button type="submit" id="askSend" class="ask-send">Ask</button>

@@ -665,6 +665,128 @@
     min-height: 1em;
   }
 
+  /* ---------------------------------------------------------- voice call */
+  .ask-voice {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px 18px;
+    text-align: center;
+  }
+  .ask-voice[hidden] { display: none; }
+
+  /* --level is the live mic RMS, pushed in from the VoiceClient on every frame.
+     Everything below scales off it, so the orb genuinely reacts to your voice
+     instead of running a canned animation. */
+  .voice-orb {
+    --level: 0;
+    position: relative;
+    width: 116px;
+    height: 116px;
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .orb-core {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--cyan));
+    transform: scale(calc(1 + var(--level) * .28));
+    transition: transform .09s linear, background .5s var(--ease);
+    box-shadow: 0 0 calc(18px + var(--level) * 40px) rgba(var(--rgb-accent), calc(.35 + var(--level) * .5));
+  }
+  .orb-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(var(--rgb-accent), .3);
+    opacity: calc(.25 + var(--level) * .75);
+    transform: scale(calc(.68 + var(--level) * .34));
+    transition: transform .12s linear, opacity .12s linear;
+  }
+  .orb-ring:nth-child(2) {
+    transform: scale(calc(.84 + var(--level) * .5));
+    border-color: rgba(var(--rgb-cyan), .28);
+  }
+
+  /* Idle: a slow breath, so it never looks frozen/broken. */
+  .voice-orb[data-state="idle"] .orb-core {
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
+    animation: orbBreathe 3.4s ease-in-out infinite;
+  }
+  /* Thinking: the visitor has stopped talking and nothing is happening yet —
+     without motion here the call feels dead exactly when it's working hardest. */
+  .voice-orb[data-state="thinking"] .orb-core {
+    background: linear-gradient(135deg, var(--orange), var(--pink));
+    animation: orbSpin 1s linear infinite;
+  }
+  .voice-orb[data-state="speaking"] .orb-core {
+    background: linear-gradient(135deg, var(--green), var(--cyan));
+    animation: orbPulse .85s ease-in-out infinite;
+  }
+  .voice-orb[data-state="speaking"] .orb-ring { border-color: rgba(var(--rgb-green), .38); }
+
+  @keyframes orbBreathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+  @keyframes orbSpin    { to { transform: rotate(360deg); } }
+  @keyframes orbPulse   { 0%,100% { transform: scale(1); } 50% { transform: scale(1.13); } }
+  @media (prefers-reduced-motion: reduce) {
+    .orb-core, .orb-ring { animation: none !important; transition: none; }
+  }
+
+  .voice-state {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--accent2);
+  }
+  .voice-caption {
+    min-height: 3.2em;
+    max-width: 30ch;
+    font-size: .9rem;
+    line-height: 1.55;
+    color: var(--text2);
+  }
+  .voice-caption b { color: var(--text); font-weight: 600; }
+  .voice-hang {
+    padding: 9px 22px;
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 600;
+    color: #fff;
+    background: #dc2626;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .voice-hang:hover { background: #b91c1c; }
+
+  .ask-call {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    padding: 9px 13px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--green);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .25s var(--ease);
+  }
+  .ask-call:hover { filter: brightness(1.08); }
+  .ask-call:disabled { opacity: .5; cursor: not-allowed; }
+  .ask-call svg { width: 14px; height: 14px; }
+  .ask-call[hidden] { display: none; }
+
   @media (max-width: 640px) {
     .ask-panel { bottom: 84px; right: 12px; left: 12px; width: auto; }
     .ask-btn   { bottom: 20px; right: 16px; padding: 11px 16px; }
