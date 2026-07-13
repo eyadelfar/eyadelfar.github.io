@@ -19,29 +19,35 @@
   };
 
   /* ---- live visitor pill ---------------------------------------------- */
-  function show(count) {
+  /* GoatCounter returns count (pageviews) and count_unique (visitors). We show
+     UNIQUES — "1,200 visitors" is the honest number; pageviews flatter. The raw
+     pageview count goes in the tooltip for anyone who hovers. */
+  function show(unique, views) {
     var num = document.getElementById('visitorNum');
     var pill = document.getElementById('visitorPill');
     if (!num || !pill) return;
-    num.textContent = count;
+    num.textContent = unique;
+    if (views && views !== unique) {
+      pill.title = unique + ' unique visitors · ' + views + ' page views';
+    }
     pill.hidden = false;
   }
 
   function cacheGet() {
-    try { return sessionStorage.getItem(CACHE_KEY); } catch (e) { return null; }
+    try { return JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null'); } catch (e) { return null; }
   }
   function cacheSet(v) {
-    try { sessionStorage.setItem(CACHE_KEY, v); } catch (e) { /* ignore */ }
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(v)); } catch (e) { /* ignore */ }
   }
 
   function renderVisitors() {
     if (!document.getElementById('visitorPill')) return;
 
     var cached = cacheGet();
-    if (cached) { show(cached); return; }
+    if (cached) { show(cached.u, cached.v); return; }
 
-    // Requires "Allow adding visitor counts on your website" in GoatCounter
-    // settings. If it's off, this 403s — and the pill just stays hidden.
+    // Requires "Allow adding visitor counts to your website" in GoatCounter's
+    // site settings. Without it this 403s — and the pill just stays hidden.
     var ctl = new AbortController();
     var timer = setTimeout(function () { ctl.abort(); }, 4000);
 
@@ -52,10 +58,12 @@
         return res.json();
       })
       .then(function (data) {
+        if (!data) return;
+        var unique = data.count_unique || data.count;
         // Render nothing rather than a misleading "0".
-        if (!data || !data.count) return;
-        cacheSet(data.count);
-        show(data.count);
+        if (!unique) return;
+        cacheSet({ u: unique, v: data.count });
+        show(unique, data.count);
       })
       .catch(function () { /* blocked, offline, or counter disabled: stay hidden */ });
   }

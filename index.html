@@ -844,9 +844,10 @@
 </div>
 
 <script>
-  /* Set this to your deployed Cloudflare Worker URL (see contact-worker/README.md).
-     Left empty, the contact form degrades to a pre-filled mailto: instead of failing. */
-  window.PORTFOLIO_API = '';
+  /* My Cloudflare Worker: contact form + the résumé assistant (Workers AI).
+     If it's ever unreachable, the contact form degrades to a pre-filled mailto:
+     and the assistant hides itself, rather than failing in the visitor's face. */
+  window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
 </script>
 
 <script data-goatcounter="https://eyadelfar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
