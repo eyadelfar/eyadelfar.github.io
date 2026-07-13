@@ -142,6 +142,9 @@
     display: flex;
     align-items: center;
     gap: 7px;
+    /* #topbar is .ui, which sets pointer-events:none — re-enable it here or the
+       hover tooltip (uniques vs page views) never fires. */
+    pointer-events: auto;
     padding: 7px 13px;
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 999px;
