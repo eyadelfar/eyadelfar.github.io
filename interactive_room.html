@@ -37,11 +37,19 @@
         <div class="label">Playground Status</div>
         <div class="value"><span id="modeText">Exploring the Playground</span><small id="fpsText">DAYLIGHT</small></div>
       </div>
-      <span class="visitor-pill" id="visitorPill" title="Total visitors to this site" hidden>
+      <div class="visitor-pill" id="visitorPill" hidden>
         <span class="visitor-dot"></span>
-        <span class="visitor-num" id="visitorNum"></span>
-        <span class="visitor-word">visitors</span>
-      </span>
+        <button type="button" class="visitor-stat" data-series="uniques">
+          <span class="visitor-word">Unique</span>
+          <span class="visitor-num" id="visitorUniques">0</span>
+        </button>
+        <span class="visitor-sep">|</span>
+        <button type="button" class="visitor-stat" data-series="views">
+          <span class="visitor-word">Views</span>
+          <span class="visitor-num" id="visitorViews">0</span>
+        </button>
+        <div class="visitor-peek" id="visitorPeek" hidden></div>
+      </div>
     </div>
   </div>
 
@@ -134,6 +142,6 @@
   <script>
     window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
   </script>
-  <script src="analytics.js?v=2" defer></script>
+  <script src="analytics.js?v=4" defer></script>
 </body>
 </html>

@@ -24,6 +24,7 @@ if (launcher && panel && window.PORTFOLIO_API) {
     speaking: 'Speaking',
   };
   const OFFLINE = 'I cannot reach the assistant right now. His resume is at resume.pdf, and the contact form below reaches him directly.';
+  const DEFAULT_STATUS = 'Llama 3.3 70B, hybrid retrieval, on my own Cloudflare Worker.';
 
   let engine = null;
   let voice = null;
@@ -88,7 +89,7 @@ if (launcher && panel && window.PORTFOLIO_API) {
   function hangUp() {
     voice?.endCall();
     setCallMode(false);
-    setStatus('Call ended.');
+    setStatus(DEFAULT_STATUS);
   }
 
   const callUi = {
@@ -157,6 +158,12 @@ if (launcher && panel && window.PORTFOLIO_API) {
       callbar.toggleAttribute('data-muted', muted);
     },
 
+    onIdle() {
+      bubble('bot', 'I did not hear anything for a while, so I hung up. Press Call whenever you want to pick it back up.');
+      setCallMode(false);
+      setStatus(DEFAULT_STATUS);
+    },
+
     onError(message) {
       console.error('[voice]', message);
       if (message === 'rate_limited') {
@@ -176,7 +183,7 @@ if (launcher && panel && window.PORTFOLIO_API) {
   async function startCall() {
     if (inCall) return hangUp();
     try {
-      voice ??= await import('./voice.js?v=3');
+      voice ??= await import('./voice.js?v=4');
       if (!voice.isSupported()) {
         setStatus('Your browser cannot do voice calls. Type instead.');
         callBtn.disabled = true;
@@ -184,8 +191,10 @@ if (launcher && panel && window.PORTFOLIO_API) {
       }
       setCallMode(true);
       voiceState.textContent = 'Connecting...';
+      setStatus('Calibrating to your room...');
       track('voice-call');
       await voice.startCall(callUi);
+      setStatus('Talk normally. Silence ends your turn, and talking over me cuts me off.');
     } catch (err) {
       console.error('[voice] call failed:', err);
       callUi.onError(String(err?.message || err));
@@ -222,7 +231,7 @@ if (launcher && panel && window.PORTFOLIO_API) {
     panel.hidden = false;
     launcher.setAttribute('aria-expanded', 'true');
     input.focus();
-    setStatus('Llama 3.3 70B, hybrid retrieval, on my own Cloudflare Worker.');
+    setStatus(DEFAULT_STATUS);
     track('chat-open');
   }
 
