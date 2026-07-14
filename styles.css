@@ -54,34 +54,7 @@
   .github-stat-num,
   nav .logo {
     font-family: 'Space Grotesk', system-ui, sans-serif;
-  }
-
-  .callout {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 14px 18px;
-    margin: 14px 0;
-    border-radius: 10px;
-    background: rgba(79, 70, 229, .07);
-    border-left: 3px solid var(--accent);
-    font-size: .92rem;
-    line-height: 1.65;
-    color: var(--text);
-  }
-  .callout-label {
-    display: inline-block;
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    font-size: .72rem;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--accent2);
-    white-space: nowrap;
-    margin-top: 2px;
-  }
-
-  .card p { font-size: .93rem; line-height: 1.7; }
+  }.card p { font-size: .93rem; line-height: 1.7; }
   .card h3 { letter-spacing: -.01em; }
   .section-title { letter-spacing: -.02em; }
   a {
@@ -186,8 +159,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Was text-align:center with a narrow column — which is what left the huge
-       dead gap under the CTA. The grid below fills the width instead. */
+    
     text-align: left;
     padding: 130px 28px 80px;
     overflow: hidden;
@@ -206,8 +178,6 @@
 
   .hero-identity { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 
-  /* The hero column is now ~590px, not the full page width. At the old 170px the
-     avatar + a 3.6rem name overflowed and flex-wrap stacked them. */
   .hero-identity .hero-top {
     justify-content: flex-start;
     flex-wrap: nowrap;
@@ -223,7 +193,6 @@
   .hero-identity .subtitle { font-size: 1.02rem; margin-bottom: 4px; }
   .hero-identity .location { font-size: .88rem; }
 
-  /* Recruiters scan for availability before anything else. Two lines of HTML. */
   .hero-status {
     display: inline-flex;
     align-items: center;
@@ -279,8 +248,6 @@
   }
   .btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); transform: translateY(-2px); }
 
-  /* Secondary by design: six equal grey pills gave a phone number the same weight
-     as the résumé, which told a recruiter nothing and cost a beat of attention. */
   .hero-icons { display: flex; gap: 10px; }
   .hero-icons a {
     display: grid;
@@ -299,9 +266,6 @@
   }
   .hero-icons svg { width: 17px; height: 17px; }
 
-  /* Deliberately NOT .stat .num — app.js runs a count-up on those and its regex
-     reads "6,000+" as 6. These are static, and instant beats animated in a
-     five-second scan anyway. */
   .hero-proof { display: flex; gap: 28px; flex-wrap: wrap; }
   .hero-proof div { display: flex; flex-direction: column; }
   .hero-proof b {
@@ -313,15 +277,38 @@
   .hero-proof span { font-size: .78rem; color: var(--text2); }
 
   .hero-playground-link {
-    font-size: .88rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 8px 12px;
+    font-size: .82rem;
     font-weight: 500;
     color: var(--text2);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transition: color .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
   }
-  .hero-playground-link:hover { color: var(--accent2); }
+  .hero-playground-link svg { flex: none; }
+  .hero-playground-link .room-icon { width: 15px; height: 15px; color: var(--accent2); }
+  .hero-playground-link .room-arrow {
+    width: 14px;
+    height: 14px;
+    opacity: .5;
+    transition: transform .25s var(--ease), opacity .25s var(--ease);
+  }
+  .hero-playground-link:hover {
+    color: var(--text);
+    background: var(--bg);
+    border-color: rgba(var(--rgb-accent), .35);
+  }
+  .hero-playground-link:hover .room-arrow { transform: translateX(3px); opacity: 1; }
+  .hero-playground-link:focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-playground-link .room-arrow { transition: none; }
+  }
 
-  /* ------------------------------------------------------------ hero agent */
-  /* The best proof on this site is the site itself, so it goes above the fold
-     instead of hiding behind a floating button. */
+  
   .hero-agent {
     position: relative;
     padding: 30px;
@@ -387,8 +374,6 @@
   .agent-ask:hover, .agent-call:hover { filter: brightness(1.08); transform: translateY(-2px); }
   .agent-ask svg, .agent-call svg { width: 15px; height: 15px; }
 
-  /* A recruiter skims this line. An engineering manager reads "RRF" and knows
-     immediately that this isn't a wrapper around someone else's API. */
   .agent-stack {
     padding-top: 16px;
     border-top: 1px solid var(--border);
@@ -433,18 +418,7 @@
     animation: float 6s ease-in-out infinite;
     flex-shrink: 0;
   }
-  .hero-info { text-align: left; }
-  .hero-langs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-  .hero-lang {
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: .82rem;
-    font-weight: 500;
-    color: var(--text2);
-    background: var(--chip);
-    border: 1px solid var(--border);
-  }
-  @keyframes float {
+  .hero-info { text-align: left; }@keyframes float {
     0%, 100% { transform: translateY(0); }
     50%       { transform: translateY(-14px); }
   }
@@ -478,37 +452,7 @@
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
-  }
-  .hero-links {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    opacity: 0;
-    animation: fadeUp .8s .7s var(--ease) forwards;
-  }
-  .hero-links a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 24px;
-    border-radius: 10px;
-    font-size: .9rem;
-    font-weight: 600;
-    color: var(--text);
-    background: rgba(79, 70, 229, .10);
-    border: 1px solid rgba(79, 70, 229, .22);
-    transition: all .35s var(--ease);
-  }
-  .hero-links a:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 32px rgba(79, 70, 229, .22);
-  }
-  .hero-cta { display: flex; justify-content: center; margin-top: 16px; }
-  .hero-playground {
+  }.hero-playground {
     display: inline-flex; align-items: center; gap: 10px;
     padding: 13px 34px; border-radius: 12px;
     font-size: .98rem; font-weight: 700;
@@ -614,10 +558,7 @@
     background: linear-gradient(90deg, transparent, var(--border), transparent);
   }
 
-  /* ---------------------------------------------------------- contact form */
-  /* Was visibly broken: the section title anchored left (it has an accent bar)
-     while the lead and form were centred in a 620px cage, leaving a huge empty
-     gutter. Two columns fill it and read as deliberate. */
+  
   .contact-section { padding: 72px 0 24px; }
   .contact-grid {
     display: grid;
@@ -682,7 +623,7 @@
     border-color: var(--accent2);
     box-shadow: 0 0 0 3px rgba(var(--rgb-accent), .12);
   }
-  /* Hidden from humans, not from bots: display:none is a tell, off-screen is not. */
+  
   .contact-hp {
     position: absolute;
     left: -9999px;
@@ -712,10 +653,7 @@
   .contact-status.warn { color: var(--orange); }
   .contact-status a { color: var(--accent2); text-decoration: underline; }
 
-  /* ------------------------------------------------------------ ask widget */
-  /* One dock, bottom-right. Back-to-top used to sit bottom-LEFT — directly on top
-     of the experience timeline dots. It's hidden over the hero, where the agent
-     card is already the way in (and where it used to cover the mobile CTA). */
+  
   .fab-dock {
     position: fixed;
     right: 24px; bottom: 24px;
@@ -785,18 +723,7 @@
     color: var(--text2);
     cursor: pointer;
     line-height: 1;
-  }
-
-  .ask-progress { padding: 12px 18px 0; }
-  .ask-bar { height: 4px; background: var(--chip); border-radius: 999px; overflow: hidden; }
-  .ask-bar-fill {
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, var(--accent), var(--cyan));
-    transition: width .4s var(--ease);
-  }
-
-  .ask-log {
+  }.ask-log {
     flex: 1;
     overflow-y: auto;
     padding: 16px 18px;
@@ -843,8 +770,6 @@
   }
   .ask-suggest:hover { background: rgba(var(--rgb-accent), .14); }
 
-  /* Citations are buttons, not decoration: clicking one shows the passage the
-     answer was actually grounded in. */
   .ask-cites {
     display: flex;
     flex-wrap: wrap;
@@ -881,7 +806,7 @@
     background: var(--accent);
     border-color: var(--accent);
   }
-  /* The score is the tell that the retrieval is real, not decorative. */
+  
   .cite-score {
     font-variant-numeric: tabular-nums;
     font-size: .62rem;
@@ -910,8 +835,6 @@
     margin-bottom: 4px;
   }
 
-  /* The barge-in, made visible. The server has always broadcast this; the UI
-     used to throw it away, so the agent's best feature was invisible. */
   .cut {
     display: block;
     margin-top: 6px;
@@ -931,7 +854,7 @@
     background: rgba(var(--rgb-green), .1);
     border-radius: 999px;
   }
-  /* A ghost of what it thinks you're saying, right now. */
+  
   .ask-interim {
     opacity: .6;
     border: 1px dashed rgba(255, 255, 255, .5);
@@ -956,30 +879,17 @@
     border-radius: 999px;
   }
   .ask-form input:focus { outline: none; border-color: var(--accent2); }
-  .ask-mic, .ask-send {
-    font: inherit;
-    border: none;
-    cursor: pointer;
-    border-radius: 999px;
-    transition: all .25s var(--ease);
-  }
-  .ask-mic {
-    display: grid;
-    place-items: center;
-    width: 36px; height: 36px;
-    flex: none;
-    color: var(--text2);
-    background: var(--chip);
-  }
-  .ask-mic svg { width: 15px; height: 15px; }
-  .ask-mic:hover { color: var(--accent2); }
-  .ask-mic.listening { color: #fff; background: var(--pink); }
   .ask-send {
     padding: 10px 16px;
+    font: inherit;
     font-size: .85rem;
     font-weight: 600;
     color: #fff;
     background: var(--accent);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .25s var(--ease);
   }
   .ask-send:disabled { opacity: .5; cursor: not-allowed; }
   .ask-status {
@@ -990,11 +900,7 @@
     min-height: 1em;
   }
 
-  /* ---------------------------------------------------------- voice call */
-  /* A call is a MODE of the conversation, not a takeover. The old version hid the
-     transcript and the input behind a full-panel orb, so the visitor lost all
-     context and had nowhere to go. This bar sits above the form; the log and the
-     input stay exactly where they were. */
+  
   .ask-callbar {
     display: flex;
     align-items: center;
@@ -1007,8 +913,6 @@
   .callbar-info { flex: 1; min-width: 0; }
   .voice-hint { font-size: .7rem; line-height: 1.4; color: var(--text2); }
 
-  /* The moment it starts speaking, the bar tells you that you can cut it off.
-     That affordance is the whole difference between a voice agent and a speaker. */
   .hint-barge { display: none; }
   .ask-callbar[data-state="speaking"] .hint-listen { display: none; }
   .ask-callbar[data-state="speaking"] .hint-barge {
@@ -1032,9 +936,6 @@
   .voice-mute svg { width: 14px; height: 14px; }
   .voice-mute[aria-pressed="true"] { color: #fff; background: var(--pink); }
 
-  /* --level is the live mic RMS, pushed in from the VoiceClient on every frame.
-     Everything below scales off it, so the orb genuinely reacts to your voice
-     instead of running a canned animation. */
   .voice-orb {
     --level: 0;
     position: relative;
@@ -1070,13 +971,11 @@
     border-color: rgba(var(--rgb-cyan), .28);
   }
 
-  /* Idle: a slow breath, so it never looks frozen/broken. */
   .voice-orb[data-state="idle"] .orb-core {
     background: linear-gradient(135deg, #9ca3af, #6b7280);
     animation: orbBreathe 3.4s ease-in-out infinite;
   }
-  /* Thinking: the visitor has stopped talking and nothing is happening yet —
-     without motion here the call feels dead exactly when it's working hardest. */
+  
   .voice-orb[data-state="thinking"] .orb-core {
     background: linear-gradient(135deg, var(--orange), var(--pink));
     animation: orbSpin 1s linear infinite;
@@ -1116,18 +1015,36 @@
   }
   .voice-hang:hover { background: #b91c1c; }
 
-  /* Suggestions live outside the log now — inside it, they scrolled away into
-     history the moment you sent your first message. */
   .ask-suggests {
+    --fade: 22px;
     display: flex;
     flex-wrap: nowrap;
     gap: 6px;
-    padding: 10px 14px;
+    padding: 10px 14px 9px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
     border-top: 1px solid var(--border);
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--rgb-accent), .32) transparent;
   }
-  .ask-suggests::-webkit-scrollbar { display: none; }
+  .ask-suggests::-webkit-scrollbar { height: 5px; }
+  .ask-suggests::-webkit-scrollbar-track { background: transparent; }
+  .ask-suggests::-webkit-scrollbar-thumb {
+    background: rgba(var(--rgb-accent), .32);
+    border-radius: 999px;
+  }
+  .ask-suggests:hover::-webkit-scrollbar-thumb { background: rgba(var(--rgb-accent), .55); }
+
+  .ask-suggests[data-edge="end"] {
+    mask-image: linear-gradient(90deg, #000 calc(100% - var(--fade)), transparent);
+  }
+  .ask-suggests[data-edge="start"] {
+    mask-image: linear-gradient(90deg, transparent, #000 var(--fade));
+  }
+  .ask-suggests[data-edge="both"] {
+    mask-image: linear-gradient(90deg, transparent, #000 var(--fade),
+                                       #000 calc(100% - var(--fade)), transparent);
+  }
   .ask-suggests[hidden] { display: none; }
   .ask-suggest { flex: none; }
 
@@ -1167,8 +1084,7 @@
     .hero          { padding: 108px 20px 60px; }
     .hero-avatar   { width: 96px; height: 96px; }
     .hero-value    { font-size: 1rem; }
-    /* Side by side, "Download résumé" wrapped onto two lines inside its pill.
-       Full-width stacked reads better and is easier to hit with a thumb. */
+    
     .hero-actions  { width: 100%; flex-direction: column; }
     .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
     .hero-proof    { gap: 18px; }
@@ -1306,26 +1222,11 @@
   .venture-card:hover {
     border-color: rgba(79, 70, 229, .38);
     box-shadow: 0 20px 60px rgba(79, 70, 229, .12);
-  }
-  .venture-img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    transition: transform .6s var(--ease);
-  }
-  .venture-card:hover .venture-img { transform: scale(1.03); }
+  }.venture-card:hover .venture-img { transform: scale(1.03); }
   .venture-body { padding: 26px; }
   .venture-body h3      { font-size: 1.7rem; font-weight: 800; color: var(--accent2); margin-bottom: 4px; }
   .venture-body .tagline { font-size: 1rem; color: var(--text2); font-style: italic; margin-bottom: 20px; }
-  .venture-body p        { margin-bottom: 14px; }
-  .venture-features { columns: 1; column-gap: 24px; margin: 14px 0; }
-  .venture-features li       { margin-bottom: 6px; break-inside: avoid; font-size: .95rem; }
-  .venture-features li strong { color: var(--accent2); }
-  .venture-blurb { color: var(--text2); font-size: .95rem; margin-bottom: 16px; }
-  .venture-open { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 9px; font-size: .9rem; font-weight: 600; color: #fff; background: var(--accent); border: none; cursor: pointer; transition: background .25s, transform .25s; }
-  .venture-open:hover { background: var(--accent2); transform: translateY(-1px); }
-
-  .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; }
+  .venture-body p        { margin-bottom: 14px; }.venture-blurb { color: var(--text2); font-size: .95rem; margin-bottom: 16px; }.project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 22px; }
   .project-grid .card { margin-bottom: 0; }
 
   .project-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
@@ -1614,9 +1515,7 @@
     transition: all .2s var(--ease);
     cursor: default;
   }
-  .skill-chip:hover { background: rgba(79, 70, 229, .16); color: var(--text); transform: translateY(-1px); }
-  .skill-chip-e { font-size: .82rem; line-height: 1; }
-  .skill-chip.blue   { color: var(--blue);   background: rgba(var(--rgb-blue),.07);   border-color: rgba(var(--rgb-blue),.16); }
+  .skill-chip:hover { background: rgba(79, 70, 229, .16); color: var(--text); transform: translateY(-1px); }.skill-chip.blue   { color: var(--blue);   background: rgba(var(--rgb-blue),.07);   border-color: rgba(var(--rgb-blue),.16); }
   .skill-chip.blue:hover   { background: rgba(var(--rgb-blue),.16); color: var(--blue); }
   .skill-chip.green  { color: var(--green);  background: rgba(var(--rgb-green),.07);   border-color: rgba(var(--rgb-green),.16); }
   .skill-chip.green:hover  { background: rgba(var(--rgb-green),.16); color: var(--green); }
@@ -1699,8 +1598,6 @@
   .footer-links a:hover { color: var(--accent); }
   .footer-sep { color: rgba(255, 255, 255, .15); }
 
-  /* Lives in .fab-dock now — the dock owns positioning and show/hide. Made quiet
-     and secondary so it doesn't compete with the Ask button next to it. */
   .back-to-top {
     position: static;
     display: flex;
@@ -1833,9 +1730,7 @@
     .hero .subtitle         { font-size: 1.05rem; }
     .hero-avatar            { width: 130px; height: 130px; }
     .hero-top               { flex-direction: column; text-align: center; }
-    .hero-info              { text-align: center; }
-    .hero-langs             { justify-content: center; }
-    .stats-bar              { grid-template-columns: repeat(2, 1fr); }
+    .hero-info              { text-align: center; }.stats-bar              { grid-template-columns: repeat(2, 1fr); }
     .section-title          { font-size: 1.65rem; }
     .project-grid           { grid-template-columns: 1fr; }
     .project-grid-2         { grid-template-columns: 1fr; }
@@ -1846,11 +1741,7 @@
     .github-repos-grid      { grid-template-columns: 1fr; }
     .skill-row-label        { min-width: 110px; }
     .cert-grid              { grid-template-columns: 1fr; }
-    nav .nav-links          { display: none; }
-    .venture-img            { height: 200px; }
-    .venture-grid           { grid-template-columns: 1fr; }
-    .venture-features       { columns: 1; }
-    .carousel-track .card   { flex: 0 0 calc(100vw - 80px); }
+    nav .nav-links          { display: none; }.venture-grid           { grid-template-columns: 1fr; }.carousel-track .card   { flex: 0 0 calc(100vw - 80px); }
     .journey-card           { flex: 0 0 calc(100vw - 80px); }
     .journey-step-label     { display: none; }
     .github-stats-row       { grid-template-columns: repeat(2, 1fr); }
@@ -1923,9 +1814,7 @@
   .sc-close:hover { color: #fff; background: var(--pink); border-color: transparent; transform: rotate(90deg); }
   .sc-body { overflow: auto; padding: 22px; }
   .sc-body::-webkit-scrollbar { width: 9px; }
-  .sc-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 8px; }
-  .sc-tabs { display: flex; gap: 6px; padding: 12px 20px 0; flex-shrink: 0; flex-wrap: wrap; }
-  .sc-tab {
+  .sc-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 8px; }.sc-tab {
     cursor: pointer; padding: 8px 16px; border-radius: 10px 10px 0 0;
     font-size: .85rem; font-weight: 600; color: var(--text2);
     background: transparent; border: 1px solid transparent; border-bottom: none;
@@ -2119,7 +2008,6 @@
     .dash-kpis { grid-template-columns: repeat(2,1fr); }
     .sc-body { padding: 16px; }
   }
-
 
 .badge,.badge.green,.badge.orange,.badge.pink,.badge.blue{color:var(--text2);background:var(--chip);border-color:var(--border)}
 .badge:hover,.badge.green:hover,.badge.orange:hover,.badge.pink:hover,.badge.blue:hover{background:rgba(17,24,39,.09);color:var(--text);transform:translateY(-2px)}

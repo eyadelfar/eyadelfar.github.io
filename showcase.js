@@ -21,7 +21,7 @@ const SC_TEMPLATES = `
             <div class="kq-leaf"><div class="kq-page kq-page--center">
               <div class="kq-eyebrow">Dedication</div>
               <div class="kq-divider"></div>
-              <p class="kq-body-text" style="font-style:italic;font-size:1.2rem">For us &mdash; for every quiet moment we almost forgot, and every loud one we never could.</p>
+              <p class="kq-body-text" style="font-style:italic;font-size:1.2rem">For us, for every quiet moment we almost forgot, and every loud one we never could.</p>
               <div class="kq-pagenum">i</div>
             </div><span class="kq-edge"></span></div>
 
@@ -37,7 +37,7 @@ const SC_TEMPLATES = `
               <div class="kq-eyebrow">Chapter Two</div>
               <h3 class="kq-h">Every Single Day</h3>
               <div class="kq-photo" style="background:linear-gradient(135deg,#cfe0f0,#a9c4e6)"><span>day 2,700 of our streak</span></div>
-              <p class="kq-body-text">August 4th &mdash; day one of our streak. Over 2,700 days of talking, never missed one. Through exams, distance, everything. Not a single day of silence.</p>
+              <p class="kq-body-text">August 4th, day one of our streak. Over 2,700 days of talking, never missed one. Through exams, distance, everything. Not a single day of silence.</p>
               <div class="kq-pagenum">2</div>
             </div><span class="kq-edge"></span></div>
 
@@ -45,7 +45,7 @@ const SC_TEMPLATES = `
               <div class="kq-eyebrow">Chapter Three</div>
               <h3 class="kq-h">The Surprise</h3>
               <div class="kq-photo" style="background:linear-gradient(135deg,#f0d2da,#dca7b8)"><span>flowers, and a flight she didn't know about</span></div>
-              <p class="kq-body-text">She didn't know I was on that flight. I showed up at her door on her birthday, flowers in hand, heart pounding. Her face &mdash; I'll never forget it.</p>
+              <p class="kq-body-text">She didn't know I was on that flight. I showed up at her door on her birthday, flowers in hand, heart pounding. Her face. I'll never forget it.</p>
               <div class="kq-pagenum">3</div>
             </div><span class="kq-edge"></span></div>
 
@@ -60,7 +60,7 @@ const SC_TEMPLATES = `
               <div class="kq-eyebrow">Chapter Four</div>
               <h3 class="kq-h">The Long Way Home</h3>
               <div class="kq-photo" style="background:linear-gradient(135deg,#e9dcc4,#d2bd92)"><span>the longer route, on purpose</span></div>
-              <p class="kq-body-text">She fell asleep on my shoulder during that long drive home. I took the longer route on purpose &mdash; I wasn't ready for the night to end.</p>
+              <p class="kq-body-text">She fell asleep on my shoulder during that long drive home. I took the longer route on purpose, because I wasn't ready for the night to end.</p>
               <div class="kq-pagenum">5</div>
             </div><span class="kq-edge"></span></div>
 
@@ -75,15 +75,15 @@ const SC_TEMPLATES = `
             <span class="kq-counter">Cover</span>
             <button class="kq-btn kq-next" aria-label="Next page"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
           </div>
-          <p style="color:var(--text2);font-size:.82rem">Tap the page or use the arrows to turn. AI arranges <em>your</em> photos and <em>your</em> words &mdash; it never replaces your feelings.</p>
+          <p style="color:var(--text2);font-size:.82rem">Tap the page or use the arrows to turn. AI arranges <em>your</em> photos and <em>your</em> words. It never replaces your feelings.</p>
         </div>
       </div>
     </div>
 
     <div class="sc-pane" data-kqpane="readme">
       <div class="readme">
-        <h4>KeepQuill &mdash; AI-Powered Memory Book Generator</h4>
-        <p>Your photos and your own feelings, arranged into a beautiful, print-ready memory book in minutes. The words and moments are yours &mdash; KeepQuill just gives them shape. The AI <strong>structures and arranges</strong>; it never replaces the sender's emotions.</p>
+        <h4>KeepQuill, an AI-Powered Memory Book Generator</h4>
+        <p>Your photos and your own feelings, arranged into a beautiful, print-ready memory book in minutes. The words and moments are yours. KeepQuill just gives them shape. The AI <strong>structures and arranges</strong>; it never replaces the sender's emotions.</p>
         <div class="rm-grid">
           <div class="rm-stat"><b>16+</b><span>design templates</span></div>
           <div class="rm-stat"><b>7</b><span>book structures</span></div>
@@ -98,7 +98,7 @@ const SC_TEMPLATES = `
           <span class="rm-step">AI writes captions</span><span class="rm-arrow">&rarr;</span>
           <span class="rm-step">Edit &amp; export PDF</span>
         </div>
-        <p>Photos are grouped by time, place, people and mood, distributed across chapters and spreads, then captioned and titled automatically. The editor is fully WYSIWYG &mdash; what you arrange on screen is exactly what gets printed.</p>
+        <p>Photos are grouped by time, place, people and mood, distributed across chapters and spreads, then captioned and titled automatically. The editor is fully WYSIWYG: what you arrange on screen is exactly what gets printed.</p>
         <h4>Key features</h4>
         <ul>
           <li>Smart photo grouping with automatic quality &amp; duplicate detection</li>
@@ -287,7 +287,7 @@ const SC_TEMPLATES = `
   <div id="tpl-attendance">
     <video class="sc-video" src="videos/attendance.mp4" controls autoplay loop playsinline></video>
     <div class="readme" style="margin-top:18px">
-      <p>One-shot face-recognition attendance pipeline (<strong>graduation thesis</strong>): YOLO detects faces, RetinaFace + MTCNN align them, and DeepFace embeddings match against a single enrollment photo per person &mdash; no retraining needed to add someone. Marked attendance streams to MySQL via MS SSIS and a live Power BI dashboard.</p>
+      <p>One-shot face-recognition attendance pipeline (<strong>graduation thesis</strong>): YOLO detects faces, RetinaFace + MTCNN align them, and DeepFace embeddings match against a single enrollment photo per person, with no retraining needed to add someone. Marked attendance streams to MySQL via MS SSIS and a live Power BI dashboard.</p>
       <div class="rm-flow">
         <span class="rm-step">Camera</span><span class="rm-arrow">&rarr;</span>
         <span class="rm-step">YOLO detect</span><span class="rm-arrow">&rarr;</span>
@@ -307,7 +307,7 @@ const SC_TEMPLATES = `
       </div>
       <div class="cre-scores" id="creScores"></div>
     </div>
-    <div class="readme" style="margin-top:18px"><p style="text-align:center;color:var(--text2)">Custom TensorFlow RCNN &mdash; FocalLoss, PatchExtractor &amp; PositionalEmbedding &mdash; scoring children's artwork across 6 creativity dimensions. <strong style="color:var(--accent2)">TensorFlow &middot; Custom Layers &middot; FastAPI</strong></p></div>
+    <div class="readme" style="margin-top:18px"><p style="text-align:center;color:var(--text2)">Custom TensorFlow RCNN (FocalLoss, PatchExtractor, PositionalEmbedding) scoring children's artwork across 6 creativity dimensions. <strong style="color:var(--accent2)">TensorFlow &middot; Custom Layers &middot; FastAPI</strong></p></div>
   </div>
 `;
 (function () { const t = document.getElementById('sc-templates'); if (t) t.innerHTML = SC_TEMPLATES; })();

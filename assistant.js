@@ -1,159 +1,81 @@
-/* Résumé assistant UI — text chat and live voice, in one conversation.
- *
- * The model runs on Eyad's own Cloudflare Worker, so opening this costs the
- * visitor one small script and nothing else. The engine (chat.js) and the voice
- * client are lazy-imported on first use.
- */
-(function () {
-  'use strict';
+import { renderCitations } from './citations.js?v=1';
 
-  var engine = null;
-  var voice = null;
-  var busy = false;
-  var inCall = false;
+const launcher = document.getElementById('askBtn');
+const panel = document.getElementById('askPanel');
+if (launcher && panel && window.PORTFOLIO_API) {
+  const heroAgent = document.querySelector('.hero-agent');
+  const log = document.getElementById('askLog');
+  const form = document.getElementById('askForm');
+  const input = document.getElementById('askInput');
+  const send = document.getElementById('askSend');
+  const status = document.getElementById('askStatus');
+  const suggests = document.getElementById('askSuggests');
+  const callBtn = document.getElementById('askCall');
+  const callbar = document.getElementById('askCallbar');
+  const orb = document.getElementById('voiceOrb');
+  const voiceState = document.getElementById('voiceState');
+  const muteBtn = document.getElementById('voiceMute');
+  const hangBtn = document.getElementById('voiceHang');
 
-  var launcher = document.getElementById('askBtn');
-  var panel = document.getElementById('askPanel');
-  if (!launcher || !panel) return;
+  const STATE_LABEL = {
+    idle: 'Ready',
+    listening: 'Listening',
+    thinking: 'Thinking',
+    speaking: 'Speaking',
+  };
+  const OFFLINE = 'I cannot reach the assistant right now. His resume is at resume.pdf, and the contact form below reaches him directly.';
 
-  var heroAgent = document.querySelector('.hero-agent');
+  let engine = null;
+  let voice = null;
+  let busy = false;
+  let inCall = false;
+  let callNodes = [];
+  let interimNode = null;
 
-  var log = document.getElementById('askLog');
-  var form = document.getElementById('askForm');
-  var input = document.getElementById('askInput');
-  var send = document.getElementById('askSend');
-  var status = document.getElementById('askStatus');
-  var suggests = document.getElementById('askSuggests');
-
-  var callBtn = document.getElementById('askCall');
-  var callbar = document.getElementById('askCallbar');
-  var orb = document.getElementById('voiceOrb');
-  var vState = document.getElementById('voiceState');
-  var muteBtn = document.getElementById('voiceMute');
-  var hangBtn = document.getElementById('voiceHang');
-
-  function setStatus(text) { status.textContent = text || ''; }
-
-  /* --------------------------------------------------- availability gate */
-  /* The AI runs on a free daily quota. When it runs out, hide the entry points
-     entirely — a button that leads to "sorry, I'm offline" is worse than no
-     button, and the contact form is right there. */
-  function applyAvailability(up) {
-    var dead = up === false;
-    launcher.hidden = dead;
-    if (heroAgent) heroAgent.hidden = dead;
-    if (dead && !panel.hidden) close();
-  }
-
-  if (!window.PORTFOLIO_API) { applyAvailability(false); return; }
-  if (window.AI_AVAILABLE === false) applyAvailability(false);
-  document.addEventListener('ai-availability', function (e) { applyAvailability(e.detail.up); });
-
-  /* ------------------------------------------------------------ bubbles */
+  const track = (name) => window.trackEvent && window.trackEvent(name);
+  const scrollDown = () => { log.scrollTop = log.scrollHeight; };
+  const setStatus = (text) => { status.textContent = text || ''; };
 
   function bubble(who, text) {
-    var el = document.createElement('div');
-    el.className = 'ask-msg ask-' + who;
-    var body = document.createElement('span');
+    const el = document.createElement('div');
+    el.className = `ask-msg ask-${who}`;
+    const body = document.createElement('span');
     body.className = 'msg-text';
     body.textContent = text || '';
     el.appendChild(body);
     log.appendChild(el);
-    log.scrollTop = log.scrollHeight;
+    scrollDown();
     return el;
   }
 
-  var setText = function (el, text) { el.querySelector('.msg-text').textContent = text; };
+  const setText = (el, text) => { el.querySelector('.msg-text').textContent = text; };
 
-  /* ---------------------------------------------------------- citations */
-
-  /* bge-small scores off-topic text around 0.2-0.35 and a real match around
-     0.5-0.75. Below this is noise — it's what made "hi" cite four unrelated
-     projects. The server applies the same gate; this is belt and braces for any
-     cached client still running the old engine. */
-  var CITE_MIN = 0.42;
-
-  function citations(el, hits, overridden) {
-    var good = (hits || []).filter(function (h) {
-      return h.score === undefined || h.score >= CITE_MIN;
-    }).slice(0, 3);
-    if (!good.length) return;
-
-    var wrap = document.createElement('div');
-    wrap.className = 'ask-cites';
-
-    if (overridden) {
-      var note = document.createElement('div');
-      note.className = 'ask-note';
-      note.textContent = 'That contradicted his résumé, so this shows the source text instead.';
-      wrap.appendChild(note);
-    }
-
-    var label = document.createElement('span');
-    label.className = 'ask-cites-label';
-    label.textContent = 'Grounded in';
-    wrap.appendChild(label);
-
-    // One shared body per message: only one passage open at a time, which keeps a
-    // 400px panel from turning into an accordion.
-    var body = document.createElement('div');
-    body.className = 'ask-cite-body';
-    body.hidden = true;
-
-    good.forEach(function (h) {
-      var chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = 'ask-cite';
-      chip.setAttribute('aria-expanded', 'false');
-      chip.textContent = h.title;
-
-      if (h.score !== undefined) {
-        var score = document.createElement('span');
-        score.className = 'cite-score';
-        score.textContent = h.score.toFixed(2);
-        chip.appendChild(score);
-      }
-
-      chip.addEventListener('click', function () {
-        var open = chip.getAttribute('aria-expanded') === 'true';
-        wrap.querySelectorAll('.ask-cite').forEach(function (c) {
-          c.setAttribute('aria-expanded', 'false');
-        });
-        if (open) {
-          body.hidden = true;
-        } else {
-          chip.setAttribute('aria-expanded', 'true');
-          body.textContent = h.text || '(passage unavailable)';
-          body.hidden = false;
-        }
-        log.scrollTop = log.scrollHeight;
-      });
-
-      wrap.appendChild(chip);
-    });
-
-    wrap.appendChild(body);
-    el.appendChild(wrap);
-    log.scrollTop = log.scrollHeight;
+  function setAvailable(up) {
+    const offline = up === false;
+    launcher.hidden = offline;
+    if (heroAgent) heroAgent.hidden = offline;
+    if (offline && !panel.hidden) closePanel();
   }
 
-  /* --------------------------------------------------------- call mode */
-  /* A call is a MODE of the same conversation, not a takeover. The old version
-     hid the transcript and the input behind an orb, which threw away all context
-     and gave the visitor nowhere to go. */
+  function lastBotBubble() {
+    for (let i = callNodes.length - 1; i >= 0; i--) {
+      if (callNodes[i]?.classList.contains('ask-bot')) return callNodes[i];
+    }
+    return null;
+  }
 
-  var LABEL = { idle: 'Ready', listening: 'Listening', thinking: 'Thinking', speaking: 'Speaking' };
-
-  var callNodes = [];      // bubbles, index-aligned with the server's transcript
-  var interimNode = null;
+  function dropInterim() {
+    interimNode?.remove();
+    interimNode = null;
+  }
 
   function setCallMode(on) {
     inCall = on;
     panel.dataset.mode = on ? 'call' : 'chat';
     callbar.hidden = !on;
-    if (suggests) suggests.hidden = on;
-    callBtn.hidden = on;                       // End call in the bar owns hangup
-    input.placeholder = on ? 'Talk — or type instead…' : 'Ask a question…';
+    suggests.hidden = on;
+    callBtn.hidden = on;
+    input.placeholder = on ? 'Talk, or type instead...' : 'Ask a question...';
     if (!on) {
       orb.dataset.state = 'idle';
       orb.style.setProperty('--level', 0);
@@ -163,214 +85,219 @@
     }
   }
 
-  function dropInterim() {
-    if (interimNode) { interimNode.remove(); interimNode = null; }
+  function hangUp() {
+    voice?.endCall();
+    setCallMode(false);
+    setStatus('Call ended.');
   }
 
-  function lastBotBubble() {
-    for (var i = callNodes.length - 1; i >= 0; i--) {
-      if (callNodes[i] && callNodes[i].classList.contains('ask-bot')) return callNodes[i];
-    }
-    return null;
-  }
+  const callUi = {
+    orb,
 
-  var ui = {
-    orb: orb,
-
-    onStatus: function (s) {
-      vState.textContent = LABEL[s] || s;
-      // Drives the hint swap: the moment it starts speaking, the bar tells you
-      // you can cut it off.
-      callbar.dataset.state = s;
+    onStatus(state) {
+      voiceState.textContent = STATE_LABEL[state] || state;
+      callbar.dataset.state = state;
     },
 
-    onConnection: function (ok) {
-      if (!ok && inCall) vState.textContent = 'Reconnecting…';
+    onConnection(connected) {
+      if (!connected && inCall) voiceState.textContent = 'Reconnecting...';
     },
 
-    // A ghost bubble showing what it thinks you're saying, right now.
-    onInterim: function (text) {
+    onInterim(text) {
       if (!text) return;
       if (!interimNode) {
         interimNode = bubble('you', '');
         interimNode.classList.add('ask-interim');
       }
       setText(interimNode, text);
-      log.scrollTop = log.scrollHeight;
+      scrollDown();
     },
 
-    // Diff-render the server's transcript into real bubbles in the real log.
-    onTranscript: function (messages) {
+    onTranscript(messages) {
       dropInterim();
-      messages.forEach(function (m, i) {
-        var who = m.role === 'assistant' ? 'bot' : 'you';
-        if (!callNodes[i]) callNodes[i] = bubble(who, m.text);
-        else if (callNodes[i].querySelector('.msg-text').textContent !== m.text) {
-          setText(callNodes[i], m.text);
+      messages.forEach((message, i) => {
+        const who = message.role === 'assistant' ? 'bot' : 'you';
+        if (!callNodes[i]) callNodes[i] = bubble(who, message.text);
+        else if (callNodes[i].querySelector('.msg-text').textContent !== message.text) {
+          setText(callNodes[i], message.text);
         }
       });
-      log.scrollTop = log.scrollHeight;
+      scrollDown();
     },
 
-    onSources: function (titles) {
-      var el = lastBotBubble();
+    onSources(sources) {
+      const el = lastBotBubble();
       if (!el || el.querySelector('.ask-cites')) return;
-      citations(el, (titles || []).map(function (t) {
-        return typeof t === 'string' ? { title: t } : t;
-      }), false);
+      renderCitations(el, sources, false);
+      scrollDown();
     },
 
-    // The barge-in made visible. This is the whole point of a live voice agent.
-    onInterrupted: function () {
+    onInterrupted() {
       dropInterim();
-      var el = lastBotBubble();
+      const el = lastBotBubble();
       if (!el || el.querySelector('.cut')) return;
-      var cut = document.createElement('span');
+      const cut = document.createElement('span');
       cut.className = 'cut';
-      cut.textContent = '— cut off —';
+      cut.textContent = 'cut off';
       el.appendChild(cut);
     },
 
-    // Only brag when the number is good. A chip reading "2,400 ms" is an own goal.
-    onLatency: function (ms) {
+    onLatency(ms) {
       if (ms > 1200) return;
-      var el = lastBotBubble();
+      const el = lastBotBubble();
       if (!el || el.querySelector('.ask-latency')) return;
-      var chip = document.createElement('span');
+      const chip = document.createElement('span');
       chip.className = 'ask-latency';
-      chip.textContent = '↯ first audio ' + Math.round(ms) + ' ms';
+      chip.textContent = `first audio ${Math.round(ms)} ms`;
       el.appendChild(chip);
     },
 
-    onMute: function (muted) {
+    onMute(muted) {
       muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
       callbar.toggleAttribute('data-muted', muted);
     },
 
-    onError: function (msg) {
-      console.error('[voice]', msg);
-      if (msg === 'rate_limited') {
-        vState.textContent = 'Limit reached';
-        bubble('bot', "I've taken enough calls for today. You can still type below, or use the contact form.");
+    onError(message) {
+      console.error('[voice]', message);
+      if (message === 'rate_limited') {
+        voiceState.textContent = 'Limit reached';
+        bubble('bot', 'I have taken enough calls for today. You can still type below, or use the contact form.');
         hangUp();
         return;
       }
-      vState.textContent = 'Call failed';
-      bubble('bot', /permission|denied|NotAllowed/i.test(msg)
+      voiceState.textContent = 'Call failed';
+      bubble('bot', /permission|denied|NotAllowed/i.test(message)
         ? 'I need microphone access to talk. Allow it and press Call again.'
-        : 'Something went wrong on the call — you can still type below.');
+        : 'Something went wrong on the call. You can still type below.');
       setCallMode(false);
     },
   };
 
-  function hangUp() {
-    if (voice) voice.endCall();
-    setCallMode(false);
-    setStatus('Call ended.');
-  }
-
-  callBtn.addEventListener('click', async function () {
+  async function startCall() {
     if (inCall) return hangUp();
     try {
-      if (!voice) voice = await import('./voice.js?v=2');
+      voice ??= await import('./voice.js?v=3');
       if (!voice.isSupported()) {
-        setStatus('Your browser can’t do voice calls — type instead.');
+        setStatus('Your browser cannot do voice calls. Type instead.');
         callBtn.disabled = true;
         return;
       }
       setCallMode(true);
-      vState.textContent = 'Connecting…';
-      window.trackEvent && window.trackEvent('voice-call');
-      await voice.startCall(ui);
+      voiceState.textContent = 'Connecting...';
+      track('voice-call');
+      await voice.startCall(callUi);
     } catch (err) {
       console.error('[voice] call failed:', err);
-      ui.onError(String(err && err.message ? err.message : err));
+      callUi.onError(String(err?.message || err));
     }
-  });
+  }
 
-  hangBtn.addEventListener('click', hangUp);
-  muteBtn.addEventListener('click', function () { if (voice) voice.toggleMute(); });
-
-  /* ---------------------------------------------------------------- ask */
-
-  var FALLBACK = 'I can’t reach the assistant right now. His résumé is at ' +
-    'resume.pdf, and the contact form below reaches him directly.';
-
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    var q = input.value.trim();
-    if (!q || busy) return;
-    input.value = '';
-
-    // Mid-call, a typed question goes down the voice channel — the agent SPEAKS
-    // the answer. No local bubble: the server echoes it back as a transcript
-    // entry, and the diff-renderer paints it.
-    if (inCall && voice) {
-      voice.sendText(q);
-      return;
-    }
-
-    bubble('you', q);
+  async function ask(question) {
+    bubble('you', question);
     busy = true;
     send.disabled = true;
-    window.trackEvent && window.trackEvent('chat-message');
+    track('chat-message');
 
-    var el = bubble('bot', '');
+    const el = bubble('bot', '');
     el.classList.add('thinking');
 
     try {
-      if (!engine) engine = await import('./chat.js?v=3');
-      var out = await engine.ask(q);
+      engine ??= await import('./chat.js?v=4');
+      const answer = await engine.ask(question);
       el.classList.remove('thinking');
-      setText(el, out.reply);
-      citations(el, out.hits, out.overridden);
+      setText(el, answer.reply);
+      renderCitations(el, answer.hits, answer.overridden);
+      scrollDown();
     } catch (err) {
       el.classList.remove('thinking');
-      setText(el, err && err.message ? err.message : FALLBACK);
+      setText(el, err?.message || OFFLINE);
     }
 
     busy = false;
     send.disabled = false;
     input.focus();
-  });
+  }
 
-  /* ------------------------------------------------------------- toggle */
-
-  function open() {
+  function openPanel() {
     panel.hidden = false;
     launcher.setAttribute('aria-expanded', 'true');
     input.focus();
-    setStatus('Llama 3.3 70B · hybrid retrieval · on my own Cloudflare Worker.');
-    window.trackEvent && window.trackEvent('chat-open');
+    setStatus('Llama 3.3 70B, hybrid retrieval, on my own Cloudflare Worker.');
+    track('chat-open');
   }
-  function close() {
-    // Never leave a call running behind a closed panel — the mic would stay hot.
+
+  function closePanel() {
     if (inCall) hangUp();
     panel.hidden = true;
     launcher.setAttribute('aria-expanded', 'false');
   }
 
-  launcher.addEventListener('click', function () { panel.hidden ? open() : close(); });
-  document.getElementById('askClose').addEventListener('click', close);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !panel.hidden) close();
+  function initSuggestScroller(rail) {
+    const sync = () => {
+      const max = rail.scrollWidth - rail.clientWidth;
+      rail.dataset.edge = max < 2 ? 'none'
+        : rail.scrollLeft < 2 ? 'end'
+          : rail.scrollLeft > max - 2 ? 'start'
+            : 'both';
+    };
+
+    rail.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const step = e.deltaY * (e.deltaMode === 1 ? 16 : 1);
+      const max = rail.scrollWidth - rail.clientWidth;
+      const next = Math.min(max, Math.max(0, rail.scrollLeft + step));
+      // At either edge, hand the wheel back or the page cannot scroll past the rail.
+      if (next === rail.scrollLeft) return;
+      e.preventDefault();
+      rail.scrollLeft = next;
+    }, { passive: false });
+
+    rail.addEventListener('scroll', sync, { passive: true });
+    // The panel starts hidden, so scrollWidth is 0. Measure on resize, not once.
+    new ResizeObserver(sync).observe(rail);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question || busy) return;
+    input.value = '';
+
+    // Mid-call, a typed question goes down the voice channel and is spoken back.
+    // The server echoes it as a transcript entry, so we add no local bubble.
+    if (inCall && voice) voice.sendText(question);
+    else ask(question);
   });
 
-  document.querySelectorAll('.ask-suggest').forEach(function (b) {
-    b.addEventListener('click', function () {
-      input.value = b.textContent;
-      form.dispatchEvent(new Event('submit'));
-    });
+  launcher.addEventListener('click', () => (panel.hidden ? openPanel() : closePanel()));
+  document.getElementById('askClose').addEventListener('click', closePanel);
+  callBtn.addEventListener('click', startCall);
+  hangBtn.addEventListener('click', hangUp);
+  muteBtn.addEventListener('click', () => voice?.toggleMute());
+  log.addEventListener('cite-toggle', scrollDown);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden) closePanel();
   });
 
-  // The hero card is the above-the-fold entry point into the assistant.
-  var heroAsk = document.querySelector('.js-agent-ask');
-  var heroCall = document.querySelector('.js-agent-call');
-  if (heroAsk) heroAsk.addEventListener('click', function () { if (panel.hidden) open(); });
-  if (heroCall) {
-    heroCall.addEventListener('click', function () {
-      if (panel.hidden) open();
-      if (!inCall) callBtn.click();
+  for (const chip of document.querySelectorAll('.ask-suggest')) {
+    chip.addEventListener('click', () => {
+      input.value = chip.textContent;
+      form.requestSubmit();
     });
   }
-})();
+
+  document.querySelector('.js-agent-ask')?.addEventListener('click', () => {
+    if (panel.hidden) openPanel();
+  });
+  document.querySelector('.js-agent-call')?.addEventListener('click', () => {
+    if (panel.hidden) openPanel();
+    if (!inCall) startCall();
+  });
+
+  document.addEventListener('ai-availability', (e) => setAvailable(e.detail.up));
+  if (window.AI_AVAILABLE === false) setAvailable(false);
+  initSuggestScroller(suggests);
+} else if (launcher) {
+  launcher.hidden = true;
+}

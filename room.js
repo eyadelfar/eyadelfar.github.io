@@ -846,7 +846,7 @@
         'Voice agents run 6,000+ qualification calls every day',
         'Checks live availability, books meetings, and updates the CRM'
       ],
-      html: `<p>The Baron & Cabot copilot streams live call transcripts over <strong>WebSockets</strong> and returns <strong>sub-second</strong> objection handling and property recommendations via Vertex AI, <strong>RAG</strong>, and semantic caching. Paired <strong>AI voice agents</strong> run 6,000+ qualification calls daily — checking real-time availability, booking meetings, and updating the CRM with budget and qualification notes.</p><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">WebSockets</span><span class="tag">FastAPI</span>`
+      html: `<p>The Baron & Cabot copilot streams live call transcripts over <strong>WebSockets</strong> and returns <strong>sub-second</strong> objection handling and property recommendations via Vertex AI, <strong>RAG</strong>, and semantic caching. Paired <strong>AI voice agents</strong> run 6,000+ qualification calls daily, checking real-time availability, booking meetings, and updating the CRM with budget and qualification notes.</p><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">WebSockets</span><span class="tag">FastAPI</span>`
     };
     DATA.ai_forecast = {
       title: 'Financial Forecasting Engine', short: 'BiLSTM + Prophet forecasting that cut reporting 8h → 5min.', color: '#4ade9e',
@@ -866,7 +866,7 @@
         'Shipped alongside the MENRV.AI merchandising suite',
         'Natural prosody for global catalog content'
       ],
-      html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, expanding product accessibility across global users. It shipped alongside the MENRV.AI computer-vision merchandising suite — YOLO segmentation and <strong>Gemini VLM</strong> workflows for image editing and virtual try-on at <strong>0.85+ mAP@50</strong>, cutting catalog content creation from hours to minutes.</p><span class="tag">TTS</span><span class="tag">Gemini VLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
+      html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, expanding product accessibility across global users. It shipped alongside the MENRV.AI computer-vision merchandising suite: YOLO segmentation and <strong>Gemini VLM</strong> workflows for image editing and virtual try-on at <strong>0.85+ mAP@50</strong>, cutting catalog content creation from hours to minutes.</p><span class="tag">TTS</span><span class="tag">Gemini VLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
     };
 
     function faceCenter(obj, x, z) { obj.rotation.y = Math.atan2(-x, -z); }
@@ -2195,7 +2195,7 @@
           'AI voice agents running 6,000+ calls/day and Cloud Run automation across 30+ stages.',
           'Built KeepQuill & Favisra (personal POCs); ex-MENRV.AI, NEOMI, iSchool, e-finance.'] },
         { pane: 'kaggle', site: 'Kaggle', logo: KAGGLE_LOGO, name: 'Eyad Amin', sub: 'Kaggle · Notebooks & Competitions', href: 'https://www.kaggle.com/eyadamin1233', items: [
-          'Gamers Mental Health NLP classifier — 94% accuracy, SHAP, Bronze Notebook Medal.',
+          'Gamers Mental Health NLP classifier at 94% accuracy, with SHAP and a Bronze Notebook Medal.',
           'Certified across Pandas, Data Cleaning, Intro & Intermediate Machine Learning.',
           'Computer vision, OCR, and NLP notebooks with reproducible pipelines.'] },
       ];

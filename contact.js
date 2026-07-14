@@ -1,11 +1,3 @@
-/* Contact form.
- *
- * Posts to a Cloudflare Worker (free tier, no card). If that ever fails — the
- * Worker is down, the network is blocked, the request times out — the visitor's
- * message is NEVER lost: we hand them a pre-filled mailto: and copy the text to
- * their clipboard. A contact form that silently eats a message is worse than no
- * form at all.
- */
 (function () {
   'use strict';
 
@@ -14,13 +6,14 @@
 
   var API = window.PORTFOLIO_API || '';
   var EMAIL = 'eyadamen588@gmail.com';
+  var TIMEOUT = 20000;
 
   var statusEl = document.getElementById('contactStatus');
   var submit = document.getElementById('contactSubmit');
   var rendered = Date.now();
 
-  function setStatus(msg, kind) {
-    statusEl.textContent = msg;
+  function setStatus(message, kind) {
+    statusEl.textContent = message;
     statusEl.className = 'contact-status' + (kind ? ' ' + kind : '');
   }
 
@@ -30,14 +23,14 @@
       '&body=' + encodeURIComponent(message);
   }
 
+  // Never lose the visitor's text. If the Worker is unreachable, hand them a
+  // pre-filled mailto and put the message on their clipboard.
   async function degrade(name, message) {
     try { await navigator.clipboard.writeText(message); } catch (e) { /* not fatal */ }
-    var link = mailtoFor(name, message);
-    setStatus('', 'warn');
-    statusEl.innerHTML =
-      'Couldn’t reach the form service. <a href="' + link + '">Send it from your email app instead</a> — ' +
-      'your message has been copied to your clipboard, so nothing is lost.';
     statusEl.className = 'contact-status warn';
+    statusEl.innerHTML =
+      'I could not reach the form service. <a href="' + mailtoFor(name, message) + '">Send it from your email app instead</a>. ' +
+      'Your message is on your clipboard, so nothing is lost.';
   }
 
   form.addEventListener('submit', async function (e) {
@@ -48,28 +41,32 @@
     var message = form.message.value.trim();
 
     if (message.length < 20) {
-      setStatus('A little more detail, please — at least 20 characters.', 'warn');
+      setStatus('A little more detail, please. At least 20 characters.', 'warn');
       return;
     }
 
     submit.disabled = true;
-    setStatus('Sending…');
+    setStatus('Sending...');
 
-    if (!API) { await degrade(name, message); submit.disabled = false; return; }
+    if (!API) {
+      await degrade(name, message);
+      submit.disabled = false;
+      return;
+    }
 
-    var ctl = new AbortController();
-    var timer = setTimeout(function () { ctl.abort(); }, 20000);
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, TIMEOUT);
 
     try {
       var res = await fetch(API + '/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        signal: ctl.signal,
+        signal: controller.signal,
         body: JSON.stringify({
           name: name,
           email: email,
           message: message,
-          company: form.company.value,          // honeypot: hidden, humans leave it empty
+          company: form.company.value,
           elapsed_ms: Date.now() - rendered,
         }),
       });
@@ -80,12 +77,12 @@
       if (res.ok && data.ok) {
         form.reset();
         rendered = Date.now();
-        setStatus('Thanks — your message reached him. He’ll reply soon.', 'ok');
-        if (window.trackEvent) window.trackEvent('contact-submit', 'Contact form submitted');
+        setStatus('Thanks. Your message reached him, and he will reply soon.', 'ok');
+        window.trackEvent && window.trackEvent('contact-submit');
       } else if (data.fallback && data.fallback.mailto) {
         await degrade(name, message);
       } else {
-        setStatus(data.message || 'That didn’t go through. Try again in a moment.', 'warn');
+        setStatus(data.message || 'That did not go through. Try again in a moment.', 'warn');
       }
     } catch (err) {
       clearTimeout(timer);
