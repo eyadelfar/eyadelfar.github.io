@@ -54,12 +54,26 @@ export async function startCall(ui) {
     ui.onTranscript(messages || []);
   });
 
-  // The agent tells us which résumé sections it used, so the call can cite too.
   client.addEventListener('custommessage', function (msg) {
     try {
       var data = typeof msg === 'string' ? JSON.parse(msg) : msg;
-      if (data && data.type === 'sources') ui.onSources(data.sources || []);
+      if (!data) return;
+      // The agent tells us which résumé sections it used, so a call cites too.
+      if (data.type === 'sources') ui.onSources(data.sources || []);
+      // Barge-in. The server has been broadcasting this all along and the UI threw
+      // it away — so the agent's best feature was invisible.
+      if (data.type === 'interrupted') ui.onInterrupted();
+      if (data.type === 'rate_limited') ui.onError('rate_limited');
     } catch (e) { /* ignore */ }
+  });
+
+  // first_audio_ms is the number that proves the streaming pipeline is real.
+  client.addEventListener('metricschange', function (m) {
+    if (m && m.first_audio_ms) ui.onLatency(m.first_audio_ms);
+  });
+
+  client.addEventListener('mutechange', function (muted) {
+    ui.onMute(!!muted);
   });
 
   client.addEventListener('error', function (err) {
@@ -86,6 +100,17 @@ export async function startCall(ui) {
   client.connect();
   await opened;
   await client.startCall();   // prompts for mic permission
+}
+
+/* Typing during a live call. The server treats a text message exactly like a
+   transcribed utterance — it thinks, and then SPEAKS the answer back. This has
+   worked end-to-end since the first deploy and was simply unreachable. */
+export function sendText(text) {
+  if (client && text) client.sendText(text);
+}
+
+export function toggleMute() {
+  if (client) client.toggleMute();
 }
 
 export function endCall() {

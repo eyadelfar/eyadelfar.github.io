@@ -29,7 +29,9 @@ export async function ask(question) {
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok || !data.ok) {
-      const err = new Error(data.code || 'chat_failed');
+      // The Worker sends a human message for the cases a visitor can actually
+      // hit (rate limited, daily quota gone). Surface that, not a code.
+      const err = new Error(data.message || 'I can’t reach the assistant right now.');
       err.code = data.code;
       throw err;
     }

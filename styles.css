@@ -186,10 +186,217 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    padding: 140px 28px 100px;
+    /* Was text-align:center with a narrow column — which is what left the huge
+       dead gap under the CTA. The grid below fills the width instead. */
+    text-align: left;
+    padding: 130px 28px 80px;
     overflow: hidden;
   }
+
+  .hero-grid {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1180px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+    gap: 56px;
+    align-items: center;
+  }
+
+  .hero-identity { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+
+  /* The hero column is now ~590px, not the full page width. At the old 170px the
+     avatar + a 3.6rem name overflowed and flex-wrap stacked them. */
+  .hero-identity .hero-top {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 22px;
+    margin-bottom: 0;
+  }
+  .hero-identity .hero-avatar {
+    width: 112px;
+    height: 112px;
+    box-shadow: 0 0 40px rgba(79, 70, 229, .22);
+  }
+  .hero-identity h1 { font-size: 2.9rem; letter-spacing: -1.5px; margin-bottom: 6px; }
+  .hero-identity .subtitle { font-size: 1.02rem; margin-bottom: 4px; }
+  .hero-identity .location { font-size: .88rem; }
+
+  /* Recruiters scan for availability before anything else. Two lines of HTML. */
+  .hero-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--green);
+    background: rgba(var(--rgb-green), .09);
+    border: 1px solid rgba(var(--rgb-green), .22);
+    border-radius: 999px;
+  }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: visitorPulse 2.4s infinite;
+  }
+
+  .hero-value {
+    max-width: 40ch;
+    font-size: 1.08rem;
+    line-height: 1.65;
+    color: var(--text2);
+  }
+  .hero-value strong { color: var(--text); font-weight: 600; }
+
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn-primary, .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    padding: 13px 26px;
+    font-size: .95rem;
+    font-weight: 600;
+    border-radius: 999px;
+    transition: all .3s var(--ease);
+  }
+  .btn-primary {
+    color: #fff;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .btn-primary:hover {
+    background: var(--accent2);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(var(--rgb-accent), .32);
+  }
+  .btn-ghost {
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); transform: translateY(-2px); }
+
+  /* Secondary by design: six equal grey pills gave a phone number the same weight
+     as the résumé, which told a recruiter nothing and cost a beat of attention. */
+  .hero-icons { display: flex; gap: 10px; }
+  .hero-icons a {
+    display: grid;
+    place-items: center;
+    width: 40px; height: 40px;
+    color: var(--text2);
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all .25s var(--ease);
+  }
+  .hero-icons a:hover {
+    color: var(--accent2);
+    border-color: var(--accent2);
+    transform: translateY(-2px);
+  }
+  .hero-icons svg { width: 17px; height: 17px; }
+
+  /* Deliberately NOT .stat .num — app.js runs a count-up on those and its regex
+     reads "6,000+" as 6. These are static, and instant beats animated in a
+     five-second scan anyway. */
+  .hero-proof { display: flex; gap: 28px; flex-wrap: wrap; }
+  .hero-proof div { display: flex; flex-direction: column; }
+  .hero-proof b {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 1.32rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .hero-proof span { font-size: .78rem; color: var(--text2); }
+
+  .hero-playground-link {
+    font-size: .88rem;
+    font-weight: 500;
+    color: var(--text2);
+  }
+  .hero-playground-link:hover { color: var(--accent2); }
+
+  /* ------------------------------------------------------------ hero agent */
+  /* The best proof on this site is the site itself, so it goes above the fold
+     instead of hiding behind a floating button. */
+  .hero-agent {
+    position: relative;
+    padding: 30px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 30px 70px rgba(var(--rgb-accent), .10);
+    overflow: hidden;
+  }
+  .hero-agent[hidden] { display: none; }
+  .hero-agent::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--cyan), var(--pink));
+  }
+  .agent-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: visitorPulse 2s infinite;
+  }
+  .hero-agent h2 {
+    margin: 12px 0 10px;
+    font-size: 1.55rem;
+    line-height: 1.25;
+    letter-spacing: -.01em;
+  }
+  .agent-blurb {
+    font-size: .93rem;
+    line-height: 1.6;
+    color: var(--text2);
+    margin-bottom: 20px;
+  }
+  .agent-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .agent-ask, .agent-call {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    font: inherit;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .25s var(--ease);
+  }
+  .agent-ask { background: var(--accent); }
+  .agent-call { background: var(--green); }
+  .agent-ask:hover, .agent-call:hover { filter: brightness(1.08); transform: translateY(-2px); }
+  .agent-ask svg, .agent-call svg { width: 15px; height: 15px; }
+
+  /* A recruiter skims this line. An engineering manager reads "RRF" and knows
+     immediately that this isn't a wrapper around someone else's API. */
+  .agent-stack {
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: .74rem;
+    line-height: 1.6;
+    color: var(--text2);
+  }
+  .agent-stack b { color: var(--text); font-weight: 600; }
   .hero-bg {
     position: absolute;
     inset: 0;
@@ -408,19 +615,46 @@
   }
 
   /* ---------------------------------------------------------- contact form */
+  /* Was visibly broken: the section title anchored left (it has an accent bar)
+     while the lead and form were centred in a 620px cage, leaving a huge empty
+     gutter. Two columns fill it and read as deliberate. */
   .contact-section { padding: 72px 0 24px; }
-  .contact-lead {
-    max-width: 56ch;
-    margin: 0 auto 28px;
-    text-align: center;
-    color: var(--text2);
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+    gap: 48px;
+    align-items: start;
   }
+  .contact-intro { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .contact-lead {
+    max-width: 42ch;
+    margin: 0;
+    text-align: left;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+  .contact-promise {
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .contact-direct { display: flex; flex-direction: column; gap: 6px; font-size: .9rem; }
+  .contact-direct a { color: var(--accent2); }
+  .contact-direct a:hover { text-decoration: underline; }
+
   .contact-form {
-    max-width: 620px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+  .contact-card {
+    padding: 28px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 16px 48px rgba(var(--rgb-accent), .07);
   }
   .contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .contact-field { display: flex; flex-direction: column; gap: 6px; }
@@ -479,10 +713,26 @@
   .contact-status a { color: var(--accent2); text-decoration: underline; }
 
   /* ------------------------------------------------------------ ask widget */
-  .ask-btn {
+  /* One dock, bottom-right. Back-to-top used to sit bottom-LEFT — directly on top
+     of the experience timeline dots. It's hidden over the hero, where the agent
+     card is already the way in (and where it used to cover the mobile CTA). */
+  .fab-dock {
     position: fixed;
-    bottom: 32px; right: 32px;
-    z-index: 98;
+    right: 24px; bottom: 24px;
+    z-index: 97;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity .35s var(--ease), transform .35s var(--ease);
+  }
+  .fab-dock.show { opacity: 1; pointer-events: auto; transform: none; }
+
+  .ask-btn {
+    position: static;
     display: flex;
     align-items: center;
     gap: 9px;
@@ -580,7 +830,6 @@
   }
   @keyframes askDots { 0% { opacity: .3; } 50% { opacity: 1; } 100% { opacity: .3; } }
 
-  .ask-suggests { display: flex; flex-wrap: wrap; gap: 6px; }
   .ask-suggest {
     padding: 6px 11px;
     font: inherit;
@@ -594,22 +843,98 @@
   }
   .ask-suggest:hover { background: rgba(var(--rgb-accent), .14); }
 
-  .ask-cites { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+  /* Citations are buttons, not decoration: clicking one shows the passage the
+     answer was actually grounded in. */
+  .ask-cites {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  .ask-cites-label {
+    width: 100%;
+    font-size: .64rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 2px;
+  }
   .ask-cite {
-    padding: 3px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    font: inherit;
     font-size: .68rem;
     color: var(--text2);
     background: var(--bg2);
     border: 1px solid var(--border);
     border-radius: 999px;
-    cursor: help;
+    cursor: pointer;
+    transition: all .2s var(--ease);
   }
+  .ask-cite:hover { border-color: var(--accent2); color: var(--accent2); }
+  .ask-cite[aria-expanded="true"] {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  /* The score is the tell that the retrieval is real, not decorative. */
+  .cite-score {
+    font-variant-numeric: tabular-nums;
+    font-size: .62rem;
+    opacity: .7;
+  }
+  .ask-cite-body {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    max-height: 180px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-size: .78rem;
+    line-height: 1.6;
+    color: var(--text2);
+    background: var(--bg2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+  .ask-cite-body[hidden] { display: none; }
   .ask-note {
     width: 100%;
     font-size: .7rem;
     line-height: 1.45;
     color: var(--orange);
     margin-bottom: 4px;
+  }
+
+  /* The barge-in, made visible. The server has always broadcast this; the UI
+     used to throw it away, so the agent's best feature was invisible. */
+  .cut {
+    display: block;
+    margin-top: 6px;
+    font-size: .7rem;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--pink);
+  }
+  .ask-latency {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 8px;
+    font-size: .66rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--green);
+    background: rgba(var(--rgb-green), .1);
+    border-radius: 999px;
+  }
+  /* A ghost of what it thinks you're saying, right now. */
+  .ask-interim {
+    opacity: .6;
+    border: 1px dashed rgba(255, 255, 255, .5);
   }
 
   .ask-form {
@@ -666,17 +991,46 @@
   }
 
   /* ---------------------------------------------------------- voice call */
-  .ask-voice {
-    flex: 1;
+  /* A call is a MODE of the conversation, not a takeover. The old version hid the
+     transcript and the input behind a full-panel orb, so the visitor lost all
+     context and had nowhere to go. This bar sits above the form; the log and the
+     input stay exactly where they were. */
+  .ask-callbar {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 14px;
-    padding: 24px 18px;
-    text-align: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(var(--rgb-accent), .05), transparent);
   }
-  .ask-voice[hidden] { display: none; }
+  .ask-callbar[hidden] { display: none; }
+  .callbar-info { flex: 1; min-width: 0; }
+  .voice-hint { font-size: .7rem; line-height: 1.4; color: var(--text2); }
+
+  /* The moment it starts speaking, the bar tells you that you can cut it off.
+     That affordance is the whole difference between a voice agent and a speaker. */
+  .hint-barge { display: none; }
+  .ask-callbar[data-state="speaking"] .hint-listen { display: none; }
+  .ask-callbar[data-state="speaking"] .hint-barge {
+    display: inline;
+    color: var(--accent2);
+    font-weight: 700;
+  }
+  .ask-callbar[data-muted] .voice-orb { opacity: .35; }
+
+  .voice-mute {
+    display: grid;
+    place-items: center;
+    width: 32px; height: 32px;
+    flex: none;
+    color: var(--text2);
+    background: var(--chip);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .voice-mute svg { width: 14px; height: 14px; }
+  .voice-mute[aria-pressed="true"] { color: #fff; background: var(--pink); }
 
   /* --level is the live mic RMS, pushed in from the VoiceClient on every frame.
      Everything below scales off it, so the orb genuinely reacts to your voice
@@ -690,6 +1044,8 @@
     place-items: center;
     flex: none;
   }
+  .voice-orb--mini { width: 44px; height: 44px; }
+  .voice-orb--mini .orb-core { width: 22px; height: 22px; }
   .orb-core {
     position: relative;
     width: 58px;
@@ -740,24 +1096,17 @@
 
   .voice-state {
     font-family: 'Space Grotesk', system-ui, sans-serif;
-    font-size: .8rem;
+    font-size: .74rem;
     font-weight: 700;
     letter-spacing: .07em;
     text-transform: uppercase;
     color: var(--accent2);
   }
-  .voice-caption {
-    min-height: 3.2em;
-    max-width: 30ch;
-    font-size: .9rem;
-    line-height: 1.55;
-    color: var(--text2);
-  }
-  .voice-caption b { color: var(--text); font-weight: 600; }
   .voice-hang {
-    padding: 9px 22px;
+    padding: 8px 16px;
+    flex: none;
     font: inherit;
-    font-size: .85rem;
+    font-size: .78rem;
     font-weight: 600;
     color: #fff;
     background: #dc2626;
@@ -766,6 +1115,21 @@
     cursor: pointer;
   }
   .voice-hang:hover { background: #b91c1c; }
+
+  /* Suggestions live outside the log now — inside it, they scrolled away into
+     history the moment you sent your first message. */
+  .ask-suggests {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 10px 14px;
+    overflow-x: auto;
+    border-top: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .ask-suggests::-webkit-scrollbar { display: none; }
+  .ask-suggests[hidden] { display: none; }
+  .ask-suggest { flex: none; }
 
   .ask-call {
     display: flex;
@@ -787,11 +1151,32 @@
   .ask-call svg { width: 14px; height: 14px; }
   .ask-call[hidden] { display: none; }
 
+  @media (max-width: 960px) {
+    .hero-grid    { grid-template-columns: 1fr; gap: 34px; }
+    .contact-grid { grid-template-columns: 1fr; gap: 28px; }
+  }
+
   @media (max-width: 640px) {
-    .ask-panel { bottom: 84px; right: 12px; left: 12px; width: auto; }
-    .ask-btn   { bottom: 20px; right: 16px; padding: 11px 16px; }
+    .ask-panel  { bottom: 76px; right: 12px; left: 12px; width: auto; }
+    .fab-dock   { right: 12px; bottom: 12px; gap: 10px; }
+    .ask-btn    { padding: 11px 14px; }
     .ask-btn span { display: none; }
+    .back-to-top { width: 36px; height: 36px; }
     .contact-row { grid-template-columns: 1fr; }
+
+    .hero          { padding: 108px 20px 60px; }
+    .hero-avatar   { width: 96px; height: 96px; }
+    .hero-value    { font-size: 1rem; }
+    /* Side by side, "Download résumé" wrapped onto two lines inside its pill.
+       Full-width stacked reads better and is easier to hit with a thumb. */
+    .hero-actions  { width: 100%; flex-direction: column; }
+    .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+    .hero-proof    { gap: 18px; }
+    .hero-proof b  { font-size: 1.12rem; }
+    .hero-agent    { padding: 22px; }
+    .hero-agent h2 { font-size: 1.3rem; }
+    .agent-actions { width: 100%; }
+    .agent-ask, .agent-call { flex: 1; justify-content: center; }
   }
 
   #summary { padding-bottom: 56px; }
@@ -1314,29 +1699,25 @@
   .footer-links a:hover { color: var(--accent); }
   .footer-sep { color: rgba(255, 255, 255, .15); }
 
+  /* Lives in .fab-dock now — the dock owns positioning and show/hide. Made quiet
+     and secondary so it doesn't compete with the Ask button next to it. */
   .back-to-top {
-    position: fixed;
-    /* Left, not right: the "Ask my résumé" launcher owns the bottom-right corner. */
-    bottom: 32px; left: 32px;
-    z-index: 99;
+    position: static;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     cursor: pointer;
-    color: #fff;
-    border: none;
-    background: var(--accent);
-    box-shadow: 0 8px 32px rgba(79, 70, 229, .32);
-    opacity: 0;
-    transform: translateY(20px) scale(.8);
-    transition: all .4s var(--ease);
+    color: var(--text2);
+    background: var(--glass);
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+    transition: all .3s var(--ease);
   }
-  .back-to-top.show  { opacity: 1; transform: translateY(0) scale(1); }
-  .back-to-top:hover { background: var(--accent2); transform: translateY(-3px) scale(1.08); }
+  .back-to-top:hover { color: var(--accent2); border-color: var(--accent2); transform: translateY(-2px); }
 
   .github-stats-row {
     display: grid;

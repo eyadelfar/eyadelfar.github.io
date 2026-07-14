@@ -131,7 +131,11 @@
   </script>
 
   <script type="module" src="room.js"></script>
-  <script data-goatcounter="https://eyadelfar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-  <script src="analytics.js?v=1" defer></script>
+  <script>
+    /* analytics.js talks to my own Worker — the visitor pill and event tracking
+       are first-party, so an ad blocker can't make a recruiter invisible. */
+    window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
+  </script>
+  <script src="analytics.js?v=2" defer></script>
 </body>
 </html>

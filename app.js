@@ -24,7 +24,7 @@ const sections = document.querySelectorAll('section[id]');
   el.textContent = `${fmt(start)} – ${fmt(now)}`;
 })();
 
-const backToTop = document.querySelector('.back-to-top');
+const fabDock = document.getElementById('fabDock');
 const heroBg = document.querySelector('.hero-bg');
 let ticking = false;
 
@@ -38,7 +38,9 @@ function rebuildSecCache() {
 function onScroll() {
   const y = window.scrollY;
   nav.classList.toggle('scrolled', y > 60);
-  if (backToTop) backToTop.classList.toggle('show', y > 500);
+  // Hidden over the hero: the agent card there is already the way in, and the
+  // dock used to cover the "Enter the Playground" CTA on mobile.
+  if (fabDock) fabDock.classList.toggle('show', y > window.innerHeight * 0.6);
   const scrollY = y + 140;
   for (const s of secCache) {
     if (s.link && scrollY >= s.top && scrollY < s.bottom) {

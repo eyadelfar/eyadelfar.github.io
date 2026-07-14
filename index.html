@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=1">
+<link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
 
@@ -37,30 +37,76 @@
 
 <header class="hero" id="top">
   <div class="hero-bg"></div>
-  <div class="hero-content">
-    <div class="hero-top">
-      <img src="me.webp" alt="Eyad Elfar" class="hero-avatar">
-      <div class="hero-info">
-        <h1><span>Eyad Elfar</span></h1>
-        <div class="subtitle">AI Engineer &middot; ML, LLM, Agentic &amp; Production AI Systems</div>
-        <div class="location">Dubai, UAE</div>
-        <div class="hero-langs">
-          <span class="hero-lang">Arabic: Native</span>
-          <span class="hero-lang">English: Professional</span>
+  <div class="hero-grid">
+
+    <div class="hero-identity">
+      <span class="hero-status"><span class="status-dot"></span>Open to AI Engineer roles &middot; Dubai / Remote</span>
+
+      <div class="hero-top">
+        <img src="me.webp" alt="Eyad Elfar" class="hero-avatar" width="112" height="112" fetchpriority="high">
+        <div class="hero-info">
+          <h1><span>Eyad Elfar</span></h1>
+          <div class="subtitle">AI Engineer &middot; ML, LLM, Agentic &amp; Production AI Systems</div>
+          <div class="location">Dubai, UAE &middot; Arabic (native), English (professional)</div>
         </div>
       </div>
+
+      <p class="hero-value">I build AI systems that survive contact with production &mdash; real-time
+      copilots, voice agents handling <strong>6,000+ calls a day</strong>, and computer vision running
+      live in Dubai.</p>
+
+      <div class="hero-actions">
+        <a href="resume.pdf" target="_blank" class="btn-primary" data-track="resume-download">Download résumé</a>
+        <a href="#contact" class="btn-ghost">Get in touch</a>
+      </div>
+
+      <div class="hero-icons">
+        <a href="mailto:eyadamen588@gmail.com" aria-label="Email" title="Email" data-track="email-click">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/eyadelfar/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn" data-track="out-linkedin">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.44-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zm1.78 13.02H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        </a>
+        <a href="https://github.com/eyadelfar" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub" data-track="out-github">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.1.82-.26.82-.58 0-.28-.01-1.23-.02-2.23-3.01.55-3.79-.74-4.03-1.41-.14-.35-.72-1.41-1.23-1.7-.42-.22-1.02-.78-.02-.79.95-.02 1.62.87 1.85 1.23 1.08 1.82 2.81 1.31 3.5.99.1-.78.42-1.3.76-1.6-2.67-.3-5.46-1.34-5.46-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.54-1.53.12-3.18 0 0 1-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.04.13 3 .4c2.3-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.23 1.9 1.23 3.22 0 4.61-2.81 5.63-5.48 5.93.44.37.81 1.1.81 2.22 0 1.6-.02 2.9-.02 3.3 0 .32.22.69.82.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a href="https://www.kaggle.com/eyadamin1233" target="_blank" rel="noopener" aria-label="Kaggle" title="Kaggle" data-track="out-kaggle">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.83 23.68a.4.4 0 0 1-.32.15h-2.9a.5.5 0 0 1-.4-.19l-4.3-5.45-1.2 1.15v4.14a.35.35 0 0 1-.35.35H7.06a.35.35 0 0 1-.35-.35V.35c0-.23.12-.35.35-.35h2.3c.23 0 .35.12.35.35v14.16l6.1-6.17a.5.5 0 0 1 .39-.16h3c.16 0 .27.07.32.22.05.16.03.28-.06.38l-6.44 6.23 6.86 8.32c.1.11.11.24.04.38z"/></svg>
+        </a>
+      </div>
+
+      <div class="hero-proof">
+        <div><b>6,000+</b><span>AI calls / day</span></div>
+        <div><b>12+</b><span>production systems</span></div>
+        <div><b>500M+</b><span>records analysed</span></div>
+      </div>
+
+      <a href="interactive_room.html?play=1" class="hero-playground-link" data-track="playground-enter">
+        Or walk through my work in a 3D room &rarr;
+      </a>
     </div>
-    <div class="hero-links">
-      <a href="mailto:eyadamen588@gmail.com" data-goatcounter-click="email-click">Email</a>
-      <a href="tel:+971589794339" data-goatcounter-click="phone-click">+971 58 979 4339</a>
-      <a href="https://www.linkedin.com/in/eyadelfar/" target="_blank" data-goatcounter-click="out-linkedin">LinkedIn</a>
-      <a href="https://github.com/eyadelfar" target="_blank" data-goatcounter-click="out-github">GitHub</a>
-      <a href="https://www.kaggle.com/eyadamin1233" target="_blank" data-goatcounter-click="out-kaggle">Kaggle</a>
-      <a href="resume.pdf" target="_blank" data-goatcounter-click="resume-download">Résumé</a>
-    </div>
-    <div class="hero-cta">
-      <a href="interactive_room.html?play=1" class="hero-playground" data-goatcounter-click="playground-enter"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" x2="10" y1="11" y2="11"/><line x1="8" x2="8" y1="9" y2="13"/><line x1="15" x2="15.01" y1="12" y2="12"/><line x1="18" x2="18.01" y1="10" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg> Enter the Playground</a>
-    </div>
+
+    <!-- The best proof on this site is the site itself. Put it above the fold. -->
+    <aside class="hero-agent">
+      <span class="agent-live"><span class="live-dot"></span>Live</span>
+      <h2>Ask my résumé.<br>Or call it, and talk to it.</h2>
+      <p class="agent-blurb">A real voice agent, not a chatbot. It listens, thinks, and speaks &mdash;
+      and you can cut it off mid-sentence, like a person.</p>
+      <div class="agent-actions">
+        <button type="button" class="agent-ask js-agent-ask">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Ask a question
+        </button>
+        <button type="button" class="agent-call js-agent-call">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call it
+        </button>
+      </div>
+      <p class="agent-stack">Llama 3.3 70B &middot; hybrid retrieval (BGE embeddings + BM25, fused with
+      RRF) &middot; Deepgram STT/TTS &middot; Cloudflare Workers + Durable Objects.
+      <b>Built and hosted by me.</b></p>
+    </aside>
+
   </div>
 </header>
 
@@ -742,13 +788,23 @@
 
 </div>
 
-<button class="back-to-top" onclick="window.scrollTo({top:0});">&uarr;</button>
-
 <section id="contact" class="contact-section reveal">
   <div class="container">
-    <div class="section-title">Get in touch</div>
-    <p class="contact-lead">Have a role, a project, or a question? Send it straight to my inbox.</p>
-    <form id="contactForm" class="contact-form" novalidate>
+    <div class="contact-grid">
+
+      <div class="contact-intro">
+        <div class="section-title">Get in touch</div>
+        <p class="contact-lead">Have a role, a project, or a question? This goes straight to my inbox
+        &mdash; no form service in between, just a Worker I wrote.</p>
+        <p class="contact-promise">I usually reply within a day.</p>
+        <div class="contact-direct">
+          <a href="mailto:eyadamen588@gmail.com" data-track="email-click">eyadamen588@gmail.com</a>
+          <a href="https://www.linkedin.com/in/eyadelfar/" target="_blank" rel="noopener" data-track="out-linkedin">linkedin.com/in/eyadelfar</a>
+        </div>
+        <span class="hero-status"><span class="status-dot"></span>Open to AI Engineer roles &middot; Dubai / Remote</span>
+      </div>
+
+    <form id="contactForm" class="contact-form contact-card" novalidate>
       <div class="contact-row">
         <label class="contact-field">
           <span>Name</span>
@@ -771,6 +827,8 @@
       <button type="submit" id="contactSubmit" class="contact-submit">Send message</button>
       <p id="contactStatus" class="contact-status" role="status" aria-live="polite"></p>
     </form>
+
+    </div>
   </div>
 </section>
 
@@ -786,14 +844,14 @@
     <span class="footer-sep">&middot;</span>
     <a href="tel:+971589794339">+971 58 979 4339</a>
     <span class="footer-sep">&middot;</span>
-    <a href="resume.pdf" target="_blank" data-goatcounter-click="resume-download-footer">Résumé</a>
+    <a href="resume.pdf" target="_blank" data-track="resume-download-footer">Résumé</a>
     <span class="footer-sep">&middot;</span>
-    <a href="interactive_room.html?play=1" data-goatcounter-click="playground-enter-footer">Playground</a>
+    <a href="interactive_room.html?play=1" data-track="playground-enter-footer">Playground</a>
   </div>
   <p style="margin-top:14px;">Eyad Elfar &middot; AI Engineer &middot; Dubai, UAE &middot; 2026</p>
 </footer>
 
-<script src="app.js?v=1" defer></script>
+<script src="app.js?v=2" defer></script>
 
 <div id="sc-modal" class="sc-modal" onclick="if(event.target===this)closeShowcase()">
   <div class="sc-dialog">
@@ -808,43 +866,58 @@
 
 <div id="sc-templates" hidden></div>
 
-<script src="showcase.js?v=1" defer></script>
+<script src="showcase.js?v=2" defer></script>
 
-<button id="askBtn" class="ask-btn" aria-expanded="false" aria-controls="askPanel">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  <span>Ask my résumé</span>
-</button>
+<!-- One dock, bottom-right. Back-to-top used to live bottom-left, on top of the
+     experience timeline dots. It hides entirely over the hero, where the agent
+     card is already the entry point. -->
+<div class="fab-dock" id="fabDock">
+  <button class="back-to-top" onclick="window.scrollTo({top:0});" aria-label="Back to top">&uarr;</button>
+  <button id="askBtn" class="ask-btn" aria-expanded="false" aria-controls="askPanel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Ask my résumé</span>
+  </button>
+</div>
 
-<div id="askPanel" class="ask-panel" hidden>
+<div id="askPanel" class="ask-panel" data-mode="chat" hidden>
   <div class="ask-head">
     <div>
       <h3>Ask my résumé</h3>
-      <p>Open weights, hybrid retrieval, live voice — on an API I built and host. <em>Press Call and talk over me.</em></p>
+      <p>Open weights, hybrid retrieval, live voice &mdash; on an API I built and host.</p>
     </div>
     <button id="askClose" class="ask-close" aria-label="Close">&#10005;</button>
   </div>
 
   <div id="askLog" class="ask-log">
-    <div class="ask-msg ask-bot">Ask about Eyad's experience, the systems he's shipped, or how he built something. Or press <strong>Call</strong> and just talk to me.</div>
-    <div class="ask-suggests">
-      <button class="ask-suggest" type="button">How does his real-time sales copilot work?</button>
-      <button class="ask-suggest" type="button">What's the hardest thing he's shipped to production?</button>
-      <button class="ask-suggest" type="button">Has he deployed computer vision at scale?</button>
-      <button class="ask-suggest" type="button">Why should I hire him?</button>
-    </div>
+    <div class="ask-msg ask-bot"><span class="msg-text">Ask about Eyad's experience, the systems he's shipped, or how he built something. Or press Call and just talk to me — you can interrupt me mid-sentence.</span></div>
   </div>
 
-  <!-- Voice call stage: replaces the transcript while a call is live. -->
-  <div id="askVoice" class="ask-voice" hidden>
-    <div id="voiceOrb" class="voice-orb" data-state="idle">
+  <!-- Live call bar. It sits ABOVE the form and never hides the conversation. -->
+  <div id="askCallbar" class="ask-callbar" data-state="idle" hidden>
+    <div id="voiceOrb" class="voice-orb voice-orb--mini" data-state="idle">
       <span class="orb-ring"></span>
       <span class="orb-ring"></span>
       <span class="orb-core"></span>
     </div>
-    <div id="voiceState" class="voice-state">Connecting…</div>
-    <div id="voiceCaption" class="voice-caption"></div>
-    <div id="voiceCites" class="ask-cites"></div>
+    <div class="callbar-info">
+      <div id="voiceState" class="voice-state">Connecting…</div>
+      <div class="voice-hint">
+        <span class="hint-listen">Just talk — I'm listening.</span>
+        <span class="hint-barge">Talk any time to cut me off.</span>
+      </div>
+    </div>
+    <button type="button" id="voiceMute" class="voice-mute" aria-pressed="false" aria-label="Mute microphone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+    </button>
     <button type="button" id="voiceHang" class="voice-hang">End call</button>
+  </div>
+
+  <!-- Out of the log, so they never scroll away into history. -->
+  <div id="askSuggests" class="ask-suggests">
+    <button class="ask-suggest" type="button">How does his real-time sales copilot work?</button>
+    <button class="ask-suggest" type="button">What's the hardest thing he's shipped?</button>
+    <button class="ask-suggest" type="button">Has he deployed computer vision at scale?</button>
+    <button class="ask-suggest" type="button">Why should I hire him?</button>
   </div>
 
   <form id="askForm" class="ask-form">
@@ -859,15 +932,15 @@
 </div>
 
 <script>
-  /* My Cloudflare Worker: contact form + the résumé assistant (Workers AI).
-     If it's ever unreachable, the contact form degrades to a pre-filled mailto:
-     and the assistant hides itself, rather than failing in the visitor's face. */
+  /* My Cloudflare Worker: contact form, résumé chat, and the live voice agent.
+     If it's unreachable — or the day's free AI quota is gone — the assistant
+     hides itself and the contact form takes over, rather than failing in the
+     visitor's face. */
   window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
 </script>
 
-<script data-goatcounter="https://eyadelfar.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-<script src="analytics.js?v=1" defer></script>
-<script src="contact.js?v=1" defer></script>
-<script src="assistant.js?v=1" defer></script>
+<script src="analytics.js?v=2" defer></script>
+<script src="contact.js?v=2" defer></script>
+<script src="assistant.js?v=2" defer></script>
 </body>
 </html>
