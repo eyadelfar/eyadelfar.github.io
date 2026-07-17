@@ -35,7 +35,7 @@
     display: block; font-family: 'Space Grotesk', system-ui, sans-serif;
     font-size: 1.7rem; letter-spacing: -.02em; font-variant-numeric: tabular-nums;
   }
-  .st-kpi span { font-size: .75rem; color: var(--text2); }
+  .st-kpi span { font-size: .75rem; color: var(--text2); text-wrap: balance; }
   .st-card { padding: 18px 20px; background: var(--glass); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 18px; }
   .st-card h2 { font-size: .74rem; text-transform: uppercase; letter-spacing: .09em; color: var(--text2); margin-bottom: 12px; }
   .st-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
@@ -75,11 +75,13 @@
   .st-reset:hover { color: #dc2626; border-color: #dc2626; }
   .st-sessions td { padding: 9px 0; }
   .st-sessions td:last-child, .st-sessions th:last-child { text-align: left; width: 44%; }
-  /* The bar makes a long session visible at a glance instead of read one by one. */
+  /* The bar makes a long session visible at a glance instead of read one by one.
+     --w is a share of the longest visit shown, so the widest bar is always full. */
   .st-dur {
-    display: inline-block; min-width: 74px; padding: 3px 9px; border-radius: 6px;
+    display: block; position: relative; padding: 5px 10px; border-radius: 6px;
     font-size: .78rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text);
-    background: linear-gradient(90deg, rgba(var(--rgb-accent), .18) var(--w), transparent var(--w));
+    background: linear-gradient(90deg, rgba(var(--rgb-accent), .16) var(--w), transparent var(--w));
+    box-shadow: inset 2px 0 0 var(--accent);
   }
   .st-portfolio { color: var(--accent); background: rgba(var(--rgb-accent), .1); }
   .st-room      { color: var(--cyan);   background: rgba(var(--rgb-cyan), .12); }
@@ -102,6 +104,6 @@
 <script>
   window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
 </script>
-<script type="module" src="stats.js?v=5"></script>
+<script type="module" src="stats.js?v=6"></script>
 </body>
 </html>

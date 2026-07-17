@@ -40,6 +40,9 @@ function render(s) {
   const quota = Object.fromEntries((s.usage_today || []).map((u) => [u.kind, u.count]));
   const sessions = s.sessions || [];
   const reach = s.reach || {};
+  // Bars scale to the longest visit shown, not a fixed ceiling: against a fixed
+  // 5 minutes every real session paints a sliver and the bar says nothing.
+  const peak = Math.max(...(s.recent || []).map((r) => r.ms), 1);
   const room = sessions.find((x) => x.page === 'room');
   const site = sessions.find((x) => x.page === 'portfolio');
 
@@ -80,7 +83,7 @@ function render(s) {
              <td><span class="st-tag st-${r.page}">${PAGE[r.page] || esc(r.page)}</span></td>
              <td class="st-when">${esc(r.country || '??')}</td>
              <td class="st-when">${when(r.started)}</td>
-             <td><span class="st-dur" style="--w:${Math.min(100, (r.ms / 300000) * 100)}%">${dur(r.ms)}</span></td>
+             <td><span class="st-dur" style="--w:${((r.ms / peak) * 100).toFixed(1)}%">${dur(r.ms)}</span></td>
            </tr>`).join('')}</tbody></table>`
         : '<p class="st-empty">No sessions recorded yet.</p>'}
       ${sessions.length
