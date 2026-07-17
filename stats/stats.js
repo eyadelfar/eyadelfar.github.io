@@ -39,6 +39,7 @@ function render(s) {
   const rating = s.rating || {};
   const quota = Object.fromEntries((s.usage_today || []).map((u) => [u.kind, u.count]));
   const sessions = s.sessions || [];
+  const reach = s.reach || {};
   const room = sessions.find((x) => x.page === 'room');
   const site = sessions.find((x) => x.page === 'portfolio');
 
@@ -84,7 +85,7 @@ function render(s) {
         : '<p class="st-empty">No sessions recorded yet.</p>'}
       ${sessions.length
         ? `<p class="st-foot">${sessions.map((r) => `${PAGE[r.page] || r.page}: ${r.people} ${r.people === 1 ? 'person' : 'people'}, ${r.sessions} sessions, median ${dur(r.median)}, longest ${dur(r.longest)}`).join(' &middot; ')}${
-            site?.people && room?.people ? ` &middot; ${Math.round((room.people / site.people) * 100)}% go into the playground` : ''}</p>`
+            reach.people ? ` &middot; ${Math.round((reach.room / reach.people) * 100)}% of visitors open the playground` : ''}</p>`
         : ''}
     </div>
 
