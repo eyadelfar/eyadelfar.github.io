@@ -699,6 +699,75 @@
   .contact-direct a { color: var(--accent2); }
   .contact-direct a:hover { text-decoration: underline; }
 
+  .rate {
+    width: 100%;
+    margin-top: 6px;
+    padding: 16px 18px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .rate[hidden] { display: none; }
+  .rate-head strong { display: block; font-size: .92rem; }
+  .rate-head span {
+    display: block;
+    margin-top: 3px;
+    font-size: .78rem;
+    line-height: 1.5;
+    color: var(--text2);
+  }
+  .rate-stars { display: flex; gap: 2px; margin: 10px 0 0 -4px; }
+  .rate-star {
+    padding: 4px;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 0;
+    color: var(--border);
+    transition: color .15s var(--ease), transform .15s var(--ease);
+  }
+  .rate-star svg { width: 22px; height: 22px; fill: currentColor; }
+  .rate-star.on { color: #eab308; }
+  .rate-star:hover { transform: scale(1.12); }
+  .rate-star:focus-visible { outline: 2px solid var(--accent2); outline-offset: 1px; }
+
+  .rate-more { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .rate-more[hidden] { display: none; }
+  .rate-more textarea,
+  .rate-more input {
+    width: 100%;
+    padding: 9px 11px;
+    font: inherit;
+    font-size: .85rem;
+    color: var(--text);
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    resize: vertical;
+  }
+  .rate-more textarea:focus,
+  .rate-more input:focus { outline: none; border-color: var(--accent2); }
+  .rate-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .rate-send {
+    align-self: flex-start;
+    padding: 9px 18px;
+    font: inherit;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .rate-send:hover { background: var(--accent2); }
+  .rate-send:disabled { opacity: .55; cursor: not-allowed; }
+  .rate-status { margin-top: 8px; font-size: .76rem; color: var(--text2); }
+  .rate-status.warn { color: var(--orange); }
+  .rate-status:empty { display: none; }
+  .rate-done { font-size: .9rem; font-weight: 600; color: var(--green); }
+
   .contact-form {
     max-width: none;
     margin: 0;
@@ -822,6 +891,7 @@
   }
   .ask-panel[hidden] { display: none; }
   .ask-head {
+    flex: none;
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -839,8 +909,14 @@
     color: var(--text2);
     cursor: pointer;
     line-height: 1;
-  }.ask-log {
-    flex: 1;
+  }
+
+  /* flex-basis must stay auto. At flex-basis 0 the log's shrink factor is 0, so
+     once the panel hits max-height every overflowing pixel comes out of the
+     suggestion rail and the form instead, and the rail collapses to nothing. */
+  .ask-log {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     padding: 16px 18px;
     display: flex;
@@ -874,7 +950,7 @@
   @keyframes askDots { 0% { opacity: .3; } 50% { opacity: 1; } 100% { opacity: .3; } }
 
   .ask-suggest {
-    padding: 6px 11px;
+    padding: 7px 12px;
     font: inherit;
     font-size: .76rem;
     color: var(--accent2);
@@ -977,6 +1053,7 @@
   }
 
   .ask-form {
+    flex: none;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1018,6 +1095,7 @@
 
   
   .ask-callbar {
+    flex: none;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1133,10 +1211,12 @@
 
   .ask-suggests {
     --fade: 22px;
+    flex: none;
     display: flex;
     flex-wrap: nowrap;
-    gap: 6px;
-    padding: 10px 14px 9px;
+    align-items: center;
+    gap: 7px;
+    padding: 13px 14px 12px;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     border-top: 1px solid var(--border);

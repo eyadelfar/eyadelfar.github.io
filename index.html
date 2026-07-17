@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 
@@ -827,6 +827,25 @@
           <a href="https://www.linkedin.com/in/eyadelfar/" target="_blank" rel="noopener" data-track="out-linkedin">linkedin.com/in/eyadelfar</a>
         </div>
         <span class="hero-status"><span class="status-dot"></span>Open to AI Engineer roles &middot; Dubai / Remote</span>
+
+        <form class="rate" id="rateForm" novalidate>
+          <div class="rate-head">
+            <strong>Any thoughts?</strong>
+            <span>Rate it, tell me what you think, or tell me what is broken. No name needed.</span>
+          </div>
+          <div class="rate-stars" id="rateStars" role="radiogroup" aria-label="Rating out of 5"></div>
+          <div class="rate-more" id="rateMore" hidden>
+            <textarea id="rateComment" rows="3" maxlength="1000"
+                      placeholder="Optional. Anything at all."></textarea>
+            <input type="text" id="rateContact" maxlength="200" autocomplete="email"
+                   placeholder="Email, only if you want a reply">
+            <div class="rate-hp" aria-hidden="true">
+              <label>Company <input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+            </div>
+            <button type="submit" class="rate-send" id="rateSend">Send feedback</button>
+          </div>
+          <p class="rate-status" id="rateStatus" role="status" aria-live="polite"></p>
+        </form>
       </div>
 
     <form id="contactForm" class="contact-form contact-card" novalidate>
@@ -962,6 +981,7 @@
 
 <script src="analytics.js?v=4" defer></script>
 <script src="contact.js?v=3" defer></script>
+<script src="rate.js?v=1" defer></script>
 <script type="module" src="assistant.js?v=4"></script>
 </body>
 </html>
