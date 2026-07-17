@@ -43,7 +43,10 @@ function render(s) {
   const site = sessions.find((x) => x.page === 'portfolio');
 
   board.innerHTML = `
-    <div class="st-head"><h1>Traffic</h1></div>
+    <div class="st-head">
+      <h1>Traffic</h1>
+      <button type="button" class="st-reset" id="stReset">Reset</button>
+    </div>
     <p class="st-sub">First-party, counted on my own Worker. Nothing here is public.</p>
 
     <div class="st-kpis">
@@ -69,13 +72,19 @@ function render(s) {
     </div>
 
     <div class="st-card">
-      <h2>Sessions <span class="st-note">engaged time only, so a backgrounded tab does not count. Median, because one abandoned tab wrecks an average.</span></h2>
-      ${sessions.length
-        ? table(sessions, ['Page', 'People', 'Sessions', 'Median', 'Longest'],
-            (r) => [PAGE[r.page] || esc(r.page), r.people, r.sessions, dur(r.median), dur(r.longest)])
+      <h2>Every session <span class="st-note">engaged time, so a backgrounded tab does not count</span></h2>
+      ${s.recent?.length
+        ? `<table class="st-sessions"><thead><tr><th>Page</th><th>Country</th><th>When</th><th>Time on page</th></tr></thead>
+           <tbody>${s.recent.map((r) => `<tr>
+             <td><span class="st-tag st-${r.page}">${PAGE[r.page] || esc(r.page)}</span></td>
+             <td class="st-when">${esc(r.country || '??')}</td>
+             <td class="st-when">${when(r.started)}</td>
+             <td><span class="st-dur" style="--w:${Math.min(100, (r.ms / 300000) * 100)}%">${dur(r.ms)}</span></td>
+           </tr>`).join('')}</tbody></table>`
         : '<p class="st-empty">No sessions recorded yet.</p>'}
-      ${site?.people && room?.people
-        ? `<p class="st-foot">${Math.round((room.people / site.people) * 100)}% of visitors go into the playground.</p>`
+      ${sessions.length
+        ? `<p class="st-foot">${sessions.map((r) => `${PAGE[r.page] || r.page}: ${r.people} ${r.people === 1 ? 'person' : 'people'}, ${r.sessions} sessions, median ${dur(r.median)}, longest ${dur(r.longest)}`).join(' &middot; ')}${
+            site?.people && room?.people ? ` &middot; ${Math.round((room.people / site.people) * 100)}% go into the playground` : ''}</p>`
         : ''}
     </div>
 
@@ -125,8 +134,20 @@ function render(s) {
     </div>`;
 
   chart(document.getElementById('stChart'), s.series || []);
+  document.getElementById('stReset').addEventListener('click', reset);
   lock.hidden = true;
   board.hidden = false;
+}
+
+async function reset() {
+  if (!confirm('Wipe sessions, questions, feedback and events?\n\nView and visitor counts are kept. This cannot be undone.')) return;
+  const res = await fetch(`${API}/reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key: localStorage.getItem(STORE), confirm: 'reset' }),
+  });
+  if (res.ok) location.reload();
+  else alert('Reset failed.');
 }
 
 async function open(key) {
