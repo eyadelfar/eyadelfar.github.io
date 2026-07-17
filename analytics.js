@@ -28,6 +28,54 @@
     if (el) window.trackEvent(el.getAttribute('data-track'));
   }, { passive: true });
 
+  /* Engaged time, not wall-clock: a backgrounded tab is not a visitor reading.
+     No browser fires a reliable "left the page" event, so we report repeatedly
+     and let the server keep the longest for this session id. */
+  function trackSession() {
+    if (!API) return;
+
+    var id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    var page = window.PORTFOLIO_PAGE || 'portfolio';
+    var engaged = 0;
+    var since = Date.now();
+    var visible = document.visibilityState === 'visible';
+
+    function accrue() {
+      if (visible) engaged += Date.now() - since;
+      since = Date.now();
+    }
+
+    function report() {
+      accrue();
+      if (engaged < 1000) return;
+      var body = JSON.stringify({ id: id, page: page, ms: engaged });
+      try {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(API + '/session', new Blob([body], { type: 'text/plain;charset=UTF-8' }));
+        } else {
+          fetch(API + '/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+            body: body,
+            keepalive: true,
+          }).catch(function () {});
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      accrue();
+      visible = document.visibilityState === 'visible';
+      since = Date.now();
+      if (!visible) report();
+    });
+
+    // pagehide, not beforeunload: beforeunload never fires on iOS.
+    window.addEventListener('pagehide', report);
+    // Insurance for a session that ends without either event firing.
+    setInterval(report, 60000);
+  }
+
   function setAvailability(up) {
     window.AI_AVAILABLE = up;
     document.dispatchEvent(new CustomEvent('ai-availability', { detail: { up: up } }));
@@ -136,4 +184,5 @@
   } else {
     visit();
   }
+  trackSession();
 })();

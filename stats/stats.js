@@ -18,6 +18,14 @@ const day = (iso) =>
 
 const stars = (n) => `<span class="st-stars">${'★'.repeat(n)}<i>${'★'.repeat(5 - n)}</i></span>`;
 
+const dur = (ms) => {
+  if (!ms) return '&ndash;';
+  const s = Math.round(ms / 1000);
+  return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
+};
+
+const PAGE = { portfolio: 'Portfolio', room: 'Playground' };
+
 const when = (iso) => new Date(iso).toLocaleString('en-GB', {
   day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
 });
@@ -30,6 +38,9 @@ const table = (rows, head, cells) => rows?.length
 function render(s) {
   const rating = s.rating || {};
   const quota = Object.fromEntries((s.usage_today || []).map((u) => [u.kind, u.count]));
+  const sessions = s.sessions || [];
+  const room = sessions.find((x) => x.page === 'room');
+  const site = sessions.find((x) => x.page === 'portfolio');
 
   board.innerHTML = `
     <div class="st-head"><h1>Traffic</h1></div>
@@ -42,6 +53,9 @@ function render(s) {
       <div class="st-kpi"><b>${rating.avg ?? '&ndash;'}</b><span>Avg rating (${rating.n || 0})</span></div>
       <div class="st-kpi"><b>${quota.chat || 0}</b><span>Chat today of ${s.limits.chat.siteDay}</span></div>
       <div class="st-kpi"><b>${s.chat_available ? 'Up' : 'Resting'}</b><span>Assistant</span></div>
+      <div class="st-kpi"><b>${room?.people ?? 0}</b><span>Joined the playground</span></div>
+      <div class="st-kpi"><b>${dur(site?.median)}</b><span>Median visit</span></div>
+      <div class="st-kpi"><b>${dur(room?.median)}</b><span>Median playground</span></div>
       <div class="st-kpi"><b>${s.weak?.n ?? 0}</b><span>Weak retrievals</span></div>
     </div>
 
@@ -52,6 +66,17 @@ function render(s) {
         <span><i class="swatch swatch-views"></i>Views</span>
       </div>
       <div class="visitor-chart" id="stChart"></div>
+    </div>
+
+    <div class="st-card">
+      <h2>Sessions <span class="st-note">engaged time only, so a backgrounded tab does not count. Median, because one abandoned tab wrecks an average.</span></h2>
+      ${sessions.length
+        ? table(sessions, ['Page', 'People', 'Sessions', 'Median', 'Longest'],
+            (r) => [PAGE[r.page] || esc(r.page), r.people, r.sessions, dur(r.median), dur(r.longest)])
+        : '<p class="st-empty">No sessions recorded yet.</p>'}
+      ${site?.people && room?.people
+        ? `<p class="st-foot">${Math.round((room.people / site.people) * 100)}% of visitors go into the playground.</p>`
+        : ''}
     </div>
 
     <div class="st-card">
