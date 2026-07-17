@@ -46,12 +46,17 @@
 
   var wired = false;
 
+  function setNum(id, value) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = Number(value).toLocaleString();
+  }
+
   function render(data) {
     var pill = document.getElementById('visitorPill');
     if (!pill || !data || !data.uniques) return;
 
-    document.getElementById('visitorUniques').textContent = Number(data.uniques).toLocaleString();
-    document.getElementById('visitorViews').textContent = Number(data.views || data.uniques).toLocaleString();
+    setNum('visitorUniques', data.uniques);
+    setNum('visitorViews', data.views || data.uniques);
     pill.hidden = false;
 
     var series = data.series || [];

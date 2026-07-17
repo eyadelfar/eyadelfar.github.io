@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Traffic</title>
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="stylesheet" href="../styles.css?v=5">
+<style>
+  body { background: var(--bg2); }
+  .st-wrap { max-width: 980px; margin: 0 auto; padding: 40px 20px 80px; }
+  .st-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .st-head h1 { font-size: 1.5rem; letter-spacing: -.02em; }
+  .st-sub { color: var(--text2); font-size: .85rem; margin-bottom: 26px; }
+
+  .st-lock { max-width: 340px; margin: 14vh auto; text-align: center; }
+  .st-lock h1 { font-size: 1.3rem; margin-bottom: 6px; }
+  .st-lock p { color: var(--text2); font-size: .85rem; margin-bottom: 18px; }
+  .st-lock form { display: flex; gap: 8px; }
+  .st-lock input {
+    flex: 1; padding: 11px 14px; font: inherit; font-size: .9rem;
+    background: var(--glass); border: 1px solid var(--border); border-radius: 10px; color: var(--text);
+  }
+  .st-lock input:focus { outline: none; border-color: var(--accent2); }
+  .st-lock button {
+    padding: 11px 20px; font: inherit; font-weight: 600; color: #fff;
+    background: var(--accent); border: none; border-radius: 10px; cursor: pointer;
+  }
+  .st-err { color: var(--orange); font-size: .8rem; margin-top: 10px; min-height: 1em; }
+
+  .st-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .st-kpi { padding: 16px 18px; background: var(--glass); border: 1px solid var(--border); border-radius: 14px; }
+  .st-kpi b {
+    display: block; font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 1.7rem; letter-spacing: -.02em; font-variant-numeric: tabular-nums;
+  }
+  .st-kpi span { font-size: .75rem; color: var(--text2); }
+  .st-card { padding: 18px 20px; background: var(--glass); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 18px; }
+  .st-card h2 { font-size: .74rem; text-transform: uppercase; letter-spacing: .09em; color: var(--text2); margin-bottom: 12px; }
+  .st-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .st-cols { grid-template-columns: 1fr; } }
+
+  .st-legend { display: flex; gap: 16px; font-size: .78rem; color: var(--text2); margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  th { text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text2); padding: 0 0 8px; }
+  td { padding: 8px 0; border-top: 1px solid var(--border); vertical-align: top; }
+  td:last-child, th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .st-empty { color: var(--text2); font-size: .85rem; font-style: italic; }
+  .st-stars { color: #eab308; letter-spacing: 1px; white-space: nowrap; }
+  .st-stars i { color: var(--border); font-style: normal; }
+  .st-when { color: var(--text2); font-size: .75rem; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="st-lock" id="lock">
+  <h1>Traffic</h1>
+  <p>Private dashboard.</p>
+  <form id="lockForm">
+    <input type="password" id="lockKey" placeholder="Password" autocomplete="current-password" autofocus>
+    <button type="submit">Open</button>
+  </form>
+  <p class="st-err" id="lockErr"></p>
+</div>
+
+<div class="st-wrap" id="board" hidden></div>
+
+<script>
+  window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
+</script>
+<script type="module" src="stats.js?v=1"></script>
+</body>
+</html>
