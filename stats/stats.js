@@ -18,6 +18,10 @@ const day = (iso) =>
 
 const stars = (n) => `<span class="st-stars">${'★'.repeat(n)}<i>${'★'.repeat(5 - n)}</i></span>`;
 
+const when = (iso) => new Date(iso).toLocaleString('en-GB', {
+  day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC',
+});
+
 const table = (rows, head, cells) => rows?.length
   ? `<table><thead><tr>${head.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${
       rows.map((r) => `<tr>${cells(r).map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`
@@ -38,6 +42,7 @@ function render(s) {
       <div class="st-kpi"><b>${rating.avg ?? '&ndash;'}</b><span>Avg rating (${rating.n || 0})</span></div>
       <div class="st-kpi"><b>${quota.chat || 0}</b><span>Chat today of ${s.limits.chat.siteDay}</span></div>
       <div class="st-kpi"><b>${s.chat_available ? 'Up' : 'Resting'}</b><span>Assistant</span></div>
+      <div class="st-kpi"><b>${s.weak?.n ?? 0}</b><span>Weak retrievals</span></div>
     </div>
 
     <div class="st-card">
@@ -47,6 +52,24 @@ function render(s) {
         <span><i class="swatch swatch-views"></i>Views</span>
       </div>
       <div class="visitor-chart" id="stChart"></div>
+    </div>
+
+    <div class="st-card">
+      <h2>What people asked <span class="st-note">last ${(s.turns || []).length}, newest first. A low score means retrieval struggled.</span></h2>
+      ${s.turns?.length
+        ? `<table class="st-turns"><tbody>${s.turns.map((t) => `<tr>
+            <td class="st-kind"><span class="st-tag st-${t.kind.replace(' ', '-')}">${t.kind}</span></td>
+            <td>
+              <div class="st-q">${esc(t.question)}</div>
+              ${t.reply ? `<div class="st-a">${esc(t.reply)}</div>` : ''}
+            </td>
+            <td class="st-when">
+              ${t.score != null ? `<span class="st-score ${t.score < 0.45 ? 'weak' : ''}">${t.score.toFixed(2)}</span><br>` : ''}
+              ${t.overridden ? '<span class="st-flag">overridden</span><br>' : ''}
+              ${esc(t.country || '??')} &middot; ${when(t.ts)}
+            </td>
+          </tr>`).join('')}</tbody></table>`
+        : '<p class="st-empty">Nobody has asked anything yet.</p>'}
     </div>
 
     <div class="st-card">

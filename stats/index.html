@@ -50,6 +50,21 @@
   .st-stars { color: #eab308; letter-spacing: 1px; white-space: nowrap; }
   .st-stars i { color: var(--border); font-style: normal; }
   .st-when { color: var(--text2); font-size: .75rem; white-space: nowrap; }
+  .st-note { font-weight: 400; text-transform: none; letter-spacing: 0; margin-left: 8px; }
+  .st-turns td { padding: 12px 0; }
+  .st-kind { width: 92px; }
+  .st-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .st-chat  { color: var(--accent);  background: rgba(var(--rgb-accent), .1); }
+  .st-voice { color: var(--green);   background: rgba(var(--rgb-green), .12); }
+  .st-small-talk { color: var(--text2); background: var(--chip); }
+  .st-q { font-weight: 600; color: var(--text); }
+  .st-a { margin-top: 4px; color: var(--text2); font-size: .82rem; line-height: 1.5; }
+  .st-score { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--green); }
+  .st-score.weak { color: var(--orange); }
+  .st-flag { font-size: .66rem; font-weight: 700; color: var(--orange); }
 </style>
 </head>
 <body>
@@ -69,6 +84,6 @@
 <script>
   window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
 </script>
-<script type="module" src="stats.js?v=1"></script>
+<script type="module" src="stats.js?v=2"></script>
 </body>
 </html>
