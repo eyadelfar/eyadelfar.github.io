@@ -6,3 +6,4 @@ github_token.txt
 # OS / editor cruft
 Thumbs.db
 .DS_Store
+_*.mjs
