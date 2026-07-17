@@ -270,12 +270,15 @@
   }
 
   .hero {
+    /* The banner reads through now, so hero secondary text needs more weight.
+       #6b7280 is 4.83:1 on white and fails the moment the background is tinted. */
+    --text2: #4b5563;
     position: relative;
     min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
-    
     text-align: left;
     padding: 130px 28px 80px;
     overflow: hidden;
@@ -292,22 +295,45 @@
     align-items: center;
   }
 
-  .hero-identity { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .hero-identity { display: flex; flex-direction: column; align-items: flex-start; }
 
-  .hero-identity .hero-top {
-    justify-content: flex-start;
-    flex-wrap: nowrap;
+  .hero-top {
+    display: flex;
+    align-items: center;
     gap: 22px;
-    margin-bottom: 0;
+    margin-bottom: 20px;
   }
-  .hero-identity .hero-avatar {
-    width: 112px;
-    height: 112px;
-    box-shadow: 0 0 40px rgba(79, 70, 229, .22);
+  .hero-info { min-width: 0; }
+  .hero-avatar {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 40px rgba(var(--rgb-accent), .22);
+    flex-shrink: 0;
   }
-  .hero-identity h1 { font-size: 2.9rem; letter-spacing: -1.5px; margin-bottom: 6px; }
-  .hero-identity .subtitle { font-size: 1.02rem; margin-bottom: 4px; }
-  .hero-identity .location { font-size: .88rem; }
+  .hero h1 {
+    font-size: 2.9rem;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    margin-bottom: 6px;
+  }
+  .hero h1 span {
+    color: var(--accent);
+    background: linear-gradient(120deg, var(--accent), var(--cyan));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--accent2);
+    margin-bottom: 3px;
+  }
+  .hero .location { font-size: .88rem; color: var(--text2); }
 
   .hero-status {
     display: inline-flex;
@@ -330,16 +356,19 @@
 
   .hero-value {
     max-width: 40ch;
+    margin-bottom: 28px;
     font-size: 1.08rem;
     line-height: 1.65;
     color: var(--text2);
   }
   .hero-value strong { color: var(--text); font-weight: 600; }
 
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
   .btn-primary, .btn-ghost {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    line-height: 1.2;
     padding: 13px 26px;
     font-size: .95rem;
     font-weight: 600;
@@ -364,14 +393,14 @@
   }
   .btn-ghost:hover { border-color: var(--accent2); color: var(--accent2); transform: translateY(-2px); }
 
-  .hero-icons { display: flex; gap: 10px; }
+  .hero-icons { display: flex; gap: 10px; margin-bottom: 24px; }
   .hero-icons a {
     display: grid;
     place-items: center;
     width: 40px; height: 40px;
     color: var(--text2);
-    background: var(--glass);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(17, 24, 39, .10);
     border-radius: 12px;
     transition: all .25s var(--ease);
   }
@@ -382,15 +411,6 @@
   }
   .hero-icons svg { width: 17px; height: 17px; }
 
-  .hero-proof { display: flex; gap: 28px; flex-wrap: wrap; }
-  .hero-proof div { display: flex; flex-direction: column; }
-  .hero-proof b {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    font-size: 1.32rem;
-    font-weight: 800;
-    color: var(--text);
-  }
-  .hero-proof span { font-size: .78rem; color: var(--text2); }
 
   .hero-playground-link {
     display: inline-flex;
@@ -400,8 +420,8 @@
     font-size: .82rem;
     font-weight: 500;
     color: var(--text2);
-    background: var(--bg2);
-    border: 1px solid var(--border);
+    background: rgba(247, 247, 249, .72);
+    border: 1px solid rgba(17, 24, 39, .10);
     border-radius: 999px;
     transition: color .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
   }
@@ -428,10 +448,12 @@
   .hero-agent {
     position: relative;
     padding: 30px;
-    background: var(--glass);
-    border: 1px solid var(--border);
+    /* Frosted, not blurred: the backdrop is already a soft 2px-blurred wash, so
+       backdrop-filter would re-blur it every parallax frame for no pixels. */
+    background: rgba(255, 255, 255, .72);
+    border: 1px solid rgba(17, 24, 39, .10);
     border-radius: 22px;
-    box-shadow: 0 30px 70px rgba(var(--rgb-accent), .10);
+    box-shadow: 0 24px 60px rgba(var(--rgb-accent), .12);
     overflow: hidden;
   }
   .hero-agent[hidden] { display: none; }
@@ -503,80 +525,27 @@
     inset: 0;
     z-index: 0;
     background: url('images/hero_banner.webp') center / cover no-repeat;
-    opacity: .18;
-    filter: blur(3px);
-    transition: transform .1s linear;
+    opacity: .30;
+    filter: blur(2px);
+    /* No transition: app.js sets transform every rAF frame, so a transition
+       restarts each frame and fights the loop. */
+    will-change: transform;
   }
   .hero-bg::after {
     content: '';
     position: absolute;
     inset: 0;
+    /* opacity on .hero-bg composites this veil WITH the banner as one group, so
+       these alphas are effectively multiplied by .30. Ends at #fff, not --bg, so
+       there is no seam where the hero meets .stats-bar. */
     background:
-      radial-gradient(ellipse at 50% 30%, rgba(79, 70, 229, .10) 0%, transparent 60%),
-      linear-gradient(180deg, rgba(255, 255, 255, .30) 0%, var(--bg) 100%);
+      radial-gradient(ellipse at 50% 28%, rgba(var(--rgb-accent), .12) 0%, transparent 62%),
+      linear-gradient(180deg,
+        rgba(255, 255, 255, .34) 0%,
+        rgba(255, 255, 255, .42) 50%,
+        rgba(255, 255, 255, .56) 88%,
+        #fff 100%);
   }
-  .hero-content { position: relative; z-index: 1; }
-  .hero-top {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 36px;
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-  }
-  .hero-avatar {
-    width: 170px;
-    height: 170px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--accent);
-    box-shadow: 0 0 60px rgba(79, 70, 229, .28), 0 0 120px rgba(79, 70, 229, .10);
-    animation: float 6s ease-in-out infinite;
-    flex-shrink: 0;
-  }
-  .hero-info { text-align: left; }@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-14px); }
-  }
-  .hero h1 {
-    font-size: 3.6rem;
-    font-weight: 900;
-    letter-spacing: -2px;
-    margin-bottom: 10px;
-  }
-  .hero h1 span {
-    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--cyan), var(--accent));
-    background-size: 100% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero .subtitle {
-    font-size: 1.3rem;
-    color: var(--accent2);
-    font-weight: 500;
-    margin-bottom: 10px;
-    opacity: 0;
-    animation: fadeUp .8s .3s var(--ease) forwards;
-  }
-  .hero .location {
-    color: var(--text2);
-    font-size: 1rem;
-    margin-bottom: 32px;
-    opacity: 0;
-    animation: fadeUp .8s .5s var(--ease) forwards;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }.hero-playground {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 13px 34px; border-radius: 12px;
-    font-size: .98rem; font-weight: 700;
-    color: #fff; background: var(--accent); border: 1px solid var(--accent);
-    white-space: nowrap;
-    transition: background .25s, transform .25s, box-shadow .25s;
-  }
-  .hero-playground:hover { background: var(--accent2); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 34px rgba(79, 70, 229, .3); }
 
   .reveal {
     opacity: 0;
@@ -1183,6 +1152,10 @@
   @keyframes orbBreathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
   @keyframes orbSpin    { to { transform: rotate(360deg); } }
   @keyframes orbPulse   { 0%,100% { transform: scale(1); } 50% { transform: scale(1.13); } }
+  @media (prefers-reduced-transparency: reduce) {
+    .hero-agent, .hero-icons a { background: var(--glass); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .orb-core, .orb-ring { animation: none !important; transition: none; }
   }
@@ -1264,8 +1237,16 @@
   .ask-call svg { width: 14px; height: 14px; }
   .ask-call[hidden] { display: none; }
 
+  /* ------------------------------------------------------------------
+     Width-based media queries carry NO specificity. An override must repeat
+     the base rule's selector VERBATIM: `.hero-avatar` inside a query does not
+     beat `.hero-identity .hero-avatar` outside one. That is what silently
+     pinned the mobile avatar at 112px while this block claimed 96px.
+     Corollary: one generation of CSS per component, at one specificity level.
+     ------------------------------------------------------------------ */
+
   @media (max-width: 960px) {
-    .hero-grid    { grid-template-columns: 1fr; gap: 34px; }
+    .hero-grid    { grid-template-columns: 1fr; gap: 24px; }
     .contact-grid { grid-template-columns: 1fr; gap: 28px; }
   }
 
@@ -1277,18 +1258,22 @@
     .back-to-top { width: 36px; height: 36px; }
     .contact-row { grid-template-columns: 1fr; }
 
-    .hero          { padding: 108px 20px 60px; }
-    .hero-avatar   { width: 96px; height: 96px; }
-    .hero-value    { font-size: 1rem; }
-    
-    .hero-actions  { width: 100%; flex-direction: column; }
-    .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
-    .hero-proof    { gap: 18px; }
-    .hero-proof b  { font-size: 1.12rem; }
-    .hero-agent    { padding: 22px; }
-    .hero-agent h2 { font-size: 1.3rem; }
-    .agent-actions { width: 100%; }
-    .agent-ask, .agent-call { flex: 1; justify-content: center; }
+    /* Hugging the content beats min-height here: on a tall phone the hero would
+       otherwise re-inject dead space and push the agent card back below the fold. */
+    .hero          { min-height: 0; align-items: flex-start; padding: 84px 20px 48px; }
+    .hero-top      { gap: 14px; margin-bottom: 16px; }
+    .hero-avatar   { width: 76px; height: 76px; }
+    .hero h1       { font-size: 2.05rem; letter-spacing: -1px; }
+    .hero .subtitle { font-size: .98rem; }
+    .hero-value    { font-size: 1rem; margin-bottom: 22px; }
+    .hero-actions  { align-self: stretch; gap: 10px; margin-bottom: 14px; }
+    .btn-primary, .btn-ghost { flex: 1 1 auto; white-space: nowrap; padding: 12px 14px; font-size: .9rem; }
+    .hero-icons    { margin-bottom: 18px; }
+
+    .hero-agent    { padding: 20px; background: rgba(255, 255, 255, .90); }
+    .hero-agent h2 { font-size: 1.25rem; }
+    .agent-actions { margin-bottom: 14px; }
+    .agent-ask, .agent-call { flex: 1 1 auto; white-space: nowrap; justify-content: center; padding: 11px 14px; font-size: .85rem; }
   }
 
   #summary { padding-bottom: 56px; }
@@ -1922,11 +1907,7 @@
   }
 
   @media (max-width: 768px) {
-    .hero h1                { font-size: 2.4rem; }
-    .hero .subtitle         { font-size: 1.05rem; }
-    .hero-avatar            { width: 130px; height: 130px; }
-    .hero-top               { flex-direction: column; text-align: center; }
-    .hero-info              { text-align: center; }.stats-bar              { grid-template-columns: repeat(2, 1fr); }
+    .stats-bar              { grid-template-columns: repeat(2, 1fr); }
     .section-title          { font-size: 1.65rem; }
     .project-grid           { grid-template-columns: 1fr; }
     .project-grid-2         { grid-template-columns: 1fr; }
