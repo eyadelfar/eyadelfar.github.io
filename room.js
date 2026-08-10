@@ -819,14 +819,14 @@
     };
 
     DATA.ai_arscore = {
-      title: 'AR Creativity Scoring (NEOMI)', short: 'An AR learning engine that scores 15,000+ students’ block compositions.', color: '#ffd166',
+      title: 'AR Creativity Scoring (NEOMI)', short: 'An AR learning engine that scores 10K+ students’ block compositions.', color: '#ffd166',
       lines: [
         'A ResNet fine-tuned in PyTorch reads spatial features from the blocks',
         'Six metrics: Readability, Flexibility, Elaboration, Uniqueness, Mindfulness, Fluency',
-        'LLM-based evaluator reached 92% alignment with educators',
+        'LLM-based evaluator reached 90%+ alignment with educators',
         'Press [E] to score the next sample composition'
       ],
-      html: `<p>For an AR learning platform serving <strong>15,000+ students</strong> across 20 German schools, I built the core engine that scores the shapes children build out of physical blocks. A <strong>ResNet fine-tuned in PyTorch</strong> extracts spatial features from each abstract block composition, feeding six creativity metrics.</p><p>An LLM-based evaluator reached <strong>92% alignment</strong> with educator creativity benchmarks. MLflow tracked experiments and model versions; CI/CD + self-updating dashboards cut debugging 75% and grading time 60%.</p><span class="tag">PyTorch</span><span class="tag">ResNet</span><span class="tag">LLM Eval</span><span class="tag">MLflow</span><span class="tag">CI/CD</span>`
+      html: `<p>For an AR learning platform serving <strong>10K+ students</strong> across 20+ school deployments, I built the core engine that scores the shapes children build out of physical blocks. A <strong>ResNet fine-tuned in PyTorch</strong> extracts spatial features from each abstract block composition, feeding six creativity metrics.</p><p>An LLM-based evaluator reached <strong>90%+ alignment</strong> with educator creativity benchmarks. MLflow tracked experiments and model versions; CI/CD + self-updating dashboards cut debugging 75% and grading time 60%.</p><span class="tag">PyTorch</span><span class="tag">ResNet</span><span class="tag">LLM Eval</span><span class="tag">MLflow</span><span class="tag">CI/CD</span>`
     };
     DATA.ai_cv = {
       title: 'Computer Vision · Real-time Detection', short: 'YOLOv8 detection powering environmental & attendance systems.', color: '#ff6b6b',
@@ -843,20 +843,20 @@
       lines: [
         'Live call transcript streamed over WebSockets',
         'RAG + semantic caching on Vertex AI → sub-second guidance',
-        'Voice agents run 6,000+ qualification calls every day',
+        'Voice agents run thousands of qualification calls every day',
         'Checks live availability, books meetings, and updates the CRM'
       ],
-      html: `<p>The Baron & Cabot copilot streams live call transcripts over <strong>WebSockets</strong> and returns <strong>sub-second</strong> objection handling and property recommendations via Vertex AI, <strong>RAG</strong>, and semantic caching. Paired <strong>AI voice agents</strong> run 6,000+ qualification calls daily, checking real-time availability, booking meetings, and updating the CRM with budget and qualification notes.</p><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">WebSockets</span><span class="tag">FastAPI</span>`
+      html: `<p>The Baron & Cabot copilot streams live call transcripts over <strong>WebSockets</strong> and returns <strong>sub-second</strong> objection handling and property recommendations via Vertex AI, <strong>RAG</strong>, and semantic caching. Paired <strong>AI voice agents</strong> run thousands of qualification calls daily, checking real-time availability, booking meetings, and updating the CRM with budget and qualification notes.</p><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">WebSockets</span><span class="tag">FastAPI</span>`
     };
     DATA.ai_forecast = {
-      title: 'Financial Forecasting Engine', short: 'BiLSTM + Prophet forecasting that cut reporting 8h → 5min.', color: '#4ade9e',
+      title: 'Financial Forecasting Engine', short: 'Forecasting engine that cut reporting 8h → 5min.', color: '#4ade9e',
       lines: [
-        'BiLSTM + Prophet ensemble with 20+ technical indicators',
+        'Ensemble forecasting over 20+ technical indicators',
         'Collapsed reporting time from 8 hours to 5 minutes',
         'Confidence bands for risk-aware decisions',
         'Built at MENRV.AI for merchandising analytics'
       ],
-      html: `<p>A financial forecasting engine combining <strong>BiLSTM</strong> and <strong>Prophet</strong> over 20+ technical indicators, with confidence intervals for risk-aware planning. It collapsed reporting cycles from <strong>8 hours to 5 minutes</strong>, freeing analysts for higher-value work.</p><span class="tag">BiLSTM</span><span class="tag">Prophet</span><span class="tag">Time Series</span><span class="tag">Forecasting</span>`
+      html: `<p>A financial forecasting engine built over 20+ technical indicators, with confidence intervals for risk-aware planning. It collapsed reporting cycles from <strong>8 hours to 5 minutes</strong>, freeing analysts for higher-value work.</p><span class="tag">Technical Indicators</span><span class="tag">Time Series</span><span class="tag">Forecasting</span>`
     };
     DATA.ai_tts = {
       title: 'Multilingual TTS · 50+ Languages', short: 'Text-to-speech that expanded a product’s global accessibility.', color: '#b09afa',
@@ -866,7 +866,7 @@
         'Shipped alongside the MENRV.AI merchandising suite',
         'Natural prosody for global catalog content'
       ],
-      html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, expanding product accessibility across global users. It shipped alongside the MENRV.AI computer-vision merchandising suite: YOLO segmentation and <strong>Gemini VLM</strong> workflows for image editing and virtual try-on at <strong>0.85+ mAP@50</strong>, cutting catalog content creation from hours to minutes.</p><span class="tag">TTS</span><span class="tag">Gemini VLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
+      html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, expanding product accessibility across global users. It shipped alongside the MENRV.AI computer-vision merchandising suite: <strong>Gemini VLM</strong> workflows for image editing and virtual try-on, cutting catalog content creation from hours to minutes.</p><span class="tag">TTS</span><span class="tag">Gemini VLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
     };
 
     function faceCenter(obj, x, z) { obj.rotation.y = Math.atan2(-x, -z); }
@@ -1143,7 +1143,7 @@
           x.strokeStyle = n.c; x.lineWidth = 2.5; roundRect(x, n.x, n.y, n.w, n.h, 10); x.stroke();
           x.fillStyle = '#e6f1fa'; x.font = 'bold 19px Inter, sans-serif'; x.textAlign = 'center'; x.fillText(n.t, n.x + n.w / 2, n.y + n.h / 2 + 7);
         });
-        x.fillStyle = '#7fa8c2'; x.font = '16px monospace'; x.textAlign = 'left'; x.fillText('sub-second guidance · 6,000+ calls/day', 24, 442);
+        x.fillStyle = '#7fa8c2'; x.font = '16px monospace'; x.textAlign = 'left'; x.fillText('sub-second guidance · thousands of calls/day', 24, 442);
         tex.needsUpdate = true;
       });
     })();
@@ -1162,7 +1162,7 @@
         x.fillStyle = '#0a1016'; x.fillRect(0, 0, 760, 460);
         x.strokeStyle = 'rgba(74,222,158,0.12)'; x.lineWidth = 1;
         for (let g = 0; g <= 5; g++) { const gy = Y0 + (Y1 - Y0) * g / 5; x.beginPath(); x.moveTo(X0, gy); x.lineTo(X1, gy); x.stroke(); }
-        x.fillStyle = '#4ade9e'; x.font = 'bold 30px Inter, sans-serif'; x.textAlign = 'left'; x.fillText('Forecasting · BiLSTM + Prophet', 24, 46);
+        x.fillStyle = '#4ade9e'; x.font = 'bold 30px Inter, sans-serif'; x.textAlign = 'left'; x.fillText('Forecasting · 20+ Indicators', 24, 46);
 
         x.strokeStyle = '#7fa8c2'; x.lineWidth = 3; x.beginPath();
         for (let i = 0; i < NH; i++) { const X = px(i), Y = py(hist[i]); i ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke();
@@ -1756,7 +1756,7 @@
           panelBanner('flow', '#4f46e5', 'System Topology') +
           `<p>How the real-time sales copilot fits together end-to-end.</p>
            <h3>Pipeline</h3><p>Live call audio → transcript over WebSockets → RAG retrieval &amp; semantic caching → Vertex AI reasoning → sub-second guidance back to the agent.</p>
-           <h3>Automation Layer</h3><p>Cloud Run services orchestrate 30+ property-lifecycle stages with Gemini Vision document checks, bidirectional CRM sync, n8n coaching scorecards, and a Twilio WhatsApp outreach bot.</p>
+           <h3>Automation Layer</h3><p>Cloud Run services orchestrate dozens of property-lifecycle stages with Gemini Vision document checks, bidirectional CRM sync, n8n coaching scorecards, and a Twilio WhatsApp outreach bot.</p>
            <h3>Intelligence Layer</h3><p>A LangGraph, n8n, and MLflow platform covering meeting scores, call activity, team rankings, company benchmarks, and custom manager reports.</p>
            <span class="tag">Vertex AI</span><span class="tag">RAG</span><span class="tag">Cloud Run</span><span class="tag">LangGraph</span><span class="tag">MLflow</span><span class="tag">n8n</span>`;
         openSidePanel();
@@ -1859,8 +1859,8 @@
           'AI Infrastructure & Automation Production Engineering');
         const mq = [
           ['sub-second', 'AI Core Context Latency'],
-          ['6,000+ Calls', 'Voice Agent Qualification / Day'],
-          ['30+ Nodes', 'Property Lifecycle Automated States'],
+          ['Thousands', 'Voice Agent Qualifications / Day'],
+          ['Dozens', 'Property Lifecycle Automated States'],
           ['500M+ Rows', 'Transactional Records Analyzed']
         ];
         mq.forEach((item, idx) => {
@@ -2192,7 +2192,7 @@
       const PROFILES = [
         { pane: 'linkedin', site: 'LinkedIn', logo: LINKEDIN_LOGO, name: 'Eyad Elfar', sub: 'AI Engineer · Dubai, UAE', href: 'https://www.linkedin.com/in/eyadelfar/', items: [
           'Architecting production LLM/RAG copilots with sub-second real-time guidance.',
-          'AI voice agents running 6,000+ calls/day and Cloud Run automation across 30+ stages.',
+          'AI voice agents running thousands of calls/day and Cloud Run automation across dozens of stages.',
           'Built KeepQuill & Favisra (personal POCs); ex-MENRV.AI, NEOMI, iSchool, e-finance.'] },
         { pane: 'kaggle', site: 'Kaggle', logo: KAGGLE_LOGO, name: 'Eyad Amin', sub: 'Kaggle · Notebooks & Competitions', href: 'https://www.kaggle.com/eyadamin1233', items: [
           'Gamers Mental Health NLP classifier at 94% accuracy, with SHAP and a Bronze Notebook Medal.',

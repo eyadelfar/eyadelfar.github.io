@@ -5,22 +5,22 @@ export const DATA = {
         color: '#4f46e5',
         lines: [
           'sub-second real-time AI guidance with Vertex AI + RAG',
-          '6,000+ qualification calls handled daily by voice agents',
-          '30+ property-lifecycle stages automated on Cloud Run',
-          '21+ n8n workflows deployed for coaching scorecards',
-          '14-factor ML lead scoring for sales prioritization',
+          'thousands of qualification calls handled daily by voice agents',
+          'dozens of property-lifecycle stages automated on Cloud Run',
+          'coaching scorecards automated with n8n workflows',
+          'multi-factor ML lead scoring for sales prioritization',
           '500M+ payment transactions analyzed at e-finance',
-          '15K+ students served through the AR learning engine',
+          '10K+ students served through the AR learning engine',
           '50+ languages supported in multilingual TTS'
         ],
-        html: `<ul><li><strong>sub-second</strong> real-time AI guidance using Vertex AI, RAG, and semantic caching.</li><li><strong>6,000+</strong> qualification calls run daily by AI voice agents.</li><li><strong>30+</strong> property-lifecycle stages automated with Google Cloud Run and Gemini Vision.</li><li><strong>21+</strong> n8n workflows deployed for coaching, reporting, scheduling, and scorecards.</li><li><strong>14-factor</strong> ML lead scoring model for higher-quality sales prioritization.</li><li><strong>500M+</strong> transactions analyzed in digital payments.</li><li><strong>15K+</strong> students served by an AR learning AI engine.</li></ul><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">FastAPI</span><span class="tag">Cloud Run</span><span class="tag">n8n</span>`
+        html: `<ul><li><strong>sub-second</strong> real-time AI guidance using Vertex AI, RAG, and semantic caching.</li><li><strong>thousands</strong> of qualification calls run daily by AI voice agents.</li><li><strong>dozens</strong> of property-lifecycle stages automated with Google Cloud Run and Gemini Vision.</li><li><strong>n8n</strong> workflows deployed for coaching, reporting, scheduling, and scorecards.</li><li><strong>multi-factor</strong> ML lead scoring model for higher-quality sales prioritization.</li><li><strong>500M+</strong> transactions analyzed in digital payments.</li><li><strong>10K+</strong> students served by an AR learning AI engine.</li></ul><span class="tag">RAG</span><span class="tag">Vertex AI</span><span class="tag">FastAPI</span><span class="tag">Cloud Run</span><span class="tag">n8n</span>`
       },
       journey: {
         title: 'Professional Journey',
         short: 'From data analysis to production AI systems.',
         color: '#4f46e5',
         lines: ['2025-Now · AI Engineer · Baron & Cabot', '2024-2025 · Data Scientist · MENRV.AI', '2024-2025 · AI Engineer (Contract) · NEOMI', '2023-2024 · AI Instructor · iSchool', '2023 · Data Analyst · e-finance'],
-        html: `<h3>AI Engineer · Baron & Cabot · 2025-Now</h3><p>Designed a FastAPI/React sales copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-second guidance. Built voice-agent workflows running 6,000+ qualification calls daily, a Cloud Run platform automating 30+ property-lifecycle stages, and a LangGraph/n8n/MLflow performance-intelligence platform.</p><h3>Data Scientist · MENRV.AI · 2024-2025</h3><p>Delivered a computer-vision merchandising suite for Shein and Myntra (YOLO segmentation + Gemini VLM, 0.85+ mAP@50), a DINOv2 deck assistant, a BiLSTM + Prophet forecasting engine, and multilingual TTS across 50+ languages.</p><h3>AI Engineer (Contract) · NEOMI · 2024-2025</h3><p>Built the core AI engine for an AR learning platform serving 15,000+ students: a ResNet fine-tuned in PyTorch reads spatial features from abstract block compositions, and an LLM evaluator scores them, reaching 92% alignment with educator benchmarks across 20 German schools.</p><h3>AI Instructor · iSchool · 2023-2024</h3><p>Mentored 70+ students across 64 sessions and guided 36 AI-driven reinforcement-learning game projects.</p><h3>Data Analyst · e-finance · 2023</h3><p>Analyzed 500M+ digital payment transactions, surfacing 10+ behavioral insights for executive reporting, and optimized ETL and reporting automation.</p>`
+        html: `<h3>AI Engineer · Baron & Cabot · 2025-Now</h3><p>Designed a FastAPI/React sales copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-second guidance. Built voice-agent workflows running thousands of qualification calls daily, a Cloud Run platform automating dozens of property-lifecycle stages, and a LangGraph/n8n/MLflow performance-intelligence platform.</p><h3>Data Scientist · MENRV.AI · 2024-2025</h3><p>Delivered a computer-vision merchandising suite for fashion retail using Gemini VLM workflows for image editing and virtual try-on, an AI deck assistant with automated image generation and slide composition, a forecasting engine over 20+ technical indicators, and multilingual TTS across 50+ languages.</p><h3>AI Engineer (Contract) · NEOMI · 2024-2025</h3><p>Built the core AI engine for an AR learning platform serving 10K+ students: a ResNet fine-tuned in PyTorch reads spatial features from abstract block compositions, and an LLM evaluator scores them, reaching 90%+ alignment with educator benchmarks across 20+ school deployments.</p><h3>AI Instructor · iSchool · 2023-2024</h3><p>Mentored 70+ students across 64 sessions and guided 36 AI-driven reinforcement-learning game projects.</p><h3>Data Analyst · e-finance · 2023</h3><p>Analyzed 500M+ digital payment transactions, surfacing 10+ behavioral insights for executive reporting, and optimized ETL and reporting automation.</p>`
       },
       projects: {
         title: 'Featured Projects',

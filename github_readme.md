@@ -7,7 +7,7 @@
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit-000000?style=for-the-badge\&logo=githubpages\&logoColor=white)](https://eyadelfar.github.io)
 [![Kaggle](https://img.shields.io/badge/Kaggle-Bronze%20Notebook%20Medal-B8860B?style=for-the-badge&logo=kaggle&logoColor=white)](https://kaggle.com/eyadamin1233)
 [![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:eyadamen588@gmail.com)
-[![Resume](https://img.shields.io/badge/Resume-View-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1StwAG0ouncBrJ6mTprTm81-g9CNwOzPd/view)
+[![Resume](https://img.shields.io/badge/Resume-View-4285F4?style=for-the-badge&logo=readthedocs&logoColor=white)](https://eyadelfar.github.io/resume.pdf)
 <br />
 <img src="https://komarev.com/ghpvc/?username=eyadelfar&label=Profile%20Views&color=3ABEF9&style=flat-square" alt="Profile views" />
 
@@ -50,14 +50,14 @@ My focus is AI that is **fast, reliable, measurable, and useful**: sub-second gu
 
 <table align="center">
 <tr>
-<td align="center" width="175"><h3>sub-500ms</h3><b>Real-time AI Guidance</b></td>
-<td align="center" width="175"><h3>30+</h3><b>CRM Stages Automated</b></td>
-<td align="center" width="175"><h3>21+</h3><b>n8n Workflows Deployed</b></td>
-<td align="center" width="175"><h3>14-Factor</h3><b>ML Lead Scoring</b></td>
+<td align="center" width="175"><h3>sub-second</h3><b>Real-time AI Guidance</b></td>
+<td align="center" width="175"><h3>Dozens</h3><b>CRM Stages Automated</b></td>
+<td align="center" width="175"><h3>n8n</h3><b>Agentic Automation</b></td>
+<td align="center" width="175"><h3>Multi-Factor</h3><b>ML Lead Scoring</b></td>
 </tr>
 <tr>
 <td align="center" width="175"><h3>500M+</h3><b>Records Analyzed</b></td>
-<td align="center" width="175"><h3>15K+</h3><b>Students Served</b></td>
+<td align="center" width="175"><h3>10K+</h3><b>Students Served</b></td>
 <td align="center" width="175"><h3>50+</h3><b>Languages Supported</b></td>
 <td align="center" width="175"><h3>Bronze</h3><b>Kaggle Notebook Medal</b></td>
 </tr>
@@ -78,9 +78,9 @@ My focus is AI that is **fast, reliable, measurable, and useful**: sub-second gu
 flowchart LR
     E["<b>2023 · e-finance</b><br/><b>Data Analyst</b><br/>Analyzed 500M+ transactional records, surfacing 10+ behavioral insights in digital payments. Built an automated reporting pipeline and optimized ETL to double throughput with no latency increase."]:::c0
     I["<b>2023-24 · iSchool</b><br/><b>AI Instructor</b><br/>Mentored 70+ students across 64 sessions and guided 36 AI-driven game projects using reinforcement learning. Hands-on Python, Scratch, Arduino, and PictoBlox."]:::c1
-    M["<b>2024-25 · MENRV.AI</b><br/><b>Data Scientist</b><br/>Launched a vLLM merchandising suite (Shein, Myntra) with virtual try-on at 90% fit and a content generator (-80% time). Built an AI deck assistant, a BiLSTM + Prophet forecaster (8h to 5min), and TTS across 50+ languages."]:::c2
-    N["<b>2024-25 · NEOMI</b><br/><b>Data Scientist, Freelance</b><br/>Built the core AI engine for an AR learning platform serving 15,000+ students, with handwriting recognition and an LLM evaluator at 92% alignment. Added CI/CD (debugging -75%) and scaled to 20 German schools."]:::c3
-    B["<b>2025-Now · Baron & Cabot</b><br/><b>AI Automation Engineer</b><br/>Architected a FastAPI/React copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-500ms guidance. Built ElevenLabs voice agents on n8n that auto-book meetings, a Cloud Run platform automating 30+ CRM stages with Gemini Vision, and a 14-factor ML lead-scoring model."]:::c4
+    M["<b>2024-25 · MENRV.AI</b><br/><b>Data Scientist</b><br/>Delivered a computer-vision merchandising suite for fashion retail with Gemini VLM image editing and virtual try-on, cutting catalog content creation from hours to minutes. Built an AI deck assistant, a forecasting engine over 20+ indicators (8h to 5min), and TTS across 50+ languages."]:::c2
+    N["<b>2024-25 · NEOMI</b><br/><b>AI Engineer (Contract)</b><br/>Built the core AI engine for an AR learning platform serving 10K+ students, with a ResNet feature extractor and an LLM evaluator at 90%+ alignment. Added CI/CD (debugging -75%) and scaled across 20+ school deployments."]:::c3
+    B["<b>2025-Now · Baron & Cabot</b><br/><b>AI Engineer</b><br/>Architected a FastAPI/React copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-second guidance. Built ElevenLabs voice agents on n8n that auto-book meetings, a Cloud Run platform automating dozens of CRM stages with Gemini Vision, and a multi-factor ML lead-scoring model."]:::c4
 
     E --> I --> M --> N --> B
 
@@ -136,9 +136,9 @@ Developed a YOLOv8-based object detection system for identifying cigarette-butt 
 
 **Impact**
 
-- **92%** detection accuracy
+- **0.70+ mAP@50**, benchmarked against Faster R-CNN
 - Real-time detection with dashboard integration
-- Up to **70%** reduction in manual monitoring effort
+- Built for a confidential organization; won Best Project medal
 - Designed for public-space monitoring workflows
 
 **Stack**
@@ -320,7 +320,7 @@ flowchart TB
         direction TB
         B1["n8n meeting booking"]:::leaf
         B2["CRM orchestration"]:::leaf
-        B3["21+ workflows"]:::leaf
+        B3["Agentic workflows"]:::leaf
         B1 ~~~ B2 ~~~ B3
     end
     subgraph S3["LLM Applications"]
@@ -339,7 +339,7 @@ flowchart TB
     end
     subgraph S5["Multimodal AI"]
         direction TB
-        E1["Gemini Vision - AML/Docs"]:::leaf
+        E1["Gemini Vision - Document Checks"]:::leaf
         E2["TTS - 50+ languages"]:::leaf
         E3["Computer vision & OCR"]:::leaf
         E1 ~~~ E2 ~~~ E3
