@@ -10,10 +10,10 @@
     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
     import { makeHelpers } from './room.helpers.js?v=6cc096a3';
     import { DATA } from './room.data.js?v=e07bfef7';
-    import { createCharacter } from './room.character.js?v=982cac20';
+    import { createCharacter } from './room.character.js?v=dc7cde59';
     import { makeNav } from './room.nav.js?v=4e35072d';
-    import { createWalker } from './room.walk.js?v=888c6c2f';
-    import { buildZen } from './room.zen.js?v=12af9209';
+    import { createWalker } from './room.walk.js?v=b37f8a9a';
+    import { buildZen } from './room.zen.js?v=7b704461';
     import { WORK } from './room.work.js?v=6cfe5398';
 
     await Promise.race([

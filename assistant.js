@@ -50,7 +50,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
   };
   const NO_RETRY = new Set(['daily_limit', 'quota_exhausted']);
   const OFFLINE = 'I cannot reach the assistant right now. His resume is at resume.pdf, and the contact form below reaches him directly.';
-  const DEFAULT_STATUS = 'Llama 3.3 70B, hybrid retrieval, on my own Cloudflare Worker.';
+  const DEFAULT_STATUS = 'Open-weights models, hybrid retrieval, on my own Cloudflare Worker.';
   const WAKING_MS = 4000;
 
   let engine = null;

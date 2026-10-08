@@ -106,7 +106,7 @@
     stack: function () {
       console.table([
         { part: 'Page', made_with: 'Hand-written HTML, CSS and JavaScript. No framework.' },
-        { part: 'Chat', made_with: 'Llama 3.3 70B, hybrid retrieval (BGE embeddings + BM25, fused with RRF)' },
+        { part: 'Chat', made_with: 'GPT OSS 120B on Groq, Llama on Cloudflare as backup, hybrid retrieval (BGE embeddings + BM25, fused with RRF)' },
         { part: 'Voice', made_with: 'Deepgram speech in and out, over one WebSocket' },
         { part: 'Backend', made_with: 'A Cloudflare Worker and Durable Objects I wrote and host' },
         { part: '3D room', made_with: 'three.js, every object placed in code' },
