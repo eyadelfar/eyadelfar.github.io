@@ -1,0 +1,5 @@
+@font-face { font-family: 'Playfair Display'; src: url('playfair.woff2?v=fc26ffe8') format('woff2'); font-weight: 500 800; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Playfair Display'; src: url('playfair-italic.woff2?v=8b3eea66') format('woff2'); font-weight: 500 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('cormorant.woff2?v=35f9580f') format('woff2'); font-weight: 500 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Cormorant Garamond'; src: url('cormorant-italic.woff2?v=1393ef70') format('woff2'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Dancing Script'; src: url('dancing.woff2?v=d4a9bd42') format('woff2'); font-weight: 600 700; font-display: swap; }

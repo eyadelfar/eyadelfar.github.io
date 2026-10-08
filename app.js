@@ -1,155 +1,95 @@
+const nav = document.getElementById('nav');
+const hero = document.getElementById('top');
+const fabDock = document.getElementById('fabDock');
+const CARD_GAP = 22;
 
 const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-    }
-  });
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    entry.target.classList.add('visible');
+    revealObserver.unobserve(entry.target);
+  }
 }, { threshold: 0.06, rootMargin: '0px 0px -30px 0px' });
 
-document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger').forEach(el => {
-  revealObserver.observe(el);
-});
+document.querySelectorAll('.reveal, .reveal-scale, .stagger').forEach((el) => revealObserver.observe(el));
 
-const nav = document.querySelector('nav');
-const navLinks = document.querySelectorAll('nav .nav-links a');
-const sections = document.querySelectorAll('section[id]');
-
-(function () {
-  const el = document.getElementById('ghRange');
-  if (!el) return;
-  const now = new Date();
-  const start = new Date(now); start.setFullYear(now.getFullYear() - 1);
-  const fmt = d => d.toLocaleString('en-US', { month: 'short', year: 'numeric' });
-  el.textContent = `${fmt(start)} – ${fmt(now)}`;
-})();
-
-const fabDock = document.getElementById('fabDock');
-const hero = document.getElementById('top');
-const heroHeight = () => (hero ? hero.offsetHeight : window.innerHeight);
-const heroBg = document.querySelector('.hero-bg');
-let ticking = false;
-
-let secCache = [];
-function rebuildSecCache() {
-  secCache = Array.prototype.map.call(sections, s => {
-    const top = s.offsetTop - 100;
-    return { top, bottom: top + s.offsetHeight, link: document.querySelector(`nav a[href="#${s.getAttribute('id')}"]`) };
-  });
+if (hero) {
+  new IntersectionObserver(([entry]) => {
+    const past = !entry.isIntersecting;
+    nav.classList.toggle('scrolled', past);
+    if (fabDock) fabDock.classList.toggle('show', past);
+  }, { rootMargin: '-72px 0px 0px 0px' }).observe(hero);
 }
-function onScroll() {
-  const y = window.scrollY;
-  nav.classList.toggle('scrolled', y > 60);
-  if (fabDock) fabDock.classList.toggle('show', y > heroHeight() - 120);
-  const scrollY = y + 140;
-  for (const s of secCache) {
-    if (s.link && scrollY >= s.top && scrollY < s.bottom) {
-      navLinks.forEach(l => l.classList.remove('active'));
-      s.link.classList.add('active');
-    }
+
+const links = new Map();
+document.querySelectorAll('nav .nav-links a').forEach((a) => links.set(a.getAttribute('href').slice(1), a));
+
+const spy = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    links.forEach((a) => a.classList.remove('active'));
+    links.get(entry.target.id)?.classList.add('active');
   }
-  if (heroBg && y < window.innerHeight) heroBg.style.transform = `translateY(${y * 0.35}px)`;
-  ticking = false;
+}, { rootMargin: '-45% 0px -50% 0px' });
+
+document.querySelectorAll('section[id]').forEach((section) => spy.observe(section));
+
+function cardStep(track) {
+  const card = track.querySelector('.card');
+  return (card ? card.offsetWidth : 0) + CARD_GAP;
 }
-window.addEventListener('scroll', () => {
-  if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
-}, { passive: true });
-window.addEventListener('resize', rebuildSecCache, { passive: true });
-window.addEventListener('load', rebuildSecCache);
-rebuildSecCache();
-
-const countObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.querySelectorAll('.stat .num').forEach(num => {
-        const text = num.textContent;
-        const match = text.match(/(\d+)/);
-        if (match) {
-          const target = parseInt(match[1]);
-          const prefix = text.substring(0, text.indexOf(match[1]));
-          const suffix = text.substring(text.indexOf(match[1]) + match[1].length);
-          let current = 0;
-          const step = Math.max(1, Math.floor(target / 40));
-          const interval = setInterval(() => {
-            current = Math.min(current + step, target);
-            num.textContent = prefix + current + suffix;
-            if (current >= target) clearInterval(interval);
-          }, 30);
-        }
-      });
-      countObserver.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.5 });
-
-document.querySelectorAll('.stats-bar').forEach(el => countObserver.observe(el));
 
 function scrollCarousel(id, dir) {
   const track = document.getElementById(id);
-  const card = track.querySelector('.card');
-  const cardW = card.offsetWidth + 22;
-  const perView = Math.max(1, Math.floor(track.clientWidth / cardW));
-  track.scrollBy({ left: dir * cardW * perView, behavior: 'smooth' });
+  const step = cardStep(track);
+  const perView = Math.max(1, Math.floor(track.clientWidth / step));
+  track.scrollBy({ left: dir * step * perView, behavior: 'smooth' });
 }
 
-function initCarousel(trackId, dotsId, counterId) {
+function initCarousel(trackId, dotsId, counterId, onChange) {
   const track = document.getElementById(trackId);
   const dots = document.getElementById(dotsId);
   const counter = document.getElementById(counterId);
-  const cards = track.querySelectorAll('.card');
-  const total = cards.length;
-  let cardW = (cards[0] ? cards[0].offsetWidth : 0) + 22;
-  window.addEventListener('resize', () => { cardW = (cards[0] ? cards[0].offsetWidth : 0) + 22; }, { passive: true });
+  if (!track || !dots || !counter) return;
+  const total = track.querySelectorAll('.card').length;
 
   for (let i = 0; i < total; i++) {
     const dot = document.createElement('button');
     dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-    dot.onclick = () => track.scrollTo({ left: i * cardW, behavior: 'smooth' });
+    dot.setAttribute('aria-label', `Go to card ${i + 1}`);
+    dot.onclick = () => track.scrollTo({ left: i * cardStep(track), behavior: 'smooth' });
     dots.appendChild(dot);
   }
+  counter.textContent = `1 / ${total}`;
 
-  let ctick = false;
+  let queued = false;
   track.addEventListener('scroll', () => {
-    if (ctick) return; ctick = true;
+    if (queued) return;
+    queued = true;
     requestAnimationFrame(() => {
       const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
-      const clamped = atEnd ? total - 1 : Math.max(0, Math.min(Math.round(track.scrollLeft / cardW), total - 1));
-      counter.textContent = (clamped + 1) + ' / ' + total;
-      dots.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === clamped));
-      ctick = false;
+      const index = atEnd ? total - 1 : Math.max(0, Math.min(Math.round(track.scrollLeft / cardStep(track)), total - 1));
+      counter.textContent = `${index + 1} / ${total}`;
+      dots.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+      if (onChange) onChange(index);
+      queued = false;
     });
   }, { passive: true });
 }
 
+function expGoto(index) {
+  const track = document.getElementById('expCarousel');
+  if (track) track.scrollTo({ left: index * cardStep(track), behavior: 'smooth' });
+}
+
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-    const carousel = document.querySelector('.carousel-track:hover');
-    if (carousel) {
-      const dir = e.key === 'ArrowRight' ? 1 : -1;
-      scrollCarousel(carousel.id, dir);
-    }
-  }
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  const carousel = document.querySelector('.carousel-track:hover, .journey-track:hover');
+  if (carousel) scrollCarousel(carousel.id, e.key === 'ArrowRight' ? 1 : -1);
 });
 
+const steps = document.querySelectorAll('.journey-step-btn');
 initCarousel('systemsCarousel', 'systemsDots', 'systemsCounter');
-initCarousel('expCarousel', 'expDots', 'expCounter');
-
-(function() {
-  const track = document.getElementById('expCarousel');
-  const steps = document.querySelectorAll('.journey-step-btn');
-  if (!track || !steps.length) return;
-  track.addEventListener('scroll', () => {
-    const card = track.querySelector('.card');
-    if (!card) return;
-    const cardW = card.offsetWidth + 22;
-    const idx = Math.max(0, Math.min(Math.round(track.scrollLeft / cardW), steps.length - 1));
-    steps.forEach((s, i) => s.classList.toggle('active', i === idx));
-  }, { passive: true });
-})();
-
-function expGoto(idx) {
-  const track = document.getElementById('expCarousel');
-  const card = track.querySelector('.card');
-  if (!track || !card) return;
-  track.scrollTo({ left: idx * (card.offsetWidth + 22), behavior: 'smooth' });
-}
+initCarousel('expCarousel', 'expDots', 'expCounter', (index) => {
+  steps.forEach((step, i) => step.classList.toggle('active', i === Math.min(index, steps.length - 1)));
+});

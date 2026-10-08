@@ -12,6 +12,6 @@ Visit my portfolio here:
 
 ## About
 
-I’m Eyad Elfar, an AI Engineer focused on building practical, scalable AI systems that solve real business problems.
+I’m Eyad Elfar, a Lead AI Engineer focused on building practical, scalable AI systems that solve real business problems.
 
 Explore the site to see my projects, experience, and technical work.

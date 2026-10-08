@@ -307,7 +307,7 @@ const SC_TEMPLATES = `
       </div>
       <div class="cre-scores" id="creScores"></div>
     </div>
-    <div class="readme" style="margin-top:18px"><p style="text-align:center;color:var(--text2)">Custom TensorFlow RCNN (FocalLoss, PatchExtractor, PositionalEmbedding) scoring children's artwork across 6 creativity dimensions. <strong style="color:var(--accent2)">TensorFlow &middot; Custom Layers &middot; FastAPI</strong></p></div>
+    <div class="readme" style="margin-top:18px"><p style="text-align:center;color:var(--text2)">A ResNet fine-tuned in PyTorch extracts spatial features from each composition, and an LLM evaluator scores them across 6 creativity dimensions. <strong style="color:var(--accent2)">PyTorch &middot; ResNet &middot; LLM Eval &middot; FastAPI</strong></p></div>
   </div>
 `;
 (function () { const t = document.getElementById('sc-templates'); if (t) t.innerHTML = SC_TEMPLATES; })();
@@ -318,7 +318,7 @@ const SC_TEMPLATES = `
     cashflows:    { title:'Cashflows App',              tag:'Baron & Cabot · Investment Calculator', color:'#d4af37' },
     cashflowauto: { title:'Cashflow Automation',        tag:'Excel → structured data', color:'#16a34a' },
     attendance:   { title:'One-Shot Attendance System', tag:'Graduation Thesis · Face Recognition', color:'#f472b6' },
-    creativity:   { title:'Creativity Assessment System', tag:'Custom RCNN · 6 dimensions', color:'#22d3ee' },
+    creativity:   { title:'Creativity Assessment System', tag:'ResNet + LLM evaluator · 6 dimensions', color:'#22d3ee' },
   };
   const modal = document.getElementById('sc-modal');
   const body  = document.getElementById('sc-body');
@@ -328,13 +328,21 @@ const SC_TEMPLATES = `
     if(scFontsLoaded) return; scFontsLoaded = true;
     const l = document.createElement('link');
     l.rel = 'stylesheet';
-    l.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Dancing+Script:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap';
+    l.href = 'fonts/showcase.css?v=19ef60f3';
     document.head.appendChild(l);
+  }
+
+  const ventures = document.getElementById('ventures');
+  if(ventures && 'IntersectionObserver' in window){
+    const near = new IntersectionObserver(function(entries){
+      if(entries.some(function(e){ return e.isIntersecting; })){ ensureShowcaseFonts(); near.disconnect(); }
+    }, { rootMargin: '600px 0px' });
+    near.observe(ventures);
   }
 
   window.openShowcase = function(key){
     const cfg = SHOWCASES[key]; if(!cfg) return;
-    const tpl = document.getElementById('tpl-'+key); if(!tpl) return;
+    const tpl = document.getElementById('sc-templates').content.querySelector('#tpl-'+key); if(!tpl) return;
     ensureShowcaseFonts();
     document.getElementById('sc-dot').style.background = cfg.color;
     document.getElementById('sc-title').textContent = cfg.title;
@@ -373,7 +381,7 @@ const SC_TEMPLATES = `
   })();
 
   document.addEventListener('keydown', function(e){
-    if((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.classList.contains('preview')){
+    if((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.matches('.preview, .card-diagram.is-link')){
       e.preventDefault(); document.activeElement.click();
     }
   });

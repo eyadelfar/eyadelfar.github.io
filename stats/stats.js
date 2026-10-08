@@ -1,4 +1,4 @@
-import { chart } from '../sparkline.js?v=1';
+import { chart } from '../sparkline.js?v=1a4b4d43';
 
 const API = window.PORTFOLIO_API;
 const STORE = 'pf:stats-key';

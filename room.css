@@ -1,3 +1,6 @@
+@font-face { font-family: 'Bricolage Grotesque'; src: url('fonts/bricolage.woff2?v=ff16c5a7') format('woff2'); font-weight: 500 800; font-display: swap; }
+@font-face { font-family: 'Geist'; src: url('fonts/geist.woff2?v=59943677') format('woff2'); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: 'Geist Mono'; src: url('fonts/geist-mono.woff2?v=5ebb8929') format('woff2'); font-weight: 400 600; font-display: swap; }
   :root {
     --brand: #4f46e5;
     --brand-bright: #6366f1;
@@ -27,7 +30,7 @@
     overflow: hidden;
     background: #0e171f;
     color: var(--ink);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family: Geist, ui-sans-serif, system-ui, -apple-system, sans-serif;
   }
 
   #canvas {
@@ -63,7 +66,6 @@
     border-radius: 22px;
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(239, 249, 255, 0.66));
     box-shadow: 0 22px 70px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(18px);
     pointer-events: auto;
   }
 
@@ -92,7 +94,7 @@
   .nameplate p {
     margin-top: 8px;
     color: var(--muted);
-    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-family: 'Geist Mono', ui-monospace, monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -148,7 +150,6 @@
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.74);
     box-shadow: 0 14px 40px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(18px);
     font-size: 12px;
     font-weight: 600;
     color: var(--muted);
@@ -183,7 +184,6 @@
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.74);
     box-shadow: 0 22px 65px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(18px);
   }
 
   #mode-card .label {
@@ -240,7 +240,6 @@
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.94);
     box-shadow: 0 20px 50px rgba(13, 38, 56, 0.25);
-    backdrop-filter: blur(20px);
     text-align: center;
     color: #193852;
     opacity: 0;
@@ -270,7 +269,6 @@
     background: rgba(255, 255, 255, 0.82);
     border: 1px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 18px 50px var(--shadow);
-    backdrop-filter: blur(16px);
     color: var(--muted);
     font-size: 11.5px;
     line-height: 1.5;
@@ -298,7 +296,6 @@
     border: 1px solid rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.94);
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(16px);
     color: #16324a;
     opacity: 0;
     pointer-events: none;
@@ -330,8 +327,6 @@
       -24px 0 90px rgba(0, 0, 0, 0.55),
       inset 0 1px 0 rgba(255, 255, 255, 0.16),
       inset 0 0 60px rgba(99, 102, 241, 0.04);
-    backdrop-filter: blur(22px) saturate(1.25);
-    -webkit-backdrop-filter: blur(22px) saturate(1.25);
     transition: right 0.55s cubic-bezier(0.16, 1, 0.3, 1);
     color: #c4d2e2;
   }
@@ -393,7 +388,7 @@
     background: rgba(255, 255, 255, 0.06);
     color: #dce6f1;
     cursor: pointer;
-    font: 700 13px/1 Inter, sans-serif;
+    font: 700 13px/1 Geist, sans-serif;
     letter-spacing: 0.02em;
     pointer-events: auto;
     transition: background 0.2s, border-color 0.2s, transform 0.15s;
@@ -441,7 +436,6 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(18, 32, 43, 0.85);
     box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(20px);
     text-align: center;
     color: #fff;
   }
@@ -567,7 +561,6 @@
     display: none;
     padding: clamp(14px, 3vw, 46px);
     background: rgba(6, 11, 16, 0.62);
-    backdrop-filter: blur(14px);
     opacity: 0;
     transition: opacity 0.35s ease;
   }
@@ -776,21 +769,21 @@
   #joy {
     position: absolute; left: 24px; bottom: 30px; width: 130px; height: 130px;
     border-radius: 50%; background: rgba(12,20,28,0.34); border: 1.5px solid rgba(255,255,255,0.22);
-    backdrop-filter: blur(6px); pointer-events: auto; touch-action: none;
+ pointer-events: auto; touch-action: none;
   }
   #joy-thumb {
     position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px;
     border-radius: 50%; background: radial-gradient(circle at 40% 35%, #eaf6ff, #6366f1);
     box-shadow: 0 6px 18px rgba(0,0,0,0.4); transition: transform 0.04s;
   }
-  #exitRoom { position: absolute; top: 16px; right: 16px; pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; padding: 9px 15px; border-radius: 22px; font: 600 14px/1 'Inter', system-ui, sans-serif; color: #eaf6ff; background: rgba(10,18,30,0.74); border: 1px solid rgba(99,102,241,0.35); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  #exitRoom { position: absolute; top: 16px; right: 16px; pointer-events: auto; display: inline-flex; align-items: center; gap: 6px; padding: 9px 15px; border-radius: 22px; font: 600 14px/1 'Inter', system-ui, sans-serif; color: #eaf6ff; background: rgba(10,18,30,0.74); border: 1px solid rgba(99,102,241,0.35); }
   #exitRoom .ico { width: 18px; height: 18px; }
   #exitRoom:active { background: rgba(99,102,241,0.4); transform: scale(0.96); }
   #touch-actions { position: absolute; right: 22px; bottom: 34px; display: flex; flex-direction: column; gap: 14px; pointer-events: auto; }
   .tbtn {
     width: 66px; height: 66px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.25);
-    background: rgba(12,20,28,0.42); backdrop-filter: blur(6px); color: #eaf6ff;
-    font: 700 22px/1 Inter, sans-serif; display: grid; place-items: center; touch-action: manipulation;
+    background: rgba(12,20,28,0.42); color: #eaf6ff;
+    font: 700 22px/1 Geist, sans-serif; display: grid; place-items: center; touch-action: manipulation;
   }
   .tbtn:active { background: rgba(99,102,241,0.4); transform: scale(0.94); }
   #touch-hint {
@@ -807,7 +800,6 @@
     flex-direction: column;
     padding: clamp(12px, 2.5vw, 40px);
     background: rgba(4, 8, 12, 0.86);
-    backdrop-filter: blur(16px);
     opacity: 0; transition: opacity 0.3s ease;
   }
   #lightbox.active { display: flex; opacity: 1; }
@@ -840,3 +832,10 @@
   .lb-stage iframe {
     width: 100%; height: 100%; border: 0; border-radius: 10px; background: #14141f;
   }
+
+#charChip {
+  position: fixed; left: 50%; bottom: 84px; z-index: 30; transform: translateX(-50%);
+  padding: 7px 14px; border-radius: 999px; pointer-events: none;
+  font: 500 11px/1 'Geist Mono', ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase;
+  color: #cfe6f5; background: rgba(14, 23, 31, .82);
+}

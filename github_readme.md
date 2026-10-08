@@ -1,5 +1,5 @@
 <div align="center">
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=220&section=header&text=Eyad%20Elfar&fontSize=78&fontAlignY=32&animation=twinkling&fontColor=ffffff&desc=AI%20Engineer%20%C2%B7%20LLM%20Specialist%20%C2%B7%20Agentic%20Systems%20Architect&descSize=18&descAlignY=55&descColor=ffffff&v=3" alt="Eyad Elfar — AI Engineer · LLM Specialist · Agentic Systems Architect" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=220&section=header&text=Eyad%20Elfar&fontSize=78&fontAlignY=32&animation=twinkling&fontColor=ffffff&desc=Lead%20AI%20Engineer%20%C2%B7%20LLM%20Specialist%20%C2%B7%20Agentic%20Systems%20Architect&descSize=18&descAlignY=55&descColor=ffffff&v=3" alt="Eyad Elfar: AI Engineer · LLM Specialist · Agentic Systems Architect" />
 
 <br />
 
@@ -21,7 +21,7 @@
 <tr>
 <td width="65%" valign="top">
 
-Hi, I’m **Eyad Elfar**, an **AI Engineer in Dubai, UAE** building production **LLM, voice, and agentic systems** for **real estate and fintech**. I architect real-time copilots, voice agents, and automation that run inside live business workflows — not just demos.
+Hi, I’m **Eyad Elfar**, a **Lead AI Engineer in Dubai, UAE** building production **LLM, voice, and agentic systems** for **real estate and fintech**. I architect real-time copilots, voice agents, and automation that run inside live business workflows, not just demos.
 
 My focus is AI that is **fast, reliable, measurable, and useful**: sub-second guidance, agents that take real actions, and pipelines that move the numbers leadership actually tracks.
 
@@ -76,11 +76,11 @@ My focus is AI that is **fast, reliable, measurable, and useful**: sub-second gu
 ```mermaid
 %%{init: {'theme':'base','flowchart':{'wrappingWidth':300},'themeVariables':{'fontFamily':'monospace','lineColor':'#3ABEF9'}}}%%
 flowchart LR
-    E["<b>2023 · e-finance</b><br/><b>Data Analyst</b><br/>Analyzed 500M+ transactional records, surfacing 10+ behavioral insights in digital payments. Built an automated reporting pipeline and optimized ETL to double throughput with no latency increase."]:::c0
+    E["<b>2023 · e-finance</b><br/><b>Data Analyst</b><br/>Analyzed 500M+ transactional records, surfacing 10+ behavioral insights in digital payments. Built an automated reporting pipeline and optimized ETL while keeping pipeline latency stable."]:::c0
     I["<b>2023-24 · iSchool</b><br/><b>AI Instructor</b><br/>Mentored 70+ students across 64 sessions and guided 36 AI-driven game projects using reinforcement learning. Hands-on Python, Scratch, Arduino, and PictoBlox."]:::c1
     M["<b>2024-25 · MENRV.AI</b><br/><b>Data Scientist</b><br/>Delivered a computer-vision merchandising suite for fashion retail with Gemini VLM image editing and virtual try-on, cutting catalog content creation from hours to minutes. Built an AI deck assistant, a forecasting engine over 20+ indicators (8h to 5min), and TTS across 50+ languages."]:::c2
     N["<b>2024-25 · NEOMI</b><br/><b>AI Engineer (Contract)</b><br/>Built the core AI engine for an AR learning platform serving 10K+ students, with a ResNet feature extractor and an LLM evaluator at 90%+ alignment. Added CI/CD (debugging -75%) and scaled across 20+ school deployments."]:::c3
-    B["<b>2025-Now · Baron & Cabot</b><br/><b>AI Engineer</b><br/>Architected a FastAPI/React copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-second guidance. Built ElevenLabs voice agents on n8n that auto-book meetings, a Cloud Run platform automating dozens of CRM stages with Gemini Vision, and a multi-factor ML lead-scoring model."]:::c4
+    B["<b>2025-Now · Baron & Cabot</b><br/><b>Lead AI Engineer</b><br/>Architected a FastAPI/React copilot over WebSockets using Vertex AI, RAG, and semantic caching for sub-second guidance. Built ElevenLabs voice agents on n8n that auto-book meetings, a Cloud Run platform automating dozens of CRM stages with Gemini Vision, and a multi-factor ML lead-scoring model."]:::c4
 
     E --> I --> M --> N --> B
 
@@ -284,11 +284,11 @@ Built a real-time attendance system that captures attendance from a single image
 
 ### Certifications
 
-- McKinsey Forward Program — McKinsey & Company, 2024
-- NLP Specialization — Coursera, 2024
-- Secure Intelligence Training — Ericsson, 2023
-- Data Science Diploma — Orange Digital Center, 2023
-- Machine Learning Nanodegree — Udacity & EGFWD, 2023
+- McKinsey Forward Program: McKinsey & Company, 2024
+- NLP Specialization: Coursera, 2024
+- Secure Intelligence Training: Ericsson, 2023
+- Data Science Diploma: Orange Digital Center, 2023
+- Machine Learning Nanodegree: Udacity & EGFWD, 2023
 
 </td>
 </tr>

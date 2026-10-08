@@ -85,7 +85,7 @@
   var charts = null;
   var loading = null;
   function charting() {
-    loading = loading || import('./sparkline.js?v=1').then(function (mod) { charts = mod; });
+    loading = loading || import('./sparkline.js?v=1a4b4d43').then(function (mod) { charts = mod; });
     return loading;
   }
 

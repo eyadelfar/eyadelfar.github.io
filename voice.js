@@ -1,4 +1,4 @@
-import { VoiceClient } from './voice-client.js?v=1';
+import { VoiceClient } from './voice-client.js?v=94c24cef';
 
 const API = String(window.PORTFOLIO_API || 'https://portfolio-contact.eyadelfar.workers.dev').replace(/\/+$/, '');
 const SOCKET_BASE = `${API.replace(/^http/, 'ws')}/agents/voice-agent/`;

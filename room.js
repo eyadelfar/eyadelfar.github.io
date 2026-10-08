@@ -8,8 +8,13 @@
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-    import { makeHelpers } from './room.helpers.js';
-    import { DATA } from './room.data.js';
+    import { makeHelpers } from './room.helpers.js?v=6cc096a3';
+    import { DATA } from './room.data.js?v=e07bfef7';
+
+    await Promise.race([
+      Promise.all(['700 20px Geist', '800 20px "Bricolage Grotesque"', '500 20px "Geist Mono"'].map((f) => document.fonts.load(f))),
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+    ]);
 
     if (window.self !== window.top) {
       document.documentElement.innerHTML =
@@ -144,18 +149,20 @@
     camera.position.set(0, 1.68, 3.5);
     camera.rotation.order = 'YXZ';
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance", preserveDrawingBuffer: true });
+    const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
+    const PIXEL_RATIO = Math.min(window.devicePixelRatio, isTouch ? 1.25 : 1.5);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isTouch, alpha: false, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(PIXEL_RATIO);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = isTouch ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 0.45;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const composer = new EffectComposer(renderer);
     composer.setSize(window.innerWidth, window.innerHeight);
-    composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    composer.setPixelRatio(PIXEL_RATIO);
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
     const bloomPass = new UnrealBloomPass(
@@ -164,6 +171,7 @@
       0.35,
       0.92
     );
+    bloomPass.enabled = !isTouch;
     composer.addPass(bloomPass);
     composer.addPass(new OutputPass());
 
@@ -177,7 +185,6 @@
     document.body.appendChild(css3dEl);
     const cssScene = new THREE.Scene();
     let css3dActive = false;
-    const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
     if (isTouch) document.body.classList.add('touch');
     const joyVec = { x: 0, y: 0 };
     const MONITOR_POS = new THREE.Vector3(0, 1.6, -4.05);
@@ -594,7 +601,7 @@
       if (caption) {
         const capTex = roundedCanvasTexture((ctx, cw, ch) => {
           ctx.fillStyle = '#1a1712'; ctx.fillRect(0, 0, cw, ch);
-          ctx.fillStyle = '#e8d6a8'; ctx.font = 'bold 40px Inter, sans-serif';
+          ctx.fillStyle = '#e8d6a8'; ctx.font = 'bold 40px Geist, sans-serif';
           ctx.textAlign = 'center'; ctx.fillText(caption, cw / 2, ch / 2 + 14);
         }, 512, 96).tex;
         plane('Caption', w * 0.9, h * 0.13, [0, -h / 2 - 0.02, 0.04], [0, 0, 0],
@@ -608,7 +615,7 @@
     createFrame(-6.92, 2.4, 2.0, Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'index.html?embed=showcase#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
     createFrame(6.92, 2.5, -3.0, -Math.PI / 2, 'images/mental_health.webp', 0.78, 0.5, 'Mental Health NLP');
     createFrame(6.92, 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.webp', 0.78, 0.5, 'YOLOv8 Detection');
-    createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/voice_agent.webp', 0.78, 0.5, 'Voice Agents');
+    createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/diagrams/voice-agent.svg', 0.78, 0.5, 'Voice Agents');
     wallSign(-6.88, 3.32, 1.2, Math.PI / 2, 'Proof of Concept', '#4f46e5', 2.8, 0.46);
     wallSign(6.88, 3.32, -0.2, -Math.PI / 2, 'Featured Projects', '#4f46e5', 3.4, 0.46);
 
@@ -622,12 +629,12 @@
         ctx.fillStyle = accent; ctx.fillRect(0, 0, cw, 16);
         ctx.fillStyle = '#eef2f7'; roundRect(ctx, cw / 2 - 66, 60, 132, 162, 12); ctx.fill();
         ctx.strokeStyle = accent; ctx.lineWidth = 4; roundRect(ctx, cw / 2 - 66, 60, 132, 162, 12); ctx.stroke();
-        ctx.fillStyle = accent; ctx.font = 'bold 36px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('PDF', cw / 2, 165);
-        ctx.fillStyle = '#10233a'; ctx.font = 'bold 30px Inter, sans-serif';
+        ctx.fillStyle = accent; ctx.font = 'bold 36px Geist, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('PDF', cw / 2, 165);
+        ctx.fillStyle = '#10233a'; ctx.font = 'bold 30px Geist, sans-serif';
         wrapText(ctx, title, cw / 2, 300, cw - 60, 38, 2);
-        ctx.fillStyle = '#5a7287'; ctx.font = '20px Inter, sans-serif';
+        ctx.fillStyle = '#5a7287'; ctx.font = '20px Geist, sans-serif';
         wrapText(ctx, subtitle, cw / 2, 392, cw - 60, 28, 2);
-        ctx.fillStyle = accent; ctx.font = 'bold 18px monospace'; ctx.fillText('[E] OPEN', cw / 2, ch - 28);
+        ctx.fillStyle = accent; ctx.font = 'bold 18px Geist Mono, monospace'; ctx.fillText('[E] OPEN', cw / 2, ch - 28);
       }, 420, 560).tex;
       const cover = plane('Doc', w, h, [0, 0, 0.035], [0, 0, 0],
         new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.25, roughness: 0.5 }), fg);
@@ -652,10 +659,10 @@
     [['kaggle_pandas', 'Kaggle · Pandas'], ['kaggle_data_cleaning', 'Kaggle · Data Cleaning'],
      ['kaggle_intro_ml', 'Kaggle · Intro to ML'], ['kaggle_intermediate_ml', 'Kaggle · Intermediate ML'],
      ['samsung', 'Samsung Innovation Campus']
-    ].forEach(([file, cap], i) => createFrame(LX, 3.02, ZC[i], LR, `certificates/${file}.png`, 0.66, 0.42, cap));
+    ].forEach(([file, cap], i) => createFrame(LX, 3.02, ZC[i], LR, `certificates/thumb_${file}.webp`, 0.66, 0.42, cap));
 
     const DOCS = [
-     ['Résumé', 'Eyad Elfar · AI Engineer', 'resume.pdf', '#7c74ff'],
+     ['Résumé', 'Eyad Elfar · Lead AI Engineer', 'resume.pdf', '#7c74ff'],
      ['Udacity', 'ML Nanodegree (EGFWD)', 'certificates/udacity.svg', '#02b3e4'],
      ['Ericsson', 'Secure Intelligence Training', 'certificates/ericsson.pdf', '#0082f0'],
      ['Orange', 'Data Science Diploma', 'certificates/orange_diploma.pdf', '#ff7900'],
@@ -671,7 +678,7 @@
       const fg = new THREE.Group(); fg.position.set(x, y, z); fg.rotation.y = rotY; scene.add(fg);
       box('TVBezel', [w + 0.12, h + 0.12, 0.08], [0, 0, -0.03], mat(0x0c0f12, { roughness: 0.4, metalness: 0.5 }), fg);
       const video = document.createElement('video');
-      video.src = src; video.muted = true; video.loop = true; video.preload = 'auto';
+      video.muted = true; video.loop = true; video.preload = 'none';
       video.setAttribute('playsinline', ''); video.setAttribute('crossorigin', 'anonymous');
       const vtex = new THREE.VideoTexture(video); vtex.colorSpace = THREE.SRGBColorSpace;
       const screen = plane('Screen', w, h, [0, 0, 0.045], [0, 0, 0], new THREE.MeshBasicMaterial({ map: vtex }), fg);
@@ -679,7 +686,7 @@
       interactables.push(screen);
       const glow = new THREE.PointLight(0x9ec5ff, 0, 4, 2); glow.position.set(0, 0, 0.5); fg.add(glow);
       const worldPos = new THREE.Vector3(); fg.getWorldPosition(worldPos);
-      videoScreens.push({ video, glow, pos: worldPos });
+      videoScreens.push({ video, glow, pos: worldPos, src });
       return fg;
     }
     wallSign(0, 3.62, 12.84, Math.PI, 'Live Demos', '#818cf8', 3.4, 0.5);
@@ -696,24 +703,24 @@
         ctx.fillRect(0, 0, w, 28);
         ctx.fillRect(0, h - 20, w, 20);
         ctx.fillStyle = '#0f2638';
-        ctx.font = 'bold 46px Inter, system-ui, sans-serif';
+        ctx.font = 'bold 46px Geist, system-ui, sans-serif';
         ctx.fillText(meta.title, 50, 95);
         ctx.fillStyle = '#556d80';
-        ctx.font = 'italic 23px Inter, sans-serif';
+        ctx.font = 'italic 23px Geist, sans-serif';
         wrapText(ctx, meta.short, 50, 145, w - 100, 32, 2);
         let lineY = 240;
         meta.lines.forEach(ln => {
           ctx.fillStyle = borderCol;
           ctx.fillRect(50, lineY - 18, 12, 12);
           ctx.fillStyle = '#111e29';
-          ctx.font = 'bold 24px Inter, sans-serif';
+          ctx.font = 'bold 24px Geist, sans-serif';
           lineY = wrapText(ctx, ln, 80, lineY, w - 130, 36) + 16;
         });
         ctx.fillStyle = 'rgba(0,0,0,0.06)';
         roundRect(ctx, w - 240, h - 85, 200, 50, 12);
         ctx.fill();
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 18px monospace';
+        ctx.font = 'bold 18px Geist Mono, monospace';
         ctx.fillText('[E] INTERACT', w - 195, h - 53);
       }, 1024, 680).tex;
 
@@ -849,12 +856,12 @@
     DATA.ai_forecast = {
       title: 'Financial Forecasting Engine', short: 'Forecasting engine that cut reporting 8h → 5min.', color: '#4ade9e',
       lines: [
-        'Ensemble forecasting over 20+ technical indicators',
+        'Forecasting engine over 20+ technical indicators',
         'Collapsed reporting time from 8 hours to 5 minutes',
-        'Confidence bands for risk-aware decisions',
+        'Reporting that used to take a working day',
         'Built at MENRV.AI for merchandising analytics'
       ],
-      html: `<p>A financial forecasting engine built over 20+ technical indicators, with confidence intervals for risk-aware planning. It collapsed reporting cycles from <strong>8 hours to 5 minutes</strong>, freeing analysts for higher-value work.</p><span class="tag">Technical Indicators</span><span class="tag">Time Series</span><span class="tag">Forecasting</span>`
+      html: `<p>A financial forecasting engine built over 20+ technical indicators. It collapsed reporting cycles from <strong>8 hours to 5 minutes</strong>, freeing analysts for higher-value work.</p><span class="tag">Technical Indicators</span><span class="tag">Time Series</span><span class="tag">Forecasting</span>`
     };
     DATA.ai_tts = {
       title: 'Multilingual TTS · 50+ Languages', short: 'Text-to-speech that expanded a product’s global accessibility.', color: '#b09afa',
@@ -862,7 +869,7 @@
         'Multilingual text-to-speech across 50+ languages',
         'Expanded product accessibility across global users',
         'Shipped alongside the MENRV.AI merchandising suite',
-        'Natural prosody for global catalog content'
+        'Part of the MENRV.AI data science work'
       ],
       html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, expanding product accessibility across global users. It shipped alongside the MENRV.AI computer-vision merchandising suite: <strong>Gemini VLM</strong> workflows for image editing and virtual try-on, cutting catalog content creation from hours to minutes.</p><span class="tag">TTS</span><span class="tag">Gemini VLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
     };
@@ -991,7 +998,7 @@
           ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
           ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
         }
-        ctx.fillStyle = '#818cf8'; ctx.font = 'bold 34px Inter, sans-serif'; ctx.fillText('Bias - Variance', 24, 48);
+        ctx.fillStyle = '#818cf8'; ctx.font = 'bold 34px Geist, sans-serif'; ctx.fillText('Bias - Variance', 24, 48);
       }, 560, 400).tex;
       viz.add(new THREE.Mesh(new THREE.PlaneGeometry(W + 0.12, H + 0.12),
         new THREE.MeshStandardMaterial({ map: gridTex, emissive: 0xffffff, emissiveMap: gridTex, emissiveIntensity: 0.4, roughness: 0.4 })));
@@ -1028,7 +1035,7 @@
         if (idx === lastLabel) return; lastLabel = idx;
         labCtx.clearRect(0, 0, 560, 90);
         labCtx.fillStyle = '#' + colorsR[idx].toString(16).padStart(6, '0');
-        labCtx.font = 'bold 36px Inter, sans-serif'; labCtx.textAlign = 'center';
+        labCtx.font = 'bold 36px Geist, sans-serif'; labCtx.textAlign = 'center';
         labCtx.fillText(overfitNames[idx], 280, 58); labTex.needsUpdate = true;
       }
       function setCurve(a, b, f) {
@@ -1070,14 +1077,14 @@
       let cur = [0, 0, 0, 0, 0, 0], idx = 0;
       function draw() {
         sx.clearRect(0, 0, 560, 540);
-        sx.fillStyle = '#ffd166'; sx.font = 'bold 34px Inter, sans-serif'; sx.textAlign = 'left'; sx.fillText('Creativity Scoring', 20, 40);
-        sx.fillStyle = '#88a8bf'; sx.font = '17px monospace'; sx.fillText('AR block composition · Sample ' + (idx + 1) + '/4', 20, 66);
+        sx.fillStyle = '#ffd166'; sx.font = 'bold 34px Geist, sans-serif'; sx.textAlign = 'left'; sx.fillText('Creativity Scoring', 20, 40);
+        sx.fillStyle = '#88a8bf'; sx.font = '17px Geist Mono, monospace'; sx.fillText('AR block composition · Sample ' + (idx + 1) + '/4', 20, 66);
         for (let i = 0; i < 6; i++) {
           const y = 110 + i * 68, v = cur[i];
-          sx.fillStyle = '#cfe0ee'; sx.font = 'bold 20px Inter, sans-serif'; sx.fillText(dims[i], 20, y - 8);
+          sx.fillStyle = '#cfe0ee'; sx.font = 'bold 20px Geist, sans-serif'; sx.fillText(dims[i], 20, y - 8);
           sx.fillStyle = 'rgba(255,255,255,0.08)'; roundRect(sx, 20, y, 430, 20, 10); sx.fill();
           sx.fillStyle = v >= 66 ? '#4ade9e' : v >= 40 ? '#ffd166' : '#fb7185'; roundRect(sx, 20, y, 430 * v / 100, 20, 10); sx.fill();
-          sx.fillStyle = '#fff'; sx.font = 'bold 22px monospace'; sx.textAlign = 'right'; sx.fillText(Math.round(v), 548, y + 18); sx.textAlign = 'left';
+          sx.fillStyle = '#fff'; sx.font = 'bold 22px Geist Mono, monospace'; sx.textAlign = 'right'; sx.fillText(Math.round(v), 548, y + 18); sx.textAlign = 'left';
         }
         scTex.needsUpdate = true;
       }
@@ -1108,7 +1115,7 @@
         if (reveal === lastReveal) return;
         lastReveal = reveal;
         ox.clearRect(0, 0, 700, 470);
-        ox.font = 'bold 16px monospace';
+        ox.font = 'bold 16px Geist Mono, monospace';
         for (let i = 0; i < boxes.length && i < reveal; i++) {
           const b = boxes[i], X = b.x * 700, Y = b.y * 470, BW = b.w * 700, BH = b.h * 470;
           ox.strokeStyle = '#ff5a5a'; ox.lineWidth = 4; ox.strokeRect(X, Y, BW, BH);
@@ -1129,7 +1136,7 @@
       aiAnimators.push((t, cam) => {
         if (!aiNear(group, cam)) return;
         x.fillStyle = '#0a1016'; x.fillRect(0, 0, 760, 460);
-        x.fillStyle = '#3abef9'; x.font = 'bold 30px Inter, sans-serif'; x.textAlign = 'left'; x.fillText('RAG Copilot + Voice Agent', 24, 46);
+        x.fillStyle = '#3abef9'; x.font = 'bold 30px Geist, sans-serif'; x.textAlign = 'left'; x.fillText('RAG Copilot + Voice Agent', 24, 46);
         edges.forEach((e, ei) => {
           const a = nodes[e[0]], b = nodes[e[1]], ax = a.x + a.w / 2, ay = a.y + a.h / 2, bx = b.x + b.w / 2, by = b.y + b.h / 2;
           x.strokeStyle = 'rgba(120,160,200,0.4)'; x.lineWidth = 3; x.beginPath(); x.moveTo(ax, ay); x.lineTo(bx, by); x.stroke();
@@ -1139,9 +1146,9 @@
         nodes.forEach(n => {
           x.fillStyle = '#0f1c28'; roundRect(x, n.x, n.y, n.w, n.h, 10); x.fill();
           x.strokeStyle = n.c; x.lineWidth = 2.5; roundRect(x, n.x, n.y, n.w, n.h, 10); x.stroke();
-          x.fillStyle = '#e6f1fa'; x.font = 'bold 19px Inter, sans-serif'; x.textAlign = 'center'; x.fillText(n.t, n.x + n.w / 2, n.y + n.h / 2 + 7);
+          x.fillStyle = '#e6f1fa'; x.font = 'bold 19px Geist, sans-serif'; x.textAlign = 'center'; x.fillText(n.t, n.x + n.w / 2, n.y + n.h / 2 + 7);
         });
-        x.fillStyle = '#7fa8c2'; x.font = '16px monospace'; x.textAlign = 'left'; x.fillText('sub-second guidance · thousands of calls/day', 24, 442);
+        x.fillStyle = '#7fa8c2'; x.font = '16px Geist Mono, monospace'; x.textAlign = 'left'; x.fillText('sub-second guidance · thousands of calls/day', 24, 442);
         tex.needsUpdate = true;
       });
     })();
@@ -1160,7 +1167,7 @@
         x.fillStyle = '#0a1016'; x.fillRect(0, 0, 760, 460);
         x.strokeStyle = 'rgba(74,222,158,0.12)'; x.lineWidth = 1;
         for (let g = 0; g <= 5; g++) { const gy = Y0 + (Y1 - Y0) * g / 5; x.beginPath(); x.moveTo(X0, gy); x.lineTo(X1, gy); x.stroke(); }
-        x.fillStyle = '#4ade9e'; x.font = 'bold 30px Inter, sans-serif'; x.textAlign = 'left'; x.fillText('Forecasting · 20+ Indicators', 24, 46);
+        x.fillStyle = '#4ade9e'; x.font = 'bold 30px Geist, sans-serif'; x.textAlign = 'left'; x.fillText('Forecasting · 20+ Indicators', 24, 46);
 
         x.strokeStyle = '#7fa8c2'; x.lineWidth = 3; x.beginPath();
         for (let i = 0; i < NH; i++) { const X = px(i), Y = py(hist[i]); i ? x.lineTo(X, Y) : x.moveTo(X, Y); } x.stroke();
@@ -1175,7 +1182,7 @@
         x.strokeStyle = '#4ade9e'; x.lineWidth = 3; x.setLineDash([8, 6]); x.beginPath();
         x.moveTo(px(NH - 1), py(hist[NH - 1]));
         for (let i = 0; i < NF && i < rev; i++) x.lineTo(px(NH + i), py(fut[i])); x.stroke(); x.setLineDash([]);
-        x.fillStyle = '#7fa8c2'; x.font = '16px monospace'; x.fillText('reporting 8h → 5min · 20+ indicators', 24, 442);
+        x.fillStyle = '#7fa8c2'; x.font = '16px Geist Mono, monospace'; x.fillText('reporting 8h → 5min · 20+ indicators', 24, 442);
         tex.needsUpdate = true;
       });
     })();
@@ -1194,7 +1201,7 @@
       }
       const langs = ['EN', 'AR', 'FR', 'ES', '中文', 'हिं', 'DE', '日本', 'PT', 'RU'];
       const labels = langs.map((L) => {
-        const tex = roundedCanvasTexture((ctx, w, h) => { ctx.clearRect(0, 0, w, h); ctx.fillStyle = '#ece6ff'; ctx.font = 'bold 64px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(L, w / 2, h / 2); }, 128, 128).tex;
+        const tex = roundedCanvasTexture((ctx, w, h) => { ctx.clearRect(0, 0, w, h); ctx.fillStyle = '#ece6ff'; ctx.font = 'bold 64px Geist, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(L, w / 2, h / 2); }, 128, 128).tex;
         return plane('lang', 0.2, 0.2, [0, cy, 0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: tex, transparent: true }), group);
       });
       aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_tts', 'ai', 'Press <b>E</b> to explore Multilingual TTS');
@@ -1261,10 +1268,12 @@
       }
     }
 
+    const CHARACTER_BYTES = 1603060;
+    const charChip = document.getElementById('charChip');
     const gltfLoader = new GLTFLoader();
     gltfLoader.setMeshoptDecoder(MeshoptDecoder);
     gltfLoader.load(
-      'eyad.glb',
+      'eyad.glb?v=449b9ac1',
       (gltf) => {
         const model = gltf.scene;
         model.traverse((o) => {
@@ -1316,16 +1325,12 @@
         });
 
         buildEyelids();
-        finishLoad();
+        if (charChip) charChip.remove();
       },
       (xhr) => {
-        if (xhr.total) {
-          const pct = Math.min(100, Math.round((xhr.loaded / xhr.total) * 100));
-          const fill = document.getElementById('loaderFill');
-          const pctEl = document.getElementById('loaderPct');
-          if (fill) fill.style.width = pct + '%';
-          if (pctEl) pctEl.textContent = `Loading character… ${pct}%`;
-        }
+        // Bytes arrive decoded, so the total is the file's real size, not the gzip length.
+        const pct = Math.min(99, Math.round((xhr.loaded / CHARACTER_BYTES) * 100));
+        if (charChip) charChip.textContent = `Character ${pct}%`;
       },
       (err) => {
         console.error('GLB load failed, using proxy figure:', err);
@@ -1339,11 +1344,9 @@
         proxy.add(torso, head);
         characterPivot.add(proxy);
         characterReady = true;
-        finishLoad();
+        if (charChip) charChip.remove();
       }
     );
-
-    setTimeout(finishLoad, 12000);
 
     const boundingObstacles = [
       { minX: -2.7, maxX: 2.7, minZ: -5.1, maxZ: -2.3 },
@@ -1813,7 +1816,7 @@
       ctx.font = 'bold 54px sans-serif';
       ctx.fillText(title, 60, 90);
       ctx.fillStyle = '#7895a3';
-      ctx.font = '500 24px monospace';
+      ctx.font = '500 24px Geist Mono, monospace';
       ctx.fillText(desc, 65, 135);
       ctx.fillRect(60, 160, w - 120, 3);
     }
@@ -1828,11 +1831,11 @@
       ctx.lineWidth = 2;
       ctx.stroke();
       ctx.fillStyle = '#818cf8';
-      ctx.font = 'bold 24px monospace';
+      ctx.font = 'bold 24px Geist Mono, monospace';
       const tick = typingMode && Math.floor(clock.getElapsedTime() * 3) % 2 === 0 ? '_' : '';
       ctx.fillText(`eyad@playground:~$ ${screenInput}${tick}`, 90, h - 110);
       ctx.fillStyle = '#4a677a';
-      ctx.font = '16px monospace';
+      ctx.font = '16px Geist Mono, monospace';
       ctx.fillText('Nodes: IMPACT | JOURNEY | PROJECTS | STACK | EDUCATION | CONTACT | CLEAR', 90, h - 75);
     }
 
@@ -1843,10 +1846,10 @@
         ctx.fillStyle = '#05080c';
         ctx.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
         ctx.fillStyle = '#4f46e5';
-        ctx.font = 'bold 44px monospace';
+        ctx.font = 'bold 44px Geist Mono, monospace';
         ctx.fillText('SYSTEM INACTIVE', 100, 200);
         ctx.fillStyle = '#465d70';
-        ctx.font = '24px monospace';
+        ctx.font = '24px Geist Mono, monospace';
         ctx.fillText('Aim at monitor and press [E] to boot.', 100, 260);
         screenTexture.needsUpdate = true;
         return;
@@ -1870,7 +1873,7 @@
           ctx.font = 'bold 36px sans-serif';
           ctx.fillText(item[0], qx + 30, qy + 55);
           ctx.fillStyle = '#6fa1c2';
-          ctx.font = '18px monospace';
+          ctx.font = '18px Geist Mono, monospace';
           ctx.fillText(item[1], qx + 30, qy + 95);
         });
         deployMonitorCommandBox(ctx);
@@ -1881,7 +1884,7 @@
         roundRect(ctx, 60, 190, 1160, 340, 12);
         ctx.fill();
         ctx.fillStyle = '#d3e4f0';
-        ctx.font = 'bold 22px monospace';
+        ctx.font = 'bold 22px Geist Mono, monospace';
         let ly = 240;
         dm.lines.forEach(ln => { ctx.fillText(`> ${ln}`, 100, ly);
           ly += 45; });
@@ -1891,7 +1894,7 @@
       roundRect(ctx, screenCanvas.width - 480, 20, 420, 120, 6);
       ctx.fill();
       ctx.fillStyle = '#818cf8';
-      ctx.font = '14px monospace';
+      ctx.font = '14px Geist Mono, monospace';
       const tl = terminalLog.slice(-4);
       tl.forEach((l, i) => ctx.fillText(l, screenCanvas.width - 460, 45 + i * 24));
       screenTexture.needsUpdate = true;
@@ -2187,7 +2190,7 @@
       const LINKEDIN_LOGO = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>';
       const KAGGLE_LOGO = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.1025 7.3475c-.0681 0-.1022.0341-.1022.102v6.752c0 .0681.034.1022.1022.1022h.7049c.068 0 .1022-.034.1022-.1023v-1.481l.4187-.3985 1.5016 1.91c.041.0477.0884.0716.143.0716h.9091c.0476 0 .0748-.0135.0817-.0407.0135-.041.0066-.075-.0206-.1023l-1.9816-2.4618 1.9002-1.8384c.0204-.0205.0237-.051.01-.092-.0137-.0339-.0408-.051-.0816-.051h-.9398c-.0477 0-.0953.024-.143.0716L.9096 11.607V7.4496c0-.0679-.0342-.102-.1022-.102zm18.0417 0c-.068 0-.102.0341-.102.102v6.752c0 .0681.034.102.102.102h.705c.068 0 .102-.034.102-.102v-6.752c0-.068-.034-.102-.102-.102zM5.961 9.6254c-.5653 0-1.11.1806-1.6343.5415-.0545.0545-.0648.102-.0307.143l.3676.5208c.0272.0477.0717.0545.133.0204.3948-.2722.783-.4086 1.1644-.4086.2927 0 .5158.0886.669.2656.1532.1771.2197.3917.1992.6436-.6606.0681-1.1545.1495-1.4813.245-.8308.2383-1.2461.6913-1.2461 1.3586 0 .4222.1533.7695.4598 1.0419.3132.2654.6845.3982 1.1134.3982.4698 0 .8545-.1125 1.1542-.3372v.1432c0 .0682.0374.102.1123.102h.7048c.068 0 .102-.0338.102-.102V11.372c0-.6604-.2245-1.1406-.6739-1.4403-.3065-.2043-.6776-.3063-1.1134-.3063zm4.3225 0c-.6742 0-1.195.2622-1.5627.7865-.3133.4359-.4699.9671-.4699 1.5936 0 .6604.1634 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5313 0 .9567-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1132-.572a.098.098 0 00-.0716-.0306c-.034 0-.0613.0102-.0817.0307l-.4802.48c-.0408.0613-.0375.1124.0103.1532.1361.1157.2554.2129.3576.2911.102.0783.1905.1413.2656.189.354.1975.7284.2961 1.1235.2961.6808 0 1.207-.1925 1.5781-.577.3711-.3848.5567-.9484.5567-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.705c-.0682 0-.1021.034-.1021.102v.2043c-.3471-.2657-.7763-.3985-1.287-.3985zm4.8021 0c-.6742 0-1.195.2622-1.5627.7865-.3132.4359-.4699.9671-.4699 1.5936 0 .6604.1633 1.2087.4903 1.6444.3744.4972.892.7455 1.5526.7455.5311 0 .9566-.1327 1.2768-.3982v.531c0 .858-.4122 1.287-1.236 1.287-.361 0-.732-.1907-1.1133-.572a.098.098 0 00-.0716-.0306c-.034 0-.0612.0102-.0816.0307l-.48.48c-.0409.0613-.0376.1124.01.1532.1363.1157.2555.2129.3576.2911.1021.0783.1906.1413.2657.189.354.1975.7285.2961 1.1237.2961.6808 0 1.2068-.1925 1.5781-.577.371-.3848.5565-.9484.5565-1.6903V9.8196c0-.068-.034-.102-.102-.102h-.7049c-.0682 0-.1022.034-.1022.102v.2043c-.3474-.2657-.7763-.3985-1.287-.3985zm6.7457 0c-.6537 0-1.185.211-1.5936.6332-.4427.4632-.664 1.0283-.664 1.6956 0 .7083.225 1.2905.6743 1.7467.463.463 1.042.6945 1.7366.6945.6467 0 1.2154-.1838 1.7057-.5515.0545-.041.0545-.0884 0-.143l-.4802-.4903c-.041-.0409-.0919-.0409-.1533 0-.2998.2112-.6368.3167-1.0112.3167-.4222 0-.7729-.119-1.052-.3576-.2452-.2248-.3882-.5038-.429-.8375h3.3197c.0679 0 .1022-.0341.1022-.1023l.01-.2244c.0341-.6878-.1668-1.26-.6025-1.7162-.4224-.4426-.9432-.664-1.5627-.664zm-.0206.7865c.3268 0 .6062.1056.8377.3166.2452.211.371.4734.378.7865h-2.4618c.0613-.3269.2077-.5925.4392-.7968.2313-.2042.5004-.3063.8069-.3063zm-11.4249.102c.6196 0 1.0146.2181 1.1848.6538v1.6854c-.1702.4358-.5755.6538-1.2155.6538-.3133 0-.5687-.0986-.7661-.2963-.2656-.2518-.3983-.6538-.3983-1.2053 0-.9941.3984-1.4914 1.1951-1.4914zm4.802 0c.6196 0 1.0148.2181 1.1851.6538h-.0002v1.6854c-.1703.4358-.5755.6538-1.2155.6538-.3132 0-.5686-.0986-.7661-.2963-.2655-.2518-.3983-.6538-.3983-1.2053 0-.9941.3983-1.4914 1.195-1.4914zm-8.3586 1.6547v1.0215c-.286.286-.6675.412-1.1441.3779-.1703-.0135-.32-.0663-.4493-.1582-.1294-.0919-.2045-.2129-.2249-.3627-.0341-.2657.1158-.47.4495-.6129.2452-.1088.7013-.1974 1.3688-.2656z"/></svg>';
       const PROFILES = [
-        { pane: 'linkedin', site: 'LinkedIn', logo: LINKEDIN_LOGO, name: 'Eyad Elfar', sub: 'AI Engineer · Dubai, UAE', href: 'https://www.linkedin.com/in/eyadelfar/', items: [
+        { pane: 'linkedin', site: 'LinkedIn', logo: LINKEDIN_LOGO, name: 'Eyad Elfar', sub: 'Lead AI Engineer · Dubai, UAE', href: 'https://www.linkedin.com/in/eyadelfar/', items: [
           'Architecting production LLM/RAG copilots with sub-second real-time guidance.',
           'AI voice agents running thousands of calls/day and Cloud Run automation across dozens of stages.',
           'Built KeepQuill & Favisra (personal POCs); ex-MENRV.AI, NEOMI, iSchool, e-finance.'] },
@@ -2299,9 +2302,11 @@
 
     const _specPos = new THREE.Vector3();
     const _specLook = new THREE.Vector3();
+    let idleFrames = 0;
     function mainRenderLoop() {
       requestAnimationFrame(mainRenderLoop);
       if (document.hidden) return;
+      if (!entered && (++idleFrames % 8)) return;
       const delta = Math.min(clock.getDelta(), 0.04);
       const elapsed = clock.getElapsedTime();
 
@@ -2340,7 +2345,8 @@
         const vs = videoScreens[i];
         const near = !uiOpen && camera.position.distanceTo(vs.pos) < 7;
         if (near) {
-          if (vs.video.paused && vs.video.readyState >= 2) { const pr = vs.video.play(); if (pr && pr.catch) pr.catch(() => {}); }
+          if (!vs.video.src) vs.video.src = vs.src;
+          if (vs.video.paused) { const pr = vs.video.play(); if (pr && pr.catch) pr.catch(() => {}); }
           vs.glow.intensity = 0.5;
         } else {
           if (!vs.video.paused) vs.video.pause();
@@ -2392,6 +2398,8 @@
     }
     canvas.focus();
     mainRenderLoop();
+    finishLoad();
+    window.__roomReady = true;
 
     let _resizeT = null;
     window.addEventListener('resize', () => {

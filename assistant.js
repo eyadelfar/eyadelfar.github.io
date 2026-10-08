@@ -1,4 +1,4 @@
-import { renderCitations } from './citations.js?v=1';
+import { renderCitations } from './citations.js?v=4999cd10';
 
 const launcher = document.getElementById('askBtn');
 const panel = document.getElementById('askPanel');
@@ -233,7 +233,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     setStatus('');
 
     try {
-      voice ??= await import('./voice.js?v=5');
+      voice ??= await import('./voice.js?v=dab1a873');
       if (seq !== startSeq) return;
       if (!voice.isSupported()) {
         callBtn.disabled = true;
@@ -275,7 +275,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     let streamed = false;
 
     try {
-      engine ??= await import('./chat.js?v=5');
+      engine ??= await import('./chat.js?v=833175cf');
       const answer = await engine.ask(question, {
         stage(name) {
           if (!streamed && CHAT_STAGE[name]) setText(el, CHAT_STAGE[name]);
@@ -381,10 +381,16 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
   document.querySelector('.js-agent-ask')?.addEventListener('click', () => {
     if (panel.hidden) openPanel();
   });
-  document.querySelector('.js-agent-call')?.addEventListener('click', () => {
-    if (panel.hidden) openPanel();
-    startCall();
-  });
+  for (const button of document.querySelectorAll('.js-agent-call')) {
+    button.addEventListener('click', () => {
+      if (heroAgent?.dataset.ai === 'down') {
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      if (panel.hidden) openPanel();
+      startCall();
+    });
+  }
 
   document.addEventListener('ai-availability', (e) => setAvailable(e.detail.up));
   setAvailable(window.AI_AVAILABLE);

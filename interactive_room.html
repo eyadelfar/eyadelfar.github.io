@@ -7,7 +7,28 @@
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="room.css">
+<link rel="preload" href="fonts/geist.woff2?v=59943677" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/geist-mono.woff2?v=5ebb8929" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="room.css?v=f2a3c0a1">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/loaders/GLTFLoader.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/libs/meshopt_decoder.module.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/environments/RoomEnvironment.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/geometries/RoundedBoxGeometry.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/renderers/CSS3DRenderer.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/postprocessing/EffectComposer.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/postprocessing/RenderPass.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/postprocessing/UnrealBloomPass.js": "./vendor/three.bundle.min.js?v=e351956f",
+    "three/addons/postprocessing/OutputPass.js": "./vendor/three.bundle.min.js?v=e351956f"
+  }
+}
+</script>
+<link rel="modulepreload" href="vendor/three.bundle.min.js?v=e351956f">
+<link rel="modulepreload" href="room.js?v=be1798b9">
+<link rel="preload" href="eyad.glb?v=449b9ac1" as="fetch" type="model/gltf-binary" crossorigin>
 </head>
 <body>
   <canvas id="canvas" tabindex="1"></canvas>
@@ -15,16 +36,25 @@
   <div id="loader">
     <div class="loader-inner">
       <div class="loader-ring"></div>
-      <h2>Booting Eyad's AI Playground…</h2>
+      <h2>Building the room…</h2>
       <div class="loader-bar"><i id="loaderFill"></i></div>
-      <div id="loaderPct">Loading character &amp; scene…</div>
+      <div id="loaderPct">Placing the furniture</div>
     </div>
   </div>
+
+  <div id="charChip">Character 0%</div>
+  <script>
+    setTimeout(function () {
+      if (window.__roomReady) return;
+      var note = document.getElementById('loaderPct');
+      if (note) note.innerHTML = 'This is taking longer than it should. <a href="interactive_room.html" style="color:#3abef9">Reload</a> or go <a href="index.html" style="color:#3abef9">back to the portfolio</a>.';
+    }, 15000);
+  </script>
 
   <div id="topbar" class="ui">
     <div class="nameplate">
       <h1><span>AI</span> Eyad's Playground</h1>
-      <p>AI Engineer · Interactive Playground</p>
+      <p>Lead AI Engineer · Interactive Playground</p>
       <div class="pills">
         <div class="pill"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Dubai, UAE</div>
         <div class="pill">LLM Systems</div>
@@ -124,21 +154,12 @@
     </div>
   </div>
 
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
-    }
-  </script>
-
-  <script type="module" src="room.js?v=2"></script>
+  <script type="module" src="room.js?v=be1798b9"></script>
   <script>
     window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
     window.PORTFOLIO_PAGE = 'room';
   </script>
-  <script src="analytics.js?v=6" defer></script>
-  <script src="hello.js?v=1" defer></script>
+  <script src="analytics.js?v=816c7549" defer></script>
+  <script src="hello.js?v=c7297fde" defer></script>
 </body>
 </html>
