@@ -40,8 +40,6 @@ function rebuildSecCache() {
 function onScroll() {
   const y = window.scrollY;
   nav.classList.toggle('scrolled', y > 60);
-  // Key off the hero's real height, not the viewport: on mobile the hero is
-  // taller than the screen, so a viewport fraction popped the dock mid-hero.
   if (fabDock) fabDock.classList.toggle('show', y > heroHeight() - 120);
   const scrollY = y + 140;
   for (const s of secCache) {

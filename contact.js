@@ -23,8 +23,6 @@
       '&body=' + encodeURIComponent(message);
   }
 
-  // Never lose the visitor's text. If the Worker is unreachable, hand them a
-  // pre-filled mailto and put the message on their clipboard.
   async function degrade(name, message) {
     try { await navigator.clipboard.writeText(message); } catch (e) { /* not fatal */ }
     statusEl.className = 'contact-status warn';

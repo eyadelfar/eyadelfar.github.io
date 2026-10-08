@@ -270,8 +270,6 @@
   }
 
   .hero {
-    /* The banner reads through now, so hero secondary text needs more weight.
-       #6b7280 is 4.83:1 on white and fails the moment the background is tinted. */
     --text2: #4b5563;
     position: relative;
     min-height: 100vh;
@@ -411,7 +409,6 @@
   }
   .hero-icons svg { width: 17px; height: 17px; }
 
-
   .hero-playground-link {
     display: inline-flex;
     align-items: center;
@@ -448,8 +445,6 @@
   .hero-agent {
     position: relative;
     padding: 30px;
-    /* Frosted, not blurred: the backdrop is already a soft 2px-blurred wash, so
-       backdrop-filter would re-blur it every parallax frame for no pixels. */
     background: rgba(255, 255, 255, .72);
     border: 1px solid rgba(17, 24, 39, .10);
     border-radius: 22px;
@@ -480,6 +475,18 @@
     background: var(--green);
     animation: visitorPulse 2s infinite;
   }
+  .live-wait, .live-off, .agent-fallback { display: none; }
+  .hero-agent[data-ai="checking"] .agent-live,
+  .hero-agent[data-ai="down"] .agent-live { color: var(--text2); }
+  .hero-agent[data-ai="checking"] .live-dot,
+  .hero-agent[data-ai="down"] .live-dot { background: var(--text2); animation: none; }
+  .hero-agent[data-ai="checking"] .live-on,
+  .hero-agent[data-ai="down"] .live-on { display: none; }
+  .hero-agent[data-ai="checking"] .live-wait,
+  .hero-agent[data-ai="down"] .live-off { display: inline; }
+  .hero-agent[data-ai="down"] .js-agent-ask,
+  .hero-agent[data-ai="down"] .js-agent-call { display: none; }
+  .hero-agent[data-ai="down"] .agent-fallback { display: inline-flex; text-decoration: none; }
   .hero-agent h2 {
     margin: 12px 0 10px;
     font-size: 1.55rem;
@@ -527,17 +534,12 @@
     background: url('images/hero_banner.webp') center / cover no-repeat;
     opacity: .30;
     filter: blur(2px);
-    /* No transition: app.js sets transform every rAF frame, so a transition
-       restarts each frame and fights the loop. */
     will-change: transform;
   }
   .hero-bg::after {
     content: '';
     position: absolute;
     inset: 0;
-    /* opacity on .hero-bg composites this veil WITH the banner as one group, so
-       these alphas are effectively multiplied by .30. Ends at #fff, not --bg, so
-       there is no seam where the hero meets .stats-bar. */
     background:
       radial-gradient(ellipse at 50% 28%, rgba(var(--rgb-accent), .12) 0%, transparent 62%),
       linear-gradient(180deg,
@@ -880,9 +882,6 @@
     line-height: 1;
   }
 
-  /* flex-basis must stay auto. At flex-basis 0 the log's shrink factor is 0, so
-     once the panel hits max-height every overflowing pixel comes out of the
-     suggestion rail and the form instead, and the rail collapses to nothing. */
   .ask-log {
     flex: 1 1 auto;
     min-height: 0;
@@ -988,6 +987,31 @@
     border-radius: 0 8px 8px 0;
   }
   .ask-cite-body[hidden] { display: none; }
+  .ask-bot.streaming .msg-text::after {
+    content: '';
+    display: inline-block;
+    width: 2px; height: 1em;
+    margin-left: 2px;
+    vertical-align: -2px;
+    background: currentColor;
+    animation: askCaret 1s steps(2, start) infinite;
+  }
+  @keyframes askCaret { to { visibility: hidden; } }
+  .ask-stopped { opacity: .7; }
+  .ask-retry {
+    display: block;
+    margin-top: 8px;
+    padding: 4px 12px;
+    font: inherit;
+    font-size: .76rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .ask-retry:hover { background: rgba(var(--rgb-accent), .08); }
   .ask-note {
     width: 100%;
     font-size: .7rem;
@@ -1237,14 +1261,6 @@
   .ask-call svg { width: 14px; height: 14px; }
   .ask-call[hidden] { display: none; }
 
-  /* ------------------------------------------------------------------
-     Width-based media queries carry NO specificity. An override must repeat
-     the base rule's selector VERBATIM: `.hero-avatar` inside a query does not
-     beat `.hero-identity .hero-avatar` outside one. That is what silently
-     pinned the mobile avatar at 112px while this block claimed 96px.
-     Corollary: one generation of CSS per component, at one specificity level.
-     ------------------------------------------------------------------ */
-
   @media (max-width: 960px) {
     .hero-grid    { grid-template-columns: 1fr; gap: 24px; }
     .contact-grid { grid-template-columns: 1fr; gap: 28px; }
@@ -1258,8 +1274,6 @@
     .back-to-top { width: 36px; height: 36px; }
     .contact-row { grid-template-columns: 1fr; }
 
-    /* Hugging the content beats min-height here: on a tall phone the hero would
-       otherwise re-inject dead space and push the agent card back below the fold. */
     .hero          { min-height: 0; align-items: flex-start; padding: 84px 20px 48px; }
     .hero-top      { gap: 14px; margin-bottom: 16px; }
     .hero-avatar   { width: 76px; height: 76px; }

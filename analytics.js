@@ -3,14 +3,16 @@
 
   var API = window.PORTFOLIO_API || '';
   var CACHE_KEY = 'pf:visit';
+  var EMBED = window.PF_EMBED || '';
+  var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !/[?&]analytics=1/.test(location.search);
+  var COUNT = !!API && !EMBED && !LOCAL;
+  var EVENTS = !!API && !LOCAL && EMBED !== 'preview';
 
   window.trackEvent = function (name) {
-    if (!API || !name) return;
+    if (!EVENTS || !name) return;
     try {
       var body = JSON.stringify({ name: name });
       if (navigator.sendBeacon) {
-        // text/plain keeps this a simple CORS request. sendBeacon cannot preflight,
-        // so application/json would make every event fail silently.
         navigator.sendBeacon(API + '/event', new Blob([body], { type: 'text/plain;charset=UTF-8' }));
       } else {
         fetch(API + '/event', {
@@ -28,11 +30,8 @@
     if (el) window.trackEvent(el.getAttribute('data-track'));
   }, { passive: true });
 
-  /* Engaged time, not wall-clock: a backgrounded tab is not a visitor reading.
-     No browser fires a reliable "left the page" event, so we report repeatedly
-     and let the server keep the longest for this session id. */
   function trackSession() {
-    if (!API) return;
+    if (!COUNT) return;
 
     var id = Math.random().toString(36).slice(2) + Date.now().toString(36);
     var page = window.PORTFOLIO_PAGE || 'portfolio';
@@ -70,9 +69,7 @@
       if (!visible) report();
     });
 
-    // pagehide, not beforeunload: beforeunload never fires on iOS.
     window.addEventListener('pagehide', report);
-    // Insurance for a session that ends without either event firing.
     setInterval(report, 60000);
   }
 
@@ -108,7 +105,6 @@
     pill.hidden = false;
 
     var series = data.series || [];
-    // render() runs twice: once from cache, once from the network.
     if (!series.length || wired) return;
     wired = true;
 
@@ -155,6 +151,10 @@
 
     var prior = cached();
     if (prior) { render(prior); setAvailability(prior.chat); }
+    if (!COUNT) {
+      if (!prior && EMBED !== 'preview') setAvailability(true);
+      return;
+    }
 
     var controller = new AbortController();
     var timer = setTimeout(function () { controller.abort(); }, 6000);
@@ -176,7 +176,10 @@
         render(data);
         setAvailability(!!data.chat);
       })
-      .catch(function () { clearTimeout(timer); });
+      .catch(function () {
+        clearTimeout(timer);
+        setAvailability(false);
+      });
   }
 
   if (document.readyState === 'loading') {

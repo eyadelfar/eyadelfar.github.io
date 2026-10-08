@@ -40,8 +40,6 @@ function render(s) {
   const quota = Object.fromEntries((s.usage_today || []).map((u) => [u.kind, u.count]));
   const sessions = s.sessions || [];
   const reach = s.reach || {};
-  // Bars scale to the longest visit shown, not a fixed ceiling: against a fixed
-  // 5 minutes every real session paints a sliver and the bar says nothing.
   const peak = Math.max(...(s.recent || []).map((r) => r.ms), 1);
   const room = sessions.find((x) => x.page === 'room');
   const site = sessions.find((x) => x.page === 'portfolio');

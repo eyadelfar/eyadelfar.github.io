@@ -353,7 +353,6 @@ const SC_TEMPLATES = `
     setTimeout(function(){ body.innerHTML = ''; }, 350); // stop video / reset
   };
 
-  // Deep-link: open a showcase from the URL hash (used by the 3D room's frames via iframe).
   function openFromHash(){
     const k = (location.hash || '').replace('#','');
     if(SHOWCASES[k]){

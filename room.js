@@ -191,7 +191,6 @@
     const centerPoint = new THREE.Vector2(0, 0);
     const clock = new THREE.Clock();
 
-
     const { mat, physMat, box, rbox, cylinder, plane, sphere, roundedCanvasTexture, roundRect, wrapText } = makeHelpers(scene);
 
     const floorTexture = roundedCanvasTexture((ctx, w, h) => {
@@ -280,7 +279,6 @@
     }, 1024, 1024).tex;
     wallPlasterTex.wrapS = wallPlasterTex.wrapT = THREE.RepeatWrapping;
     wallPlasterTex.repeat.set(4, 2.4);
-
 
     const hemiLight = new THREE.HemisphereLight(0xd6eaff, 0xb8a080, 0.26);
     scene.add(hemiLight);
@@ -606,8 +604,8 @@
     }
 
     createFrame(-6.92, 2.45, -3.4, Math.PI / 2, 'me.webp', 1.05, 1.3, 'Eyad Elfar');
-    createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill', { kind: 'page', src: 'index.html?v=4#keepquill', title: 'KeepQuill - Sample Book & Readme', prompt: 'Press <b>E</b> to read the KeepQuill sample book' });
-    createFrame(-6.92, 2.4, 2.0, Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'index.html?v=4#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
+    createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill', { kind: 'page', src: 'index.html?embed=showcase#keepquill', title: 'KeepQuill - Sample Book & Readme', prompt: 'Press <b>E</b> to read the KeepQuill sample book' });
+    createFrame(-6.92, 2.4, 2.0, Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'index.html?embed=showcase#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
     createFrame(6.92, 2.5, -3.0, -Math.PI / 2, 'images/mental_health.webp', 0.78, 0.5, 'Mental Health NLP');
     createFrame(6.92, 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.webp', 0.78, 0.5, 'YOLOv8 Detection');
     createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/voice_agent.webp', 0.78, 0.5, 'Voice Agents');
@@ -1309,7 +1307,6 @@
           actIdle = charMixer.clipAction(idleClip); actIdle.play();
           if (walkClip !== idleClip) { actWalk = charMixer.clipAction(walkClip); actWalk.play(); actWalk.setEffectiveWeight(0); }
         }
-        // If the face has blink blendshapes (RPM: eyeBlinkLeft/Right), use real morph blinking.
         model.traverse((o) => {
           if (o.isMesh && o.morphTargetDictionary) {
             for (const key in o.morphTargetDictionary) {
@@ -1975,7 +1972,7 @@
       iframe.style.border = '0';
       iframe.style.background = '#0f0f1e';
       iframe.style.pointerEvents = 'none';
-      iframe.src = 'index.html';
+      iframe.src = 'index.html?embed=preview';
       const obj = new CSS3DObject(iframe);
       const scale = 2.24 / px;
       obj.scale.set(scale, scale, scale);
@@ -1999,7 +1996,7 @@
       uiOpen = true;
       if (document.pointerLockElement) document.exitPointerLock();
       browserEl.classList.add('active');
-      if (!portfolioLoaded) { portfolioFrame.src = 'index.html'; portfolioLoaded = true; }
+      if (!portfolioLoaded) { portfolioFrame.src = 'index.html?embed=browser'; portfolioLoaded = true; }
       if (!cardsBuilt) { buildProfileCards(); cardsBuilt = true; }
       switchTab(tab || 'portfolio');
       reticle.classList.add('hidden');
@@ -2010,6 +2007,7 @@
     function closeBrowser() {
       uiOpen = false;
       browserEl.classList.remove('active');
+      portfolioFrame.contentWindow?.postMessage({ type: 'portfolio:hangup' }, location.origin);
       reticle.classList.remove('hidden');
       if (!spectatorMode) triggerLockProcess();
       updateControlsDisplay();
@@ -2108,7 +2106,6 @@
         }
       } catch (err) { console.warn('laser click failed', err); }
     }
-
 
     function esc(s) {
       return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -2374,7 +2371,6 @@
         tBtnStand.style.display = (isSeatedState && !uiOpen) ? 'grid' : 'none';
       }
       composer.render();
-
 
       let nearMonitor = false;
       if (pcBooted && !spectatorMode && !uiOpen && !typingMode) {

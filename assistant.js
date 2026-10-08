@@ -2,7 +2,9 @@ import { renderCitations } from './citations.js?v=1';
 
 const launcher = document.getElementById('askBtn');
 const panel = document.getElementById('askPanel');
-if (launcher && panel && window.PORTFOLIO_API) {
+const embed = window.PF_EMBED || '';
+
+if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')) {
   const heroAgent = document.querySelector('.hero-agent');
   const log = document.getElementById('askLog');
   const form = document.getElementById('askForm');
@@ -23,17 +25,44 @@ if (launcher && panel && window.PORTFOLIO_API) {
     thinking: 'Thinking',
     speaking: 'Speaking',
   };
+  const CALL_STAGE = {
+    microphone: 'Asking for the microphone…',
+    calibrating: 'Measuring the room…',
+    connecting: 'Connecting…',
+    reconnecting: 'Reconnecting…',
+  };
+  const CALL_ENDED = {
+    idle: 'I did not hear anything for a while, so I hung up. Press Call whenever you want to pick it back up.',
+    'mic-denied': 'I need microphone access to talk. Allow it and press Call again.',
+    unreachable: 'I could not reach the voice agent. You can still type below, or press Call to try again.',
+    dropped: 'The call dropped. Press Call to pick it back up.',
+    'rate-limited': 'I have taken enough calls for today. You can still type below, or use the contact form.',
+    busy: 'A call is already running in another tab or window. End that one first.',
+    'server-ended': 'The call ended on my side. Press Call to start again.',
+    refused: 'I could not start the call. You can still type below.',
+    unsupported: 'Your browser cannot do voice calls. Type instead.',
+  };
+  const CHAT_STAGE = {
+    retrieving: 'Searching his résumé',
+    generating: 'Writing',
+    warming: 'The model is waking up',
+  };
+  const NO_RETRY = new Set(['daily_limit', 'quota_exhausted']);
   const OFFLINE = 'I cannot reach the assistant right now. His resume is at resume.pdf, and the contact form below reaches him directly.';
   const DEFAULT_STATUS = 'Llama 3.3 70B, hybrid retrieval, on my own Cloudflare Worker.';
+  const WAKING_MS = 4000;
 
   let engine = null;
   let voice = null;
   let busy = false;
   let inCall = false;
+  let startSeq = 0;
+  let wakeTimer = null;
   let callNodes = [];
   let interimNode = null;
 
   const track = (name) => window.trackEvent && window.trackEvent(name);
+  const atBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 48;
   const scrollDown = () => { log.scrollTop = log.scrollHeight; };
   const setStatus = (text) => { status.textContent = text || ''; };
 
@@ -52,10 +81,10 @@ if (launcher && panel && window.PORTFOLIO_API) {
   const setText = (el, text) => { el.querySelector('.msg-text').textContent = text; };
 
   function setAvailable(up) {
-    const offline = up === false;
-    launcher.hidden = offline;
-    if (heroAgent) heroAgent.hidden = offline;
-    if (offline && !panel.hidden) closePanel();
+    const down = up === false;
+    launcher.hidden = down;
+    if (heroAgent) heroAgent.dataset.ai = down ? 'down' : up === true ? 'live' : 'checking';
+    if (down && !panel.hidden) closePanel();
   }
 
   function lastBotBubble() {
@@ -78,16 +107,21 @@ if (launcher && panel && window.PORTFOLIO_API) {
     callBtn.hidden = on;
     input.placeholder = on ? 'Talk, or type instead...' : 'Ask a question...';
     if (!on) {
+      clearTimeout(wakeTimer);
       orb.dataset.state = 'idle';
       orb.style.setProperty('--level', 0);
       callbar.dataset.state = 'idle';
+      callbar.removeAttribute('data-muted');
+      muteBtn.setAttribute('aria-pressed', 'false');
       callNodes = [];
       dropInterim();
     }
   }
 
   function hangUp() {
+    startSeq++;
     voice?.endCall();
+    if (!inCall) return;
     setCallMode(false);
     setStatus(DEFAULT_STATUS);
   }
@@ -95,13 +129,45 @@ if (launcher && panel && window.PORTFOLIO_API) {
   const callUi = {
     orb,
 
+    onCallState(state, reason) {
+      clearTimeout(wakeTimer);
+
+      if (state === 'ended') {
+        if (reason === 'restart') return;
+        if (CALL_ENDED[reason]) bubble('bot', CALL_ENDED[reason]);
+        setCallMode(false);
+        setStatus(DEFAULT_STATUS);
+        return;
+      }
+
+      if (!inCall) setCallMode(true);
+      if (state === 'live') {
+        setStatus('Talk normally. Silence ends your turn, and talking over me cuts me off.');
+        return;
+      }
+
+      voiceState.textContent = CALL_STAGE[state] || 'Connecting…';
+      callbar.dataset.state = 'idle';
+      orb.dataset.state = 'idle';
+      setStatus('');
+      if (state === 'connecting') {
+        wakeTimer = setTimeout(() => { voiceState.textContent = 'Waking the agent…'; }, WAKING_MS);
+      }
+    },
+
     onStatus(state) {
       voiceState.textContent = STATE_LABEL[state] || state;
       callbar.dataset.state = state;
     },
 
-    onConnection(connected) {
-      if (!connected && inCall) voiceState.textContent = 'Reconnecting...';
+    onStall(level) {
+      if (level === 'slow') voiceState.textContent = 'Still thinking…';
+      else bubble('bot', 'That took too long, so I stopped. Could you ask it again?');
+    },
+
+    onNotice(message) {
+      console.warn('[voice]', message);
+      voiceState.textContent = 'Small hiccup, still on the line';
     },
 
     onInterim(text) {
@@ -157,74 +223,93 @@ if (launcher && panel && window.PORTFOLIO_API) {
       muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
       callbar.toggleAttribute('data-muted', muted);
     },
-
-    onIdle() {
-      bubble('bot', 'I did not hear anything for a while, so I hung up. Press Call whenever you want to pick it back up.');
-      setCallMode(false);
-      setStatus(DEFAULT_STATUS);
-    },
-
-    onError(message) {
-      console.error('[voice]', message);
-      if (message === 'rate_limited') {
-        voiceState.textContent = 'Limit reached';
-        bubble('bot', 'I have taken enough calls for today. You can still type below, or use the contact form.');
-        hangUp();
-        return;
-      }
-      voiceState.textContent = 'Call failed';
-      bubble('bot', /permission|denied|NotAllowed/i.test(message)
-        ? 'I need microphone access to talk. Allow it and press Call again.'
-        : 'Something went wrong on the call. You can still type below.');
-      setCallMode(false);
-    },
   };
 
   async function startCall() {
-    if (inCall) return hangUp();
+    if (inCall) return;
+    const seq = ++startSeq;
+    setCallMode(true);
+    voiceState.textContent = 'Starting…';
+    setStatus('');
+
     try {
-      voice ??= await import('./voice.js?v=4');
+      voice ??= await import('./voice.js?v=5');
+      if (seq !== startSeq) return;
       if (!voice.isSupported()) {
-        setStatus('Your browser cannot do voice calls. Type instead.');
         callBtn.disabled = true;
+        callUi.onCallState('ended', 'unsupported');
         return;
       }
-      setCallMode(true);
-      voiceState.textContent = 'Connecting...';
-      setStatus('Calibrating to your room...');
       track('voice-call');
       await voice.startCall(callUi);
-      setStatus('Talk normally. Silence ends your turn, and talking over me cuts me off.');
     } catch (err) {
       console.error('[voice] call failed:', err);
-      callUi.onError(String(err?.message || err));
+      if (seq !== startSeq) return;
+      voice?.endCall();
+      if (inCall) callUi.onCallState('ended', 'refused');
     }
   }
 
-  async function ask(question) {
-    bubble('you', question);
+  function retryButton(el, question) {
+    const again = document.createElement('button');
+    again.type = 'button';
+    again.className = 'ask-retry';
+    again.textContent = 'Try again';
+    again.addEventListener('click', () => {
+      if (busy) return;
+      again.remove();
+      ask(question, el);
+    });
+    el.appendChild(again);
+  }
+
+  async function ask(question, reuse) {
+    if (!reuse) bubble('you', question);
     busy = true;
     send.disabled = true;
     track('chat-message');
 
-    const el = bubble('bot', '');
+    const el = reuse || bubble('bot', '');
     el.classList.add('thinking');
+    setText(el, CHAT_STAGE.retrieving);
+    let streamed = false;
 
     try {
-      engine ??= await import('./chat.js?v=4');
-      const answer = await engine.ask(question);
-      el.classList.remove('thinking');
+      engine ??= await import('./chat.js?v=5');
+      const answer = await engine.ask(question, {
+        stage(name) {
+          if (!streamed && CHAT_STAGE[name]) setText(el, CHAT_STAGE[name]);
+        },
+        text(soFar) {
+          const follow = atBottom();
+          streamed = true;
+          el.classList.remove('thinking');
+          el.classList.add('streaming');
+          setText(el, soFar);
+          if (follow) scrollDown();
+        },
+      });
+
+      const follow = atBottom();
+      el.classList.remove('thinking', 'streaming');
       setText(el, answer.reply);
       renderCitations(el, answer.hits, answer.overridden);
-      scrollDown();
+      if (follow) scrollDown();
     } catch (err) {
-      el.classList.remove('thinking');
-      setText(el, err?.message || OFFLINE);
+      el.classList.remove('thinking', 'streaming');
+      if (err?.code === 'cancelled') {
+        if (streamed) el.classList.add('ask-stopped');
+        else el.remove();
+      } else {
+        setText(el, err?.message || OFFLINE);
+        if (!NO_RETRY.has(err?.code)) retryButton(el, question);
+        scrollDown();
+      }
     }
 
     busy = false;
     send.disabled = false;
-    input.focus();
+    if (!panel.hidden) input.focus();
   }
 
   function openPanel() {
@@ -237,6 +322,7 @@ if (launcher && panel && window.PORTFOLIO_API) {
 
   function closePanel() {
     if (inCall) hangUp();
+    engine?.cancel();
     panel.hidden = true;
     launcher.setAttribute('aria-expanded', 'false');
   }
@@ -255,14 +341,12 @@ if (launcher && panel && window.PORTFOLIO_API) {
       const step = e.deltaY * (e.deltaMode === 1 ? 16 : 1);
       const max = rail.scrollWidth - rail.clientWidth;
       const next = Math.min(max, Math.max(0, rail.scrollLeft + step));
-      // At either edge, hand the wheel back or the page cannot scroll past the rail.
       if (next === rail.scrollLeft) return;
       e.preventDefault();
       rail.scrollLeft = next;
     }, { passive: false });
 
     rail.addEventListener('scroll', sync, { passive: true });
-    // The panel starts hidden, so scrollWidth is 0. Measure on resize, not once.
     new ResizeObserver(sync).observe(rail);
   }
 
@@ -272,8 +356,6 @@ if (launcher && panel && window.PORTFOLIO_API) {
     if (!question || busy) return;
     input.value = '';
 
-    // Mid-call, a typed question goes down the voice channel and is spoken back.
-    // The server echoes it as a transcript entry, so we add no local bubble.
     if (inCall && voice) voice.sendText(question);
     else ask(question);
   });
@@ -301,11 +383,11 @@ if (launcher && panel && window.PORTFOLIO_API) {
   });
   document.querySelector('.js-agent-call')?.addEventListener('click', () => {
     if (panel.hidden) openPanel();
-    if (!inCall) startCall();
+    startCall();
   });
 
   document.addEventListener('ai-availability', (e) => setAvailable(e.detail.up));
-  if (window.AI_AVAILABLE === false) setAvailable(false);
+  setAvailable(window.AI_AVAILABLE);
   initSuggestScroller(suggests);
 } else if (launcher) {
   launcher.hidden = true;
