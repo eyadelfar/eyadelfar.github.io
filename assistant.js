@@ -36,7 +36,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     'mic-denied': 'I need microphone access to talk. Allow it and press Call again.',
     unreachable: 'I could not reach the voice agent. You can still type below, or press Call to try again.',
     dropped: 'The call dropped. Press Call to pick it back up.',
-    'rate-limited': 'I have taken enough calls for today. You can still type below, or use the contact form.',
+    'rate-limited': 'My voice is done for today, the free allowance for calls is used up. You can still type below, or use the contact form.',
     busy: 'A call is already running in another tab or window. End that one first.',
     'server-ended': 'The call ended on my side. Press Call to start again.',
     capped: 'That is the time limit for one call on this demo. You can keep typing below, or use the contact form to reach Eyad.',
@@ -81,12 +81,83 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
 
   const setText = (el, text) => { el.querySelector('.msg-text').textContent = text; };
 
-  function setAvailable(up) {
-    const down = up === false;
-    launcher.hidden = down;
-    if (heroAgent) heroAgent.dataset.ai = down ? 'down' : up === true ? 'live' : 'checking';
-    if (down && !panel.hidden) closePanel();
+  const available = { chat: true, call: true };
+
+  const tipEl = document.createElement('div');
+  tipEl.className = 'rest-tip';
+  tipEl.setAttribute('role', 'tooltip');
+  document.body.appendChild(tipEl);
+  let tipTimer = null;
+
+  function showTip(button) {
+    if (!button.classList.contains('is-resting')) return false;
+    clearTimeout(tipTimer);
+    tipEl.textContent = button.dataset.tip;
+    tipEl.classList.add('show');
+    const box = button.getBoundingClientRect();
+    const above = box.top - tipEl.offsetHeight - 10;
+    tipEl.style.left = `${Math.min(innerWidth - tipEl.offsetWidth - 8, Math.max(8, box.left + box.width / 2 - tipEl.offsetWidth / 2))}px`;
+    tipEl.style.top = `${above < 8 ? box.bottom + 10 : above}px`;
+    return true;
   }
+  const hideTip = (after = 120) => {
+    clearTimeout(tipTimer);
+    tipTimer = setTimeout(() => tipEl.classList.remove('show'), after);
+  };
+
+  // A button for something that is off today stays put, says why, and does nothing.
+  function rest(button, tip) {
+    if (!button.dataset.restWired) {
+      button.dataset.restWired = '1';
+      button.addEventListener('mouseenter', () => showTip(button));
+      button.addEventListener('focus', () => showTip(button));
+      button.addEventListener('mouseleave', () => hideTip());
+      button.addEventListener('blur', () => hideTip());
+    }
+    button.classList.toggle('is-resting', Boolean(tip));
+    if (tip) {
+      button.setAttribute('aria-disabled', 'true');
+      button.setAttribute('aria-description', tip);
+      button.dataset.tip = tip;
+    } else {
+      button.removeAttribute('aria-disabled');
+      button.removeAttribute('aria-description');
+      button.removeAttribute('data-tip');
+    }
+  }
+
+  // On touch there is no hover, so a tap on a resting button shows the reason.
+  function resting(button) {
+    if (!showTip(button)) return false;
+    hideTip(3200);
+    return true;
+  }
+
+  function setAvailable(state) {
+    if (!state) {
+      if (heroAgent) heroAgent.dataset.ai = 'checking';
+      return;
+    }
+    available.chat = state.chat;
+    available.call = state.call;
+    const hours = Math.max(1, Math.round((state.resets || 3600) / 3600));
+    const back = `Back in about ${hours} hour${hours === 1 ? '' : 's'}.`;
+    const callTip = state.call ? '' : state.chat
+      ? `My agent talked itself hoarse today. ${back} It can still type.`
+      : `My agent talked itself hoarse today. ${back} The contact form never sleeps.`;
+    const chatTip = state.chat ? '' : `Out of free thinking for today. ${back} The contact form never sleeps.`;
+
+    if (heroAgent) heroAgent.dataset.ai = state.chat && state.call ? 'live' : state.chat ? 'chat' : 'down';
+    rest(launcher, chatTip);
+    for (const button of document.querySelectorAll('.js-agent-ask')) rest(button, chatTip);
+    for (const button of document.querySelectorAll('.js-agent-call')) rest(button, callTip);
+    rest(callBtn, callTip);
+  }
+
+  const markDown = (surface) => {
+    const state = { chat: available.chat, call: available.call, resets: window.AI_AVAILABLE?.resets || 0, [surface]: false };
+    document.dispatchEvent(new CustomEvent('ai-availability', { detail: state }));
+  };
 
   function lastBotBubble() {
     for (let i = callNodes.length - 1; i >= 0; i--) {
@@ -136,6 +207,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
       if (state === 'ended') {
         if (reason === 'restart') return;
         if (CALL_ENDED[reason]) bubble('bot', CALL_ENDED[reason]);
+        if (reason === 'rate-limited') markDown('call');
         setCallMode(false);
         setStatus(DEFAULT_STATUS);
         return;
@@ -237,14 +309,14 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
   };
 
   async function startCall() {
-    if (inCall) return;
+    if (inCall || resting(callBtn)) return;
     const seq = ++startSeq;
     setCallMode(true);
     voiceState.textContent = 'Starting…';
     setStatus('');
 
     try {
-      voice ??= await import('./voice.js?v=c0e54924');
+      voice ??= await import('./voice.js?v=6b589572');
       if (seq !== startSeq) return;
       if (!voice.isSupported()) {
         callBtn.disabled = true;
@@ -338,6 +410,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
         else el.remove();
       } else {
         setText(el, err?.message || OFFLINE);
+        if (err?.code === 'quota_exhausted') markDown('chat');
         if (!NO_RETRY.has(err?.code)) retryButton(el, question);
         scrollDown();
       }
@@ -396,7 +469,10 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     else ask(question);
   });
 
-  launcher.addEventListener('click', () => (panel.hidden ? openPanel() : closePanel()));
+  launcher.addEventListener('click', () => {
+    if (!panel.hidden) closePanel();
+    else if (!resting(launcher)) openPanel();
+  });
   document.getElementById('askClose').addEventListener('click', closePanel);
   callBtn.addEventListener('click', startCall);
   hangBtn.addEventListener('click', hangUp);
@@ -414,21 +490,19 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     });
   }
 
-  document.querySelector('.js-agent-ask')?.addEventListener('click', () => {
+  document.querySelector('.js-agent-ask')?.addEventListener('click', (e) => {
+    if (resting(e.currentTarget)) return;
     if (panel.hidden) openPanel();
   });
   for (const button of document.querySelectorAll('.js-agent-call')) {
     button.addEventListener('click', () => {
-      if (heroAgent?.dataset.ai === 'down') {
-        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
+      if (resting(button)) return;
       if (panel.hidden) openPanel();
       startCall();
     });
   }
 
-  document.addEventListener('ai-availability', (e) => setAvailable(e.detail.up));
+  document.addEventListener('ai-availability', (e) => setAvailable(e.detail));
   setAvailable(window.AI_AVAILABLE);
   initSuggestScroller(suggests);
 } else if (launcher) {

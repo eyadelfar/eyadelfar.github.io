@@ -346,20 +346,41 @@
     color: #4ade80;
   }
   .agent-live .live-dot { background: #4ade80; }
-  .live-wait, .live-off, .hero-agent .agent-fallback { display: none; }
+  .live-wait, .live-off, .live-part, .hero-agent .agent-fallback { display: none; }
   .hero-agent[data-ai="checking"] .agent-live,
   .hero-agent[data-ai="down"] .agent-live { color: var(--text2); }
   .hero-agent[data-ai="checking"] .live-dot,
   .hero-agent[data-ai="down"] .live-dot { background: rgba(255, 255, 255, .5); }
   .hero-agent[data-ai="checking"] .live-dot::after,
   .hero-agent[data-ai="down"] .live-dot::after { animation: none; opacity: 0; }
-  .hero-agent[data-ai="checking"] .live-on,
-  .hero-agent[data-ai="down"] .live-on { display: none; }
+  .hero-agent:not([data-ai="live"]) .live-on { display: none; }
   .hero-agent[data-ai="checking"] .live-wait,
+  .hero-agent[data-ai="chat"] .live-part,
   .hero-agent[data-ai="down"] .live-off { display: inline; }
-  .hero-agent[data-ai="down"] .js-agent-ask,
-  .hero-agent[data-ai="down"] .js-agent-call { display: none; }
   .hero-agent[data-ai="down"] .agent-fallback { display: inline-flex; }
+
+  /* A button for something that is off today stays where it is, says why on
+     hover, and does nothing. */
+  .is-resting { opacity: .5; cursor: not-allowed; }
+  .is-resting:hover { transform: none; box-shadow: none; }
+  .is-resting .live-dot::after { animation: none; opacity: 0; }
+  .rest-tip {
+    position: fixed;
+    z-index: 400;
+    max-width: min(280px, 80vw);
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #14142b;
+    color: #fff;
+    font-size: .78rem;
+    line-height: 1.45;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .16s ease, transform .16s ease;
+  }
+  .rest-tip.show { opacity: 1; transform: none; }
   .hero-agent h2 {
     margin: 14px 0 10px;
     font-size: 1.7rem;
@@ -702,6 +723,22 @@
   .rate-send:hover { background: var(--accent2); }
   .rate-send:disabled { opacity: .55; cursor: not-allowed; }
   .rate-status { margin-top: 8px; font-size: .76rem; color: var(--text2); }
+  .rate-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+  .rate-summary { font-size: .84rem; color: var(--text2); font-variant-numeric: tabular-nums; }
+  .rate-summary b { color: #eab308; font-weight: 700; }
+  .rate-mine { margin-top: 8px; font-size: .8rem; color: var(--text2); }
+  .rate-undo {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .rate-honest { margin-top: 8px; max-width: 46ch; font-size: .76rem; line-height: 1.5; color: var(--text2); }
   .rate-status.warn { color: var(--orange); }
   .rate-status:empty { display: none; }
   .rate-done { font-size: .9rem; font-weight: 600; color: var(--green); }

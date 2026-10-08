@@ -25,7 +25,7 @@ async function ready() {
   }
   stream = await navigator.mediaDevices.getUserMedia({ audio: MIC });
   context = new (window.AudioContext || window.webkitAudioContext)();
-  await context.audioWorklet.addModule('room.mic.worklet.js?v=1ac59957');
+  await context.audioWorklet.addModule('room.mic.worklet.js?v=bfcffa27');
   node = new AudioWorkletNode(context, 'room-capture');
   node.port.onmessage = (event) => {
     if (!chunks || captured >= context.sampleRate * MAX_SECONDS) return;

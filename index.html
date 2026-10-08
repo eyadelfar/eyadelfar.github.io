@@ -33,7 +33,7 @@
 <link rel="preload" href="fonts/geist.woff2?v=59943677" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/geist-mono.woff2?v=5ebb8929" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://portfolio-contact.eyadelfar.workers.dev" crossorigin>
-<link rel="stylesheet" href="styles.css?v=7f6b0b3b">
+<link rel="stylesheet" href="styles.css?v=242e52a9">
 <link rel="stylesheet" href="late.css?v=5b974354" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="late.css?v=5b974354"></noscript>
 </head>
@@ -120,7 +120,7 @@
     </div>
 
     <aside class="hero-agent" data-ai="checking">
-      <span class="agent-live"><span class="live-dot"></span><span class="live-on">Live</span><span class="live-wait">Checking</span><span class="live-off">Resting</span></span>
+      <span class="agent-live"><span class="live-dot"></span><span class="live-on">Live</span><span class="live-wait">Checking</span><span class="live-part">Live, typing only</span><span class="live-off">Resting</span></span>
       <h2>Do not take my word for it. Ask the agent I built.</h2>
       <p class="agent-blurb">A real voice agent, not a chatbot. It listens, thinks, and speaks.
       You can cut it off mid-sentence, like a person.</p>
@@ -468,10 +468,13 @@
 
         <form class="rate" id="rateForm" novalidate>
           <div class="rate-head">
-            <strong>Any thoughts?</strong>
-            <span>Rate it, tell me what you think, or tell me what is broken. No name needed.</span>
+            <strong>Rate this site</strong>
+            <span class="rate-summary" id="rateSummary" hidden></span>
           </div>
           <div class="rate-stars" id="rateStars" role="radiogroup" aria-label="Rating out of 5"></div>
+          <p class="rate-mine" id="rateMine" hidden><span></span> <button type="button" class="rate-undo" id="rateUndo">Remove my rating</button></p>
+          <p class="rate-honest">Every rating counts exactly as given. I don't filter them, and you can
+          change or remove yours any time. No name needed.</p>
           <div class="rate-more" id="rateMore" hidden>
             <textarea id="rateComment" rows="3" maxlength="1000"
                       placeholder="Optional. Anything at all."></textarea>
@@ -480,7 +483,7 @@
             <div class="rate-hp" aria-hidden="true">
               <label>Company <input type="text" name="company" tabindex="-1" autocomplete="off"></label>
             </div>
-            <button type="submit" class="rate-send" id="rateSend">Send feedback</button>
+            <button type="submit" class="rate-send" id="rateSend">Send note</button>
           </div>
           <p class="rate-status" id="rateStatus" role="status" aria-live="polite"></p>
         </form>
@@ -605,10 +608,10 @@
 
 <script src="app.js?v=a8aa71af" defer></script>
 <script src="showcase.js?v=67fbcd88" defer></script>
-<script src="analytics.js?v=816c7549" defer></script>
+<script src="analytics.js?v=f3670d68" defer></script>
 <script src="hello.js?v=93b6d0b9" defer></script>
 <script src="contact.js?v=3218a88e" defer></script>
-<script src="rate.js?v=2765520e" defer></script>
-<script type="module" src="assistant.js?v=91da4153"></script>
+<script src="rate.js?v=2b6b5d82" defer></script>
+<script type="module" src="assistant.js?v=493e9fa1"></script>
 </body>
 </html>

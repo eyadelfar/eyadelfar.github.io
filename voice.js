@@ -1,4 +1,4 @@
-import { CLIPS } from './voice.clips.js?v=d3821b49';
+import { CLIPS } from './voice.clips.js?v=154a662a';
 import { VoiceClient } from './voice-client.js?v=94c24cef';
 
 const API = String(window.PORTFOLIO_API || 'https://portfolio-contact.eyadelfar.workers.dev').replace(/\/+$/, '');

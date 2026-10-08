@@ -158,7 +158,8 @@
 
     const isTouch = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window);
     const PIXEL_RATIO = Math.min(window.devicePixelRatio, isTouch ? 1.25 : 1.5);
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isTouch, alpha: false, powerPreference: "high-performance" });
+    // Anti-aliasing happens in the composer's own target; on the canvas it would do nothing.
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(PIXEL_RATIO);
     renderer.shadowMap.enabled = true;
@@ -167,7 +168,10 @@
     renderer.toneMappingExposure = 0.45;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    const composer = new EffectComposer(renderer);
+    // Counted per frame, not per pass: the last pass is one full-screen triangle.
+    renderer.info.autoReset = false;
+
+    const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: isTouch ? 0 : 4 }));
     composer.setSize(window.innerWidth, window.innerHeight);
     composer.setPixelRatio(PIXEL_RATIO);
     const renderPass = new RenderPass(scene, camera);
@@ -314,8 +318,6 @@
     scene.add(sunLight);
     const deskLampLight = new THREE.PointLight(0xffe6c0, 1.4, 9, 1.5);
     deskLampLight.position.set(2.2, 1.85, -3.2);
-    deskLampLight.castShadow = true;
-    deskLampLight.shadow.mapSize.set(512, 512);
     scene.add(deskLampLight);
     const blueMonitorGlow = new THREE.PointLight(0x6366f1, 0, 6, 2);
     blueMonitorGlow.position.set(0, 1.6, -3.1);
@@ -1068,6 +1070,12 @@
 
     const FAR2 = 11;
     function aiNear(group, cam) { return !cam || group.position.distanceTo(cam) < FAR2; }
+    // A drawn exhibit is a canvas uploaded to the GPU. Fifteen times a second reads as motion.
+    function drawnThisFrame(state, t) {
+      if (t - state.last < 1 / 15) return false;
+      state.last = t;
+      return true;
+    }
 
     (function buildAR() {
       const { group, topY } = aiBoard(-4.6, 6.2, 0xffd166);
@@ -1140,8 +1148,9 @@
       const nodes = [{ x: 60, y: 110, w: 160, h: 64, t: 'Live Transcript', c: '#3abef9' }, { x: 300, y: 110, w: 150, h: 64, t: 'RAG Retrieve', c: '#818cf8' }, { x: 540, y: 110, w: 160, h: 64, t: 'LLM · Vertex', c: '#b09afa' }, { x: 300, y: 300, w: 150, h: 64, t: 'Voice Agent', c: '#ffd166' }, { x: 540, y: 300, w: 160, h: 64, t: 'Booked Meeting', c: '#4ade9e' }];
       const edges = [[0, 1], [1, 2], [2, 3], [3, 4]];
       aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_rag', 'ai', 'Press <b>E</b> to explore the RAG + Voice pipeline');
+      const ragDraw = { last: -1 };
       aiAnimators.push((t, cam) => {
-        if (!aiNear(group, cam)) return;
+        if (!aiNear(group, cam) || !drawnThisFrame(ragDraw, t)) return;
         x.fillStyle = '#0a1016'; x.fillRect(0, 0, 760, 460);
         x.fillStyle = '#3abef9'; x.font = 'bold 30px Geist, sans-serif'; x.textAlign = 'left'; x.fillText('RAG Copilot + Voice Agent', 24, 46);
         edges.forEach((e, ei) => {
@@ -1169,8 +1178,9 @@
       const px = (i, n0, n1) => X0 + (X1 - X0) * (i / (NH + NF - 1));
       const py = v => Y1 - (Y1 - Y0) * THREE.MathUtils.clamp(v, 0, 1.2) / 1.2;
       aiProxy(group, { position: new THREE.Vector3(0, cy, 0) }, 'ai_forecast', 'ai', 'Press <b>E</b> to explore Forecasting');
+      const forecastDraw = { last: -1 };
       aiAnimators.push((t, cam) => {
-        if (!aiNear(group, cam)) return;
+        if (!aiNear(group, cam) || !drawnThisFrame(forecastDraw, t)) return;
         x.fillStyle = '#0a1016'; x.fillRect(0, 0, 760, 460);
         x.strokeStyle = 'rgba(74,222,158,0.12)'; x.lineWidth = 1;
         for (let g = 0; g <= 5; g++) { const gy = Y0 + (Y1 - Y0) * g / 5; x.beginPath(); x.moveTo(X0, gy); x.lineTo(X1, gy); x.stroke(); }
@@ -2327,10 +2337,37 @@
     const _specPos = new THREE.Vector3();
     const _specLook = new THREE.Vector3();
     let idleFrames = 0;
-    function mainRenderLoop() {
+
+    /* Resolution follows the machine. Two slow windows in a row lower it a step,
+       two fast ones raise it again, so it never flickers between the two. */
+    renderer.shadowMap.autoUpdate = false;
+    let pixelRatio = PIXEL_RATIO;
+    const pace = { since: performance.now(), frames: 0, slow: 0, fast: 0, shadowIn: 0 };
+    function tunePixelRatio(now) {
+      if (++pace.frames < 45) return;
+      const ms = (now - pace.since) / pace.frames;
+      pace.since = now;
+      pace.frames = 0;
+      pace.slow = ms > 24 ? pace.slow + 1 : 0;
+      pace.fast = ms < 13 ? pace.fast + 1 : 0;
+      let next = pixelRatio;
+      if (pace.slow >= 2 && pixelRatio > 0.7) next = Math.max(0.7, pixelRatio - 0.15);
+      if (pace.fast >= 2 && pixelRatio < PIXEL_RATIO) next = Math.min(PIXEL_RATIO, pixelRatio + 0.15);
+      if (next === pixelRatio) return;
+      pixelRatio = next;
+      pace.slow = 0;
+      pace.fast = 0;
+      renderer.setPixelRatio(pixelRatio);
+      composer.setPixelRatio(pixelRatio);
+    }
+
+    function mainRenderLoop(now) {
       requestAnimationFrame(mainRenderLoop);
-      if (document.hidden) return;
+      if (document.hidden) { pace.since = performance.now(); pace.frames = 0; return; }
       if (!entered && (++idleFrames % 8)) return;
+      if (uiOpen) { pace.since = performance.now(); pace.frames = 0; }
+      else if (entered) tunePixelRatio(now || performance.now());
+      renderer.info.reset();
       const delta = Math.min(clock.getDelta(), 0.04);
       const elapsed = clock.getElapsedTime();
 
@@ -2338,6 +2375,11 @@
       for (let i = 0; i < frameHooks.length; i++) frameHooks[i](delta, elapsed);
 
       const charSpeed = Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
+      // Shadows are redrawn while the avatar walks, and a few times a second otherwise.
+      if ((spectatorMode && charSpeed > 0.05) || --pace.shadowIn <= 0) {
+        renderer.shadowMap.needsUpdate = true;
+        pace.shadowIn = 20;
+      }
 
       if (spectatorMode) {
         mickeyModel.rotation.y = characterYaw + Math.PI;
@@ -2406,7 +2448,9 @@
         document.body.classList.toggle('ui-open', uiOpen);
         tBtnStand.style.display = (isSeatedState && !uiOpen) ? 'grid' : 'none';
       }
-      composer.render();
+      // Under the browser or the lightbox the room is a dim backdrop: one frame will do.
+      if (!uiOpen || !pace.frozen) composer.render();
+      pace.frozen = uiOpen;
 
       let nearMonitor = false;
       if (pcBooted && !spectatorMode && !uiOpen && !typingMode) {
@@ -2439,7 +2483,6 @@
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
-        bloomPass.setSize(window.innerWidth, window.innerHeight);
         css3dRenderer.setSize(window.innerWidth, window.innerHeight);
         redrawWorkstationMonitor();
       }, 120);
@@ -2581,7 +2624,12 @@
         return !stopped();
       },
       onFrame(hook) { frameHooks.push(hook); },
+      stats: () => ({
+        calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
+        textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries,
+        pixelRatio: renderer.getPixelRatio(),
+      }),
       onInput(hook) { inputHooks.push(hook); },
     };
-    import('./room.agent.js?v=5e71620b').then((agent) => agent.start(RoomAPI)).catch((err) => console.warn('[room] the guide did not load:', err));
+    import('./room.agent.js?v=cb09f137').then((agent) => agent.start(RoomAPI)).catch((err) => console.warn('[room] the guide did not load:', err));
 

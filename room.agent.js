@@ -1,5 +1,5 @@
-import { isStop, parse } from './room.intents.js?v=5a62f7c3';
-import { makeNav } from './room.nav.js?v=133d5f6d';
+import { isStop, parse } from './room.intents.js?v=84827262';
+import { makeNav } from './room.nav.js?v=b4344da9';
 import * as TOOLS from './room.tools.js?v=1619a99d';
 
 const API = String(window.PORTFOLIO_API || '').replace(/\/+$/, '');
@@ -10,9 +10,10 @@ const WALK_LIMIT_S = 25;
 const DWELL_MS = 3600;
 const REQUEST_MS = 20000;
 const MIN_HOLD_MS = 280;
+const TALK_KEY = 'KeyP';
 
 const GREETING = "I'm the guide. Ask me to show you something, like the voice agents, or say: give me a tour.";
-const NOT_HEARD = 'I did not hear anything. Hold the key down while you talk.';
+const NOT_HEARD = 'I did not hear anything. Hold P down while you talk.';
 const CANNOT_HEAR = 'I cannot listen right now. Type what you want to see instead.';
 const LIMITED = 'I can only follow simple requests right now. Try: show me the voice agents.';
 const NO_MIC = 'I could not use the microphone. You can type instead.';
@@ -97,7 +98,7 @@ export function start(room) {
 
   const idleHint = () => (room.touch
     ? (speech.supported ? 'Hold the mic to talk, or type' : 'Type what you want to see')
-    : (speech.supported ? 'Hold Space to talk · / to type' : 'Press / to type'));
+    : (speech.supported ? 'Hold P to talk · / to type' : 'Press / to type'));
 
   function setState(state, text) {
     dock.dataset.state = state;
@@ -390,7 +391,7 @@ export function start(room) {
     recording = { since: performance.now(), ready: null };
     setState('listening');
     recording.ready = (async () => {
-      speech.module ??= await import('./room.mic.js?v=cfc1b11e');
+      speech.module ??= await import('./room.mic.js?v=7acd6541');
       await speech.module.start();
     })().catch((err) => {
       console.warn('[guide] microphone:', err);
@@ -420,7 +421,7 @@ export function start(room) {
     if (!usable() || e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     const s = room.state();
     if (s.typing || s.open === 'browser' || s.open === 'lightbox') return;
-    if (e.code === 'Space') {
+    if (e.code === TALK_KEY) {
       e.preventDefault();
       if (!e.repeat) beginTalking();
     } else if (e.code === 'Slash') {
@@ -429,7 +430,7 @@ export function start(room) {
       input.focus();
     }
   });
-  window.addEventListener('keyup', (e) => { if (e.code === 'Space') endTalking(); });
+  window.addEventListener('keyup', (e) => { if (e.code === TALK_KEY) endTalking(); });
   window.addEventListener('blur', () => endTalking());
 
   micBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); micBtn.setPointerCapture(e.pointerId); beginTalking(); });
@@ -504,6 +505,7 @@ export function start(room) {
     state: () => ({ ...snapshot(), guide: on, busy: Boolean(run) }),
     places: Object.keys(room.places),
     tools: TOOLS.TOOLS.map((tool) => `${tool.name}${tool.arg ? `(${tool.arg})` : '()'}  ${tool.does}`),
+    stats: room.stats,
     route(place) {
       const s = room.state();
       return room.places[place] ? nav.path([s.x, s.z], room.places[place].stand) : null;

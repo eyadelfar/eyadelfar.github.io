@@ -73,9 +73,15 @@
     setInterval(report, 60000);
   }
 
-  function setAvailability(up) {
-    window.AI_AVAILABLE = up;
-    document.dispatchEvent(new CustomEvent('ai-availability', { detail: { up: up } }));
+  /* What the agent can do right now. Typing and calls run on different
+     allowances, so one can be up while the other rests. */
+  function setAvailability(data) {
+    var state = data
+      ? { chat: !!data.chat, call: data.call === undefined ? !!data.chat : !!data.call, resets: data.resets_in_s || 0 }
+      : { chat: false, call: false, resets: 0 };
+    state.up = state.chat || state.call;
+    window.AI_AVAILABLE = state;
+    document.dispatchEvent(new CustomEvent('ai-availability', { detail: state }));
   }
 
   function cached() {
@@ -150,9 +156,9 @@
     if (!API) return;
 
     var prior = cached();
-    if (prior) { render(prior); setAvailability(prior.chat); }
+    if (prior) { render(prior); setAvailability(prior); }
     if (!COUNT) {
-      if (!prior && EMBED !== 'preview') setAvailability(true);
+      if (!prior && EMBED !== 'preview') setAvailability({ chat: true, call: true });
       return;
     }
 
@@ -174,11 +180,11 @@
         if (!data || !data.uniques) return;
         try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) { /* ignore */ }
         render(data);
-        setAvailability(!!data.chat);
+        setAvailability(data);
       })
       .catch(function () {
         clearTimeout(timer);
-        setAvailability(false);
+        setAvailability(null);
       });
   }
 
