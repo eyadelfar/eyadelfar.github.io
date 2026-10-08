@@ -24,6 +24,10 @@ export const PLACES = {
   resume: { label: 'the résumé', about: 'his résumé as a PDF', also: ['resume', 'cv document', 'curriculum'] },
   certificates: { label: 'the certificates wall', about: 'certificates and letters on the wall', also: ['certificates', 'certifications', 'certs', 'honors', 'awards', 'diplomas'] },
   demos: { label: 'the live demo screens', about: 'recorded demos: the attendance system and signal graphs', also: ['demos', 'demo', 'videos', 'video wall', 'attendance', 'live demos'] },
+  meditation: { label: 'the quiet room', about: 'a planetarium off the main room: stars, a moon, somewhere to breathe', also: ['meditation', 'meditation room', 'quiet room', 'planetarium', 'zen', 'relax', 'breathe', 'stars', 'night sky', 'moon'] },
+  solar_system: { label: 'the solar system', about: 'a small solar system turning over a dark pool, in the quiet room', also: ['solar system', 'planets', 'orrery', 'sun', 'saturn', 'space'] },
+  constellation: { label: 'the neural constellation', about: 'a neural network laid out as stars on the dome', also: ['constellation', 'neural constellation', 'network of stars'] },
+  project_stars: { label: 'the wall of project stars', about: 'every piece of work listed on the site, as a star, grouped by topic', also: ['project stars', 'galaxy', 'galaxy of projects', 'all his projects', 'everything he built', 'star wall'] },
   whiteboard: { label: 'the architecture whiteboard', about: 'how the sales copilot and automation platform fit together', also: ['whiteboard', 'architecture', 'topology', 'system design', 'diagram'] },
 };
 

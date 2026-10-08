@@ -1,5 +1,4 @@
-import { BOUNDS } from './room.nav.js?v=4ffffe99';
-import { PLACES } from './room.tools.js?v=1619a99d';
+import { PLACES } from './room.tools.js?v=5782d604';
 
 /* A small plan of the room, drawn from the same obstacle and place data the
    room walks by, so it cannot disagree with it. Click a dot to be walked there. */
@@ -9,7 +8,9 @@ const PAD = 0.6;
 const DOT = 9;
 
 export function start(room) {
-  const scale = room.touch ? 6.2 : 9.5;
+  const BOUNDS = room.bounds;
+  const { main, door, zen } = room.plan;
+  const scale = room.touch ? 4.4 : 6.6;
   const minX = BOUNDS.minX - PAD;
   const minZ = BOUNDS.minZ - PAD;
   const width = Math.round((BOUNDS.maxX - BOUNDS.minX + PAD * 2) * scale);
@@ -44,13 +45,21 @@ export function start(room) {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     ctx.clearRect(0, 0, width, height);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+    // The floor plan: the main room, the round quiet room, and the passage between them.
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.24)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(px(BOUNDS.minX - 0.5), py(BOUNDS.minZ - 0.5), (BOUNDS.maxX - BOUNDS.minX + 1) * scale, (BOUNDS.maxZ - BOUNDS.minZ + 1) * scale, 4);
+    ctx.roundRect(px(main.minX), py(main.minZ), (main.maxX - main.minX) * scale, (main.maxZ - main.minZ) * scale, 3);
     ctx.fill();
     ctx.stroke();
+    ctx.fillStyle = 'rgba(99, 102, 241, 0.2)';
+    ctx.strokeStyle = 'rgba(129, 140, 248, 0.55)';
+    ctx.beginPath();
+    ctx.arc(px(zen.x), py(zen.z), zen.r * scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillRect(px(door.x - door.half), py(zen.z + zen.r) - 1, door.half * 2 * scale, (main.minZ - zen.z - zen.r) * scale + 2);
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.13)';
     for (const o of room.obstacles) {
@@ -151,5 +160,13 @@ export function start(room) {
     draw();
   });
 
-  window.room = Object.assign(window.room || {}, { map: show });
+  window.room = Object.assign(window.room || {}, {
+    map: show,
+    // Where a place is drawn on the map, in page coordinates.
+    mapPoint(id) {
+      const box = canvas.getBoundingClientRect();
+      const place = room.places[id];
+      return place ? { x: box.left + px(place.at[0]), y: box.top + py(place.at[1]) } : null;
+    },
+  });
 }

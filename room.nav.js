@@ -3,12 +3,11 @@
    search over it, pulled straight wherever the way is clear. */
 
 const CELL = 0.25;
-export const BOUNDS = { minX: -6.5, maxX: 6.5, minZ: -4.5, maxZ: 12.5 };
-const COLS = Math.round((BOUNDS.maxX - BOUNDS.minX) / CELL) + 1;
-const ROWS = Math.round((BOUNDS.maxZ - BOUNDS.minZ) / CELL) + 1;
 const NEIGHBOURS = [[1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1], [1, 1, 1.414], [1, -1, 1.414], [-1, 1, 1.414], [-1, -1, 1.414]];
 
-export function makeNav(viable) {
+export function makeNav(viable, BOUNDS) {
+  const COLS = Math.round((BOUNDS.maxX - BOUNDS.minX) / CELL) + 1;
+  const ROWS = Math.round((BOUNDS.maxZ - BOUNDS.minZ) / CELL) + 1;
   const open = new Uint8Array(COLS * ROWS);
   const xOf = (col) => BOUNDS.minX + col * CELL;
   const zOf = (row) => BOUNDS.minZ + row * CELL;

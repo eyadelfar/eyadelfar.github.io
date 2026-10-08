@@ -14,6 +14,9 @@ export function start(room) {
   let noise = null;
   let walked = 0;
   let last = null;
+  let pad = null;
+  let roomTone = null;
+  let zone = 'main';
 
   function build() {
     const Context = window.AudioContext || window.webkitAudioContext;
@@ -42,6 +45,27 @@ export function start(room) {
     level.gain.value = 0.05;
     tone.connect(low).connect(level).connect(master);
     tone.start();
+
+    // The quiet room has a sound of its own: three soft notes that breathe.
+    pad = audio.createGain();
+    pad.gain.value = 0;
+    pad.connect(master);
+    [110, 164.81, 220.5].forEach((frequency, i) => {
+      const voice = audio.createOscillator();
+      voice.type = 'sine';
+      voice.frequency.value = frequency;
+      const swell = audio.createGain();
+      swell.gain.value = 0.5;
+      const breath = audio.createOscillator();
+      breath.frequency.value = 0.07 + i * 0.023;
+      const depth = audio.createGain();
+      depth.gain.value = 0.35;
+      breath.connect(depth).connect(swell.gain);
+      voice.connect(swell).connect(pad);
+      voice.start();
+      breath.start();
+    });
+    roomTone = level;
     return true;
   }
 
@@ -91,6 +115,11 @@ export function start(room) {
   let foot = 0;
   room.onFrame(() => {
     const s = room.state();
+    if (audio && s.zone !== zone) {
+      zone = s.zone;
+      pad.gain.setTargetAtTime(zone === 'quiet' ? 0.07 : 0, audio.currentTime, 1.4);
+      roomTone.gain.setTargetAtTime(zone === 'quiet' ? 0.015 : 0.05, audio.currentTime, 1.4);
+    }
     if (s.thirdPerson || s.seated) { last = null; return; }
     if (last) {
       walked += Math.hypot(s.x - last[0], s.z - last[1]);

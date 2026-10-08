@@ -11,8 +11,10 @@
     import { makeHelpers } from './room.helpers.js?v=6cc096a3';
     import { DATA } from './room.data.js?v=e07bfef7';
     import { createCharacter } from './room.character.js?v=982cac20';
-    import { makeNav } from './room.nav.js?v=4ffffe99';
+    import { makeNav } from './room.nav.js?v=4e35072d';
     import { createWalker } from './room.walk.js?v=888c6c2f';
+    import { buildZen } from './room.zen.js?v=12af9209';
+    import { WORK } from './room.work.js?v=6cfe5398';
 
     await Promise.race([
       Promise.all(['700 20px Geist', '800 20px "Bricolage Grotesque"', '500 20px "Geist Mono"'].map((f) => document.fonts.load(f))),
@@ -181,9 +183,9 @@
     composer.addPass(renderPass);
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.3,
+      0.26,
       0.35,
-      0.92
+      0.94
     );
     bloomPass.enabled = !isTouch;
     composer.addPass(bloomPass);
@@ -230,7 +232,9 @@
       }
     }, 512, 512).tex;
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-    floorTexture.repeat.set(5, 5);
+    floorTexture.repeat.set(5 * (14 + 5) / 14, 5);
+    // Seen at a shallow angle the boards would otherwise shimmer into teeth at the far wall.
+    floorTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
     const rugTexture = roundedCanvasTexture((ctx, w, h) => {
       ctx.fillStyle = '#f7fafd';
@@ -305,19 +309,23 @@
     scene.add(hemiLight);
     const ambLight = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(ambLight);
-    const sunLight = new THREE.DirectionalLight(0xfff8ed, 1.85);
+    const KEY_LIGHT = 0.95;
+    const sunLight = new THREE.DirectionalLight(0xfff4e6, KEY_LIGHT);
     sunLight.position.set(8, 14, 6);
+    sunLight.target.position.set(0, 0, 4);
+    scene.add(sunLight.target);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.set(2048, 2048);
     sunLight.shadow.camera.near = 0.5;
     sunLight.shadow.camera.far = 35;
-    const dCam = 8;
+    const dCam = 9;
     sunLight.shadow.camera.left = -dCam;
     sunLight.shadow.camera.right = dCam;
     sunLight.shadow.camera.top = dCam;
     sunLight.shadow.camera.bottom = -dCam;
-    sunLight.shadow.bias = -0.0004;
-    sunLight.shadow.normalBias = 0.02;
+    sunLight.shadow.bias = -0.0005;
+    sunLight.shadow.normalBias = 0.03;
+    sunLight.shadow.radius = 4;
     scene.add(sunLight);
     const deskLampLight = new THREE.PointLight(0xffe6c0, 1.4, 9, 1.5);
     deskLampLight.position.set(2.2, 1.85, -3.2);
@@ -328,25 +336,51 @@
 
     const wallM = new THREE.MeshStandardMaterial({ map: wallPlasterTex, roughness: 0.95, metalness: 0.0, color: 0xeae3d6 });
     const accentWallM = new THREE.MeshStandardMaterial({ map: wallPlasterTex, roughness: 0.92, metalness: 0.0, color: 0xd8cfbe });
-    const woodM = new THREE.MeshStandardMaterial({ map: floorTexture, roughness: 0.3, metalness: 0.04 });
+    const woodM = new THREE.MeshStandardMaterial({ map: floorTexture, roughness: 0.62, metalness: 0.02 });
 
     const HALLZ = 3.95;
-    plane('Floor', 14, 18.1, [0, 0, HALLZ], [-Math.PI / 2, 0, 0], woodM);
-    box('Wall Back', [14, 5.2, 0.22], [0, 2.6, -5.1], wallM);
-    box('Wall Left', [0.22, 5.2, 18.1], [-7.1, 2.6, HALLZ], accentWallM);
-    box('Wall Right', [0.22, 5.2, 18.1], [7.1, 2.6, HALLZ], accentWallM);
-    box('Wall Front', [14, 5.2, 0.22], [0, 2.6, 13.0], wallM);
-    box('Ceiling', [14, 0.12, 18.1], [0, 5.1, HALLZ], mat(0xf4f8fb, { roughness: 0.9 }));
+    /* The room was 14 m wide. Everything that hangs on a side wall, and the walls
+       themselves, sit this much further out; E() moves an x coordinate with them. */
+    const WIDE = 2.5;
+    const E = (x) => x + Math.sign(x) * WIDE;
+    const HALF = 7 + WIDE;
+    // The doorway in the back wall, and the quiet room it leads to.
+    const DOOR = { x: 7.3, half: 1.0, height: 2.75 };
+    const ZEN = { x: DOOR.x, z: -11.35, r: 5.75 };
+    plane('Floor', 14 + WIDE * 2, 18.1, [0, 0, HALLZ], [-Math.PI / 2, 0, 0], woodM);
+    {
+      const left = DOOR.x - DOOR.half + HALF;
+      const right = HALF - (DOOR.x + DOOR.half);
+      box('Wall Back', [left, 5.2, 0.22], [-HALF + left / 2, 2.6, -5.1], wallM);
+      box('Wall Back R', [right, 5.2, 0.22], [HALF - right / 2, 2.6, -5.1], wallM);
+      box('Wall Back Top', [DOOR.half * 2, 5.2 - DOOR.height, 0.22], [DOOR.x, DOOR.height + (5.2 - DOOR.height) / 2, -5.1], wallM);
+      // The passage through the wall: dark, so the eye is drawn to what is past it.
+      const passage = mat(0x0b0d18, { roughness: 0.6 });
+      const depth = -5.0 - (ZEN.z + ZEN.r) + 0.5;
+      const mid = -5.0 - depth / 2;
+      box('Passage L', [0.12, DOOR.height, depth], [DOOR.x - DOOR.half - 0.06, DOOR.height / 2, mid], passage).castShadow = false;
+      box('Passage R', [0.12, DOOR.height, depth], [DOOR.x + DOOR.half + 0.06, DOOR.height / 2, mid], passage).castShadow = false;
+      box('Passage Top', [DOOR.half * 2 + 0.24, 0.12, depth], [DOOR.x, DOOR.height + 0.06, mid], passage).castShadow = false;
+      plane('Passage Floor', DOOR.half * 2, depth, [DOOR.x, 0.006, mid], [-Math.PI / 2, 0, 0], mat(0x0a0b14, { roughness: 0.4, metalness: 0.4 }));
+      const glow = mat(0x818cf8, { emissive: 0x6366f1, emissiveIntensity: 1.6 });
+      box('Door Glow L', [0.05, DOOR.height, 0.05], [DOOR.x - DOOR.half - 0.02, DOOR.height / 2, -4.97], glow).castShadow = false;
+      box('Door Glow R', [0.05, DOOR.height, 0.05], [DOOR.x + DOOR.half + 0.02, DOOR.height / 2, -4.97], glow).castShadow = false;
+      box('Door Glow T', [DOOR.half * 2 + 0.09, 0.05, 0.05], [DOOR.x, DOOR.height + 0.02, -4.97], glow).castShadow = false;
+    }
+    box('Wall Left', [0.22, 5.2, 18.1], [E(-7.1), 2.6, HALLZ], accentWallM);
+    box('Wall Right', [0.22, 5.2, 18.1], [E(7.1), 2.6, HALLZ], accentWallM);
+    box('Wall Front', [14 + WIDE * 2, 5.2, 0.22], [0, 2.6, 13.0], wallM);
+    box('Ceiling', [14 + WIDE * 2, 0.12, 18.1], [0, 5.1, HALLZ], mat(0xf4f8fb, { roughness: 0.9 }));
     const crownM = mat(0xfdfdfd, { roughness: 0.45, metalness: 0.03 });
-    box('Crown Back', [14.1, 0.08, 0.14], [0, 5.0, -5.02], crownM);
-    box('Crown Left', [0.14, 0.08, 18.2], [-7.02, 5.0, HALLZ], crownM);
-    box('Crown Right', [0.14, 0.08, 18.2], [7.02, 5.0, HALLZ], crownM);
-    box('Crown Front', [14.1, 0.08, 0.14], [0, 5.0, 12.92], crownM);
+    box('Crown Back', [14.1 + WIDE * 2, 0.08, 0.14], [0, 5.0, -5.02], crownM);
+    box('Crown Left', [0.14, 0.08, 18.2], [E(-7.02), 5.0, HALLZ], crownM);
+    box('Crown Right', [0.14, 0.08, 18.2], [E(7.02), 5.0, HALLZ], crownM);
+    box('Crown Front', [14.1 + WIDE * 2, 0.08, 0.14], [0, 5.0, 12.92], crownM);
     const baseM = mat(0xfafafa, { roughness: 0.4, metalness: 0.02 });
-    box('Base Back', [14, 0.16, 0.06], [0, 0.08, -5.0], baseM);
-    box('Base Left', [0.06, 0.16, 18.1], [-7.0, 0.08, HALLZ], baseM);
-    box('Base Right', [0.06, 0.16, 18.1], [7.0, 0.08, HALLZ], baseM);
-    box('Base Front', [14, 0.16, 0.06], [0, 0.08, 12.92], baseM);
+    box('Base Back', [DOOR.x - DOOR.half + HALF, 0.16, 0.06], [(DOOR.x - DOOR.half - HALF) / 2, 0.08, -5.0], baseM);
+    box('Base Left', [0.06, 0.16, 18.1], [E(-7.0), 0.08, HALLZ], baseM);
+    box('Base Right', [0.06, 0.16, 18.1], [E(7.0), 0.08, HALLZ], baseM);
+    box('Base Front', [14 + WIDE * 2, 0.16, 0.06], [0, 0.08, 12.92], baseM);
 
     const windowFrameM = mat(0xfefefe, { roughness: 0.35, metalness: 0.06 });
     box('Win Sill', [4.2, 0.08, 0.34], [-3.5, 1.05, -4.96], windowFrameM);
@@ -357,10 +391,10 @@
     box('Win Cross', [4.0, 0.05, 0.2], [-3.5, 2.2, -4.9], windowFrameM);
     plane('Sky', 4.0, 2.2, [-3.5, 2.2, -5.05], [0, 0, 0], new THREE.MeshBasicMaterial({ map: windowSkyTexture }));
     plane('Rug', 5.5, 3.8, [0, 0.015, 0.5], [-Math.PI / 2, 0, 0], new THREE.MeshStandardMaterial({ map: rugTexture,
-      roughness: 0.85, metalness: 0 }));
+      color: 0xb9bfcc, roughness: 0.95, metalness: 0 }));
 
     plane('Runner', 3.2, 9.5, [0, 0.012, 8.4], [-Math.PI / 2, 0, 0], new THREE.MeshStandardMaterial({ map: rugTexture,
-      roughness: 0.88, metalness: 0 }));
+      color: 0xb9bfcc, roughness: 0.95, metalness: 0 }));
 
     const pendantGroup = new THREE.Group();
     pendantGroup.position.set(0, 4.7, 0.6);
@@ -375,17 +409,16 @@
     scene.add(pendantLightPoint);
 
     const hallLights = [];
-    [[0, 5.0], [-3.6, 8.5], [3.6, 8.5], [0, 11.5]].forEach(([lx, lz]) => {
-      const panel = box('CeilPanel', [1.0, 0.04, 1.0], [lx, 5.02, lz],
-        mat(0xffffff, { emissive: 0xfff4e0, emissiveIntensity: 0.32, roughness: 0.6 }));
-      const pl = new THREE.PointLight(0xfff3e0, 0.32, 9, 2);
-      pl.position.set(lx, 4.9, lz);
-      scene.add(pl);
-      hallLights.push(pl);
-    });
+    {
+      // Two runs of recessed light down the hall, and coffers between them.
+      const strip = mat(0xffffff, { emissive: 0xfff1dc, emissiveIntensity: 0.9, roughness: 0.6 });
+      const beam = mat(0xe9edf2, { roughness: 0.8 });
+      for (const x of [-4.4, 4.4]) box('Ceil Strip', [0.16, 0.03, 16.4], [x, 5.03, HALLZ], strip).castShadow = false;
+      for (let z = -3.2; z <= 11.4; z += 2.92) box('Ceil Beam', [14 + WIDE * 2 - 0.6, 0.1, 0.16], [0, 5.0, z], beam).castShadow = false;
+    }
 
     const bookshelfGroup = new THREE.Group();
-    bookshelfGroup.position.set(6.78, 0, 4.8);
+    bookshelfGroup.position.set(E(6.78), 0, 4.8);
     bookshelfGroup.rotation.y = -Math.PI / 2;
     scene.add(bookshelfGroup);
     const shelfWoodM = mat(0xc4956b, { roughness: 0.35, metalness: 0.04 });
@@ -421,10 +454,23 @@
         0.4) * sc, Math.sin(s * 1.3) * 0.1 * sc], leafMats[1], g);
       return g;
     }
-    createPlant(-6.4, 0, -4.5, 0.9);
-    createPlant(5.8, 0, -4.6, 0.75);
-    createPlant(-6.5, 0, 12.5, 1.0);
-    createPlant(6.4, 0, 11.8, 0.95);
+    createPlant(E(-6.4), 0, -4.5, 0.9);
+    createPlant(4.4, 0, -4.6, 0.75);
+    createPlant(E(-6.5), 0, 12.5, 1.0);
+    createPlant(E(6.4), 0, 11.8, 0.95);
+    createPlant(E(6.5), 0, -1.6 + 3.2, 0.8);
+    createPlant(E(-6.5), 0, 5.2, 0.85);
+
+    // Somewhere to sit in the middle of the hall.
+    const BENCHES = [[-2.5, 8.2], [2.5, 8.2]];
+    {
+      const seat = physMat(0x2c3340, { roughness: 0.6, clearcoat: 0.15 });
+      const leg = mat(0x9aa3ad, { roughness: 0.3, metalness: 0.85 });
+      for (const [x, z] of BENCHES) {
+        rbox('Bench', [0.56, 0.1, 2.3], [x, 0.44, z], seat, scene, 0.04);
+        for (const dz of [-0.95, 0.95]) box('Bench Leg', [0.46, 0.39, 0.05], [x, 0.195, z + dz], leg);
+      }
+    }
 
     const deskGroup = new THREE.Group();
     deskGroup.position.set(0, 0, -3.4);
@@ -588,6 +634,7 @@
 
     const interactables = [];
 
+    const PICTURE_LIGHT = mat(0xfff6e2, { emissive: 0xffe2b0, emissiveIntensity: 1.5, roughness: 0.4 });
     function createFrame(x, y, z, rotY, imgUrl, w = 0.7, h = 0.9, caption, media) {
       const fg = new THREE.Group();
       fg.position.set(x, y, z);
@@ -596,6 +643,8 @@
 
       box('FrameOuter', [w + 0.10, h + 0.10, 0.04], [0, 0, 0], mat(0x14110d, { roughness: 0.55, metalness: 0.2 }), fg);
       box('FrameGold', [w + 0.05, h + 0.05, 0.045], [0, 0, 0.004], mat(0xb98a3a, { roughness: 0.35, metalness: 0.7 }), fg);
+      box('PictureLight', [w * 0.62, 0.025, 0.07], [0, h / 2 + 0.11, 0.11], PICTURE_LIGHT, fg).castShadow = false;
+      box('PictureArm', [0.02, 0.02, 0.1], [0, h / 2 + 0.12, 0.05], mat(0x2a2620, { roughness: 0.4, metalness: 0.7 }), fg).castShadow = false;
       box('Mat', [w + 0.005, h + 0.005, 0.05], [0, 0, 0.006], mat(0xf4efe6, { roughness: 0.9 }), fg);
       const photo = plane('Photo', w, h, [0, 0, 0.035], [0, 0, 0],
         new THREE.MeshStandardMaterial({ map: loadTex(imgUrl), roughness: 0.55, metalness: 0.02 }), fg);
@@ -622,14 +671,14 @@
       return fg;
     }
 
-    createFrame(-6.92, 2.45, -3.4, Math.PI / 2, 'me.webp', 1.05, 1.3, 'Eyad Elfar');
-    createFrame(-6.92, 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill', { kind: 'page', src: 'index.html?embed=showcase#keepquill', title: 'KeepQuill - Sample Book & Readme', prompt: 'Press <b>E</b> to read the KeepQuill sample book' });
-    createFrame(-6.92, 2.4, 2.0, Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'index.html?embed=showcase#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
-    createFrame(6.92, 2.5, -3.0, -Math.PI / 2, 'images/mental_health.webp', 0.78, 0.5, 'Mental Health NLP');
-    createFrame(6.92, 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.webp', 0.78, 0.5, 'YOLOv8 Detection');
-    createFrame(6.92, 2.4, 2.4, -Math.PI / 2, 'images/diagrams/voice-agent.svg', 0.78, 0.5, 'Voice Agents');
-    wallSign(-6.88, 3.32, 1.2, Math.PI / 2, 'Proof of Concept', '#4f46e5', 2.8, 0.46);
-    wallSign(6.88, 3.32, -0.2, -Math.PI / 2, 'Featured Projects', '#4f46e5', 3.4, 0.46);
+    createFrame(E(-6.92), 2.45, -3.4, Math.PI / 2, 'me.webp', 1.05, 1.3, 'Eyad Elfar');
+    createFrame(E(-6.92), 2.4, 0.4, Math.PI / 2, 'images/keepquill.webp', 0.78, 0.5, 'KeepQuill', { kind: 'page', src: 'index.html?embed=showcase#keepquill', title: 'KeepQuill - Sample Book & Readme', prompt: 'Press <b>E</b> to read the KeepQuill sample book' });
+    createFrame(E(-6.92), 2.4, 2.0, Math.PI / 2, 'images/favisra.webp', 0.78, 0.5, 'Favisra', { kind: 'page', src: 'index.html?embed=showcase#favisra', title: 'Favisra - Live Dashboard (demo data)', prompt: 'Press <b>E</b> to open the Favisra dashboard' });
+    createFrame(E(6.92), 2.5, -3.0, -Math.PI / 2, 'images/mental_health.webp', 0.78, 0.5, 'Mental Health NLP');
+    createFrame(E(6.92), 2.4, 0.6, -Math.PI / 2, 'images/cigarette_detection.webp', 0.78, 0.5, 'YOLOv8 Detection');
+    createFrame(E(6.92), 2.4, 2.4, -Math.PI / 2, 'images/diagrams/voice-agent.svg', 0.78, 0.5, 'Voice Agents');
+    wallSign(E(-6.88), 3.32, 1.2, Math.PI / 2, 'Proof of Concept', '#4f46e5', 2.8, 0.46);
+    wallSign(E(6.88), 3.32, -0.2, -Math.PI / 2, 'Featured Projects', '#4f46e5', 3.4, 0.46);
 
     function createDocFrame(x, y, z, rotY, title, subtitle, src, accent, w = 0.62, h = 0.82) {
       const fg = new THREE.Group(); fg.position.set(x, y, z); fg.rotation.y = rotY; scene.add(fg);
@@ -665,8 +714,8 @@
       plane('Sign', w, h, [x, y, z], [0, rotY, 0], new THREE.MeshBasicMaterial({ map: tex, transparent: true }), scene);
     }
 
-    const LX = -6.92, LR = Math.PI / 2, ZC = [6.4, 7.7, 9.0, 10.3, 11.6];
-    wallSign(-6.88, 3.85, 9.0, Math.PI / 2, 'Certifications & Honors', '#4f46e5', 3.6, 0.5);
+    const LX = E(-6.92), LR = Math.PI / 2, ZC = [6.4, 7.7, 9.0, 10.3, 11.6];
+    wallSign(E(-6.88), 3.85, 9.0, Math.PI / 2, 'Certifications & Honors', '#4f46e5', 3.6, 0.5);
 
     [['kaggle_pandas', 'Kaggle · Pandas'], ['kaggle_data_cleaning', 'Kaggle · Data Cleaning'],
      ['kaggle_intro_ml', 'Kaggle · Intro to ML'], ['kaggle_intermediate_ml', 'Kaggle · Intermediate ML'],
@@ -696,14 +745,15 @@
       const screen = plane('Screen', w, h, [0, 0, 0.045], [0, 0, 0], new THREE.MeshBasicMaterial({ map: vtex }), fg);
       screen.userData = { interact: 'media', kind: 'video', src, title, prompt: `Press <b>E</b> to play ${title}` };
       interactables.push(screen);
-      const glow = new THREE.PointLight(0x9ec5ff, 0, 4, 2); glow.position.set(0, 0, 0.5); fg.add(glow);
+      const glow = { intensity: 0 };
       const worldPos = new THREE.Vector3(); fg.getWorldPosition(worldPos);
       videoScreens.push({ video, glow, pos: worldPos, src });
       return fg;
     }
     wallSign(0, 3.62, 12.84, Math.PI, 'Live Demos', '#818cf8', 3.4, 0.5);
-    createVideoScreen(-1.75, 2.45, 12.84, Math.PI, 'videos/graphs.mp4', 'Signal Graphs', 2.0, 1.25);
-    createVideoScreen(1.75, 2.45, 12.84, Math.PI, 'videos/attendance.mp4', 'Attendance System', 2.0, 1.25);
+    wallSign(DOOR.x, DOOR.height + 0.42, -4.97, 0, 'Quiet Room', '#818cf8', 1.9, 0.34);
+    createVideoScreen(-2.4, 2.45, 12.84, Math.PI, 'videos/graphs.mp4', 'Signal Graphs', 2.0, 1.25);
+    createVideoScreen(2.4, 2.45, 12.84, Math.PI, 'videos/attendance.mp4', 'Attendance System', 2.0, 1.25);
 
     function buildWallBoard(key, pos, rotY, dSize = [2.2, 1.3]) {
       const meta = DATA[key];
@@ -753,11 +803,11 @@
       shadowFrame.rotation.y = rotY;
     }
     buildWallBoard('impact', [0, 3.05, -4.98], 0);
-    buildWallBoard('journey', [-6.98, 2.3, -1.5], Math.PI / 2);
-    buildWallBoard('projects', [6.98, 2.3, -1.5], -Math.PI / 2);
-    buildWallBoard('stack', [-6.98, 2.3, 3.8], Math.PI / 2);
-    buildWallBoard('education', [4.2, 2.5, 12.86], Math.PI);
-    buildWallBoard('contact', [6.98, 2.5, 11.3], -Math.PI / 2);
+    buildWallBoard('journey', [E(-6.98), 2.3, -1.5], Math.PI / 2);
+    buildWallBoard('projects', [E(6.98), 2.3, -1.5], -Math.PI / 2);
+    buildWallBoard('stack', [E(-6.98), 2.3, 3.8], Math.PI / 2);
+    buildWallBoard('education', [6.4, 2.5, 12.86], Math.PI);
+    buildWallBoard('contact', [E(6.98), 2.5, 11.3], -Math.PI / 2);
 
     const whiteboardTex = roundedCanvasTexture((ctx, w, h) => {
       ctx.fillStyle = '#ffffff';
@@ -886,6 +936,8 @@
       html: `<p>A multilingual <strong>TTS</strong> system spanning <strong>50+ languages</strong>, expanding product accessibility across global users. It shipped alongside the MENRV.AI computer-vision merchandising suite: <strong>Gemini VLM</strong> workflows for image editing and virtual try-on, cutting catalog content creation from hours to minutes.</p><span class="tag">TTS</span><span class="tag">Gemini VLM</span><span class="tag">Multilingual</span><span class="tag">Speech</span>`
     };
 
+    // Where each exhibit stands. Walking, the map and the guide all read this one list.
+    const PED = { nn: [5.2, -0.9], llm: [-6.2, 0.5], overfit: [4.9, 4.2], ar: [-6.2, 6.2], cv: [6.2, 6.2], rag: [-6.2, 9.4], forecast: [6.2, 9.4], tts: [-6.2, 12.0] };
     function faceCenter(obj, x, z) { obj.rotation.y = Math.atan2(-x, -z); }
     function aiBoard(x, z, glow) { const b = aiPedestal(x, z, glow); faceCenter(b.group, x, z); return b; }
     function aiCanvasPanel(group, topY, key, { offset = 1.05, w = 1.95, h = 1.18, cw = 760, ch = 460 } = {}) {
@@ -897,6 +949,14 @@
       return { cy, w, h, ctx, tex };
     }
 
+    /* Every exhibit used to carry its own light, and every light is paid for on
+       every pixel. Three lights now go to whichever exhibits the visitor is nearest. */
+    const exhibitGlows = [];
+    const rovingLights = [0, 1, 2].map(() => {
+      const light = new THREE.PointLight(0xffffff, 0, 4, 2);
+      scene.add(light);
+      return light;
+    });
     function aiPedestal(x, z, glow) {
       const g = new THREE.Group();
       g.position.set(x, 0, z);
@@ -909,7 +969,7 @@
         new THREE.MeshStandardMaterial({ color: glow, emissive: glow, emissiveIntensity: 2.4, roughness: 0.3 })
       );
       ring.rotation.x = Math.PI / 2; ring.position.y = 1.08; g.add(ring);
-      const light = new THREE.PointLight(glow, 0.5, 4, 2); light.position.set(0, 1.5, 0); g.add(light);
+      exhibitGlows.push({ x, z, colour: glow });
       return { group: g, topY: 1.08 };
     }
 
@@ -925,7 +985,7 @@
     }
 
     (function buildNeuralNet() {
-      const { group, topY } = aiBoard(4.8, -1.5, 0x6366f1);
+      const { group, topY } = aiBoard(...PED.nn, 0x6366f1);
       const viz = new THREE.Group(); viz.position.set(0, topY + 0.95, 0); group.add(viz);
       const layers = [4, 6, 6, 3], spanX = 1.25, spanY = 1.1;
       const nodeGeo = new THREE.SphereGeometry(0.045, 16, 16);
@@ -960,7 +1020,7 @@
     })();
 
     (function buildTransformer() {
-      const { group, topY } = aiBoard(-4.6, 0.5, 0x9b8cff);
+      const { group, topY } = aiBoard(...PED.llm, 0x9b8cff);
       const viz = new THREE.Group(); viz.position.set(0, topY + 0.85, 0); group.add(viz);
       const N = 8, R = 0.62;
       const tokenPos = [], tokens = [];
@@ -999,7 +1059,7 @@
     })();
 
     (function buildOverfit() {
-      const { group, topY } = aiBoard(3.2, 4.2, 0x818cf8);
+      const { group, topY } = aiBoard(...PED.overfit, 0x818cf8);
       const viz = new THREE.Group(); viz.position.set(0, topY + 0.85, 0); group.add(viz);
       const W = 1.3, H = 0.92;
       const gridTex = roundedCanvasTexture((ctx, w, h) => {
@@ -1081,7 +1141,7 @@
     }
 
     (function buildAR() {
-      const { group, topY } = aiBoard(-4.6, 6.2, 0xffd166);
+      const { group, topY } = aiBoard(...PED.ar, 0xffd166);
       const cy = topY + 1.15;
       box('ARpanel', [2.75, 1.75, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3, emissive: 0x060a0f, emissiveIntensity: 0.2 }), group);
       const sTex = ['assets/ar/sample1.webp', 'assets/ar/sample2.webp', 'assets/ar/sample3.webp', 'assets/ar/sample4.webp'].map(s => loadTex(s));
@@ -1117,7 +1177,7 @@
     })();
 
     (function buildCV() {
-      const { group, topY } = aiBoard(4.6, 6.2, 0xff6b6b);
+      const { group, topY } = aiBoard(...PED.cv, 0xff6b6b);
       const cy = topY + 1.1, W = 1.75, H = 1.18;
       box('CVback', [W + 0.12, H + 0.12, 0.06], [0, cy, -0.045], mat(0x0a1016, { roughness: 0.4, metalness: 0.3 }), group);
       plane('CVimg', W, H, [0, cy, 0.0], [0, 0, 0], new THREE.MeshBasicMaterial({ map: loadTex('images/cigarette_detection.webp') }), group);
@@ -1146,7 +1206,7 @@
     })();
 
     (function buildRAG() {
-      const { group, topY } = aiBoard(-4.6, 9.4, 0x6366f1);
+      const { group, topY } = aiBoard(...PED.rag, 0x6366f1);
       const { cy, ctx: x, tex } = aiCanvasPanel(group, topY, 'RAG');
       const nodes = [{ x: 60, y: 110, w: 160, h: 64, t: 'Live Transcript', c: '#3abef9' }, { x: 300, y: 110, w: 150, h: 64, t: 'RAG Retrieve', c: '#818cf8' }, { x: 540, y: 110, w: 160, h: 64, t: 'LLM · Vertex', c: '#b09afa' }, { x: 300, y: 300, w: 150, h: 64, t: 'Voice Agent', c: '#ffd166' }, { x: 540, y: 300, w: 160, h: 64, t: 'Booked Meeting', c: '#4ade9e' }];
       const edges = [[0, 1], [1, 2], [2, 3], [3, 4]];
@@ -1173,7 +1233,7 @@
     })();
 
     (function buildForecast() {
-      const { group, topY } = aiBoard(4.6, 9.4, 0x4ade9e);
+      const { group, topY } = aiBoard(...PED.forecast, 0x4ade9e);
       const { cy, ctx: x, tex } = aiCanvasPanel(group, topY, 'FC');
       const NH = 42, NF = 22, X0 = 50, X1 = 720, Y0 = 90, Y1 = 400;
       const hist = []; for (let i = 0; i < NH; i++) hist.push(0.5 + 0.28 * Math.sin(i * 0.35) + i * 0.006 + Math.sin(i * 1.7) * 0.05);
@@ -1208,7 +1268,7 @@
     })();
 
     (function buildTTS() {
-      const { group, topY } = aiBoard(-4.6, 12.0, 0xb09afa);
+      const { group, topY } = aiBoard(...PED.tts, 0xb09afa);
       const cy = topY + 1.0;
       const globe = new THREE.Mesh(new THREE.SphereGeometry(0.52, 22, 16), new THREE.MeshBasicMaterial({ color: 0xb09afa, wireframe: true, transparent: true, opacity: 0.5 }));
       globe.position.set(0, cy, 0); group.add(globe);
@@ -1233,11 +1293,19 @@
       });
     })();
 
+    scene.traverse((node) => {
+      if (node.isMesh && /^(Wall|Ceiling|Ceil |Crown|Base|Win |Passage|Door|Sign)/.test(node.name)) node.castShadow = false;
+    });
+
+    const zen = buildZen({ scene, centre: [ZEN.x, ZEN.z], radius: ZEN.r, door: DOOR, interactables, work: WORK });
+    // How far into the quiet room the visitor is: 0 in the main room, 1 inside.
+    let presence = 0;
+
     const particlesGeometry = new THREE.BufferGeometry();
     const particleCount = 200;
     const particlePositions = new Float32Array(particleCount * 3);
     for (let i = 0; i < particleCount; i++) {
-      particlePositions[i * 3] = -5 + Math.random() * 10;
+      particlePositions[i * 3] = -8 + Math.random() * 16;
       particlePositions[i * 3 + 1] = 0.5 + Math.random() * 4;
       particlePositions[i * 3 + 2] = -5 + Math.random() * 10;
     }
@@ -1330,26 +1398,25 @@
     const boundingObstacles = [
       { minX: -2.7, maxX: 2.7, minZ: -5.1, maxZ: -2.3 },
       { minX: 1.3, maxX: 2.3, minZ: -4.6, maxZ: -3.2 },
-      { minX: 6.0, maxX: 7.0, minZ: 3.9, maxZ: 5.7 },
-      { minX: -6.7, maxX: -6.0, minZ: -4.9, maxZ: -4.1 },
-      { minX: 5.4, maxX: 6.2, minZ: -5.0, maxZ: -4.2 },
-      { minX: -6.9, maxX: -6.1, minZ: 12.1, maxZ: 12.9 },
-      { minX: 6.0, maxX: 6.8, minZ: 11.4, maxZ: 12.2 },
-
-      { minX: 4.1, maxX: 5.5, minZ: -2.2, maxZ: -0.8 },
-      { minX: -5.3, maxX: -3.9, minZ: -0.2, maxZ: 1.2 },
-      { minX: 2.5, maxX: 3.9, minZ: 3.6, maxZ: 5.0 },
-
-      { minX: -5.4, maxX: -3.8, minZ: 5.4, maxZ: 7.0 },
-      { minX: 3.8, maxX: 5.4, minZ: 5.4, maxZ: 7.0 },
-      { minX: -5.4, maxX: -3.8, minZ: 8.6, maxZ: 10.2 },
-      { minX: 3.8, maxX: 5.4, minZ: 8.6, maxZ: 10.2 },
-      { minX: -5.4, maxX: -3.8, minZ: 11.2, maxZ: 12.8 },
+      { minX: E(6.0), maxX: E(7.0), minZ: 3.9, maxZ: 5.7, tall: true },
+      { minX: E(-6.7), maxX: E(-6.0), minZ: -4.9, maxZ: -4.1 },
+      { minX: 4.0, maxX: 4.8, minZ: -5.0, maxZ: -4.2 },
+      { minX: E(-6.9), maxX: E(-6.1), minZ: 12.1, maxZ: 12.9 },
+      { minX: E(6.0), maxX: E(6.8), minZ: 11.4, maxZ: 12.2 },
+      ...zen.obstacles,
+      ...BENCHES.map(([x, z]) => ({ minX: x - 0.3, maxX: x + 0.3, minZ: z - 1.17, maxZ: z + 1.17 })),
+      ...Object.values(PED).map(([x, z]) => ({ minX: x - 0.75, maxX: x + 0.75, minZ: z - 0.75, maxZ: z + 0.75, tall: true })),
     ];
 
+    /* The floor plan: the main room, the quiet room (a circle), and the passage
+       between them. A body keeps `margin` away from every wall and obstacle. */
+    const MAIN = { minX: -HALF, maxX: HALF, minZ: -5.0, maxZ: 13.0 };
+    const inZen = (x, z, margin = 0) => Math.hypot(x - ZEN.x, z - ZEN.z) < ZEN.r - margin;
     function verifySpatialViability(targetX, targetZ) {
       const margin = 0.45;
-      if (targetX < -6.55 || targetX > 6.55 || targetZ < -4.55 || targetZ > 12.55) return false;
+      const inMain = targetX > MAIN.minX + margin && targetX < MAIN.maxX - margin && targetZ > MAIN.minZ + margin && targetZ < MAIN.maxZ - margin;
+      const inPassage = Math.abs(targetX - DOOR.x) < DOOR.half - 0.3 && targetZ < MAIN.minZ + margin + 0.05 && targetZ > ZEN.z + ZEN.r - margin - 0.6;
+      if (!inMain && !inPassage && !inZen(targetX, targetZ, margin)) return false;
       for (let i = 0; i < boundingObstacles.length; i++) {
         const b = boundingObstacles[i];
         if (targetX > b.minX - margin && targetX < b.maxX + margin && targetZ > b.minZ - margin && targetZ < b.maxZ + margin)
@@ -1849,6 +1916,7 @@
         if (!pcBooted) bootWorkstationSystem();
         else openBrowser('portfolio');
       }
+      if (node.interact === 'zen') showNotice(node.say, true);
       if (node.interact === 'board') openPanel(node.key);
       if (node.interact === 'media') openLightbox(node.kind, node.src, node.title);
       if (node.interact === 'ai') openPanel(node.key);
@@ -2433,6 +2501,10 @@
       updateBlink(dt);
     }
 
+    let cameraReach = 3.8;
+    const tallAt = (x, z) => boundingObstacles.some((b) => b.tall && x > b.minX - 0.2 && x < b.maxX + 0.2 && z > b.minZ - 0.2 && z < b.maxZ + 0.2);
+    const DAY_SKY = new THREE.Color(0xdce9f2);
+    const NIGHT_SKY = new THREE.Color(0x04050c);
     const _specPos = new THREE.Vector3();
     const _specLook = new THREE.Vector3();
     let idleFrames = 0;
@@ -2441,7 +2513,7 @@
        two fast ones raise it again, so it never flickers between the two. */
     renderer.shadowMap.autoUpdate = false;
     let pixelRatio = PIXEL_RATIO;
-    const pace = { since: performance.now(), frames: 0, slow: 0, fast: 0, shadowIn: 0 };
+    const pace = { since: performance.now(), frames: 0, slow: 0, fast: 0, shadowIn: 0, glowIn: 0 };
     function tunePixelRatio(now) {
       if (++pace.frames < 45) return;
       const ms = (now - pace.since) / pace.frames;
@@ -2492,15 +2564,33 @@
         const cx = mickeyModel.position.x;
         const cz = mickeyModel.position.z;
         const focusY = characterBaseHeight * 0.62;
-        const camX = cx + Math.sin(spectatorAzimuth) * Math.cos(spectatorElevation) * spectatorDistance;
-        const camY = focusY + Math.sin(spectatorElevation) * spectatorDistance;
-        const camZ = cz - Math.cos(spectatorAzimuth) * Math.cos(spectatorElevation) * spectatorDistance;
+        // If a tall exhibit stands between the camera and the character, the camera comes in front of it.
+        const dirX = Math.sin(spectatorAzimuth) * Math.cos(spectatorElevation);
+        const dirY = Math.sin(spectatorElevation);
+        const dirZ = -Math.cos(spectatorAzimuth) * Math.cos(spectatorElevation);
+        let reach = spectatorDistance;
+        for (let step = 1; step <= 12; step++) {
+          const far = (spectatorDistance * step) / 12;
+          if (focusY + dirY * far < 2.9 && tallAt(cx + dirX * far, cz + dirZ * far)) { reach = Math.max(0.9, far - spectatorDistance / 12 - 0.2); break; }
+        }
+        cameraReach += (reach - cameraReach) * (1 - Math.exp(-delta * (reach < cameraReach ? 14 : 4)));
+        const camX = cx + dirX * cameraReach;
+        const camY = focusY + dirY * cameraReach;
+        const camZ = cz + dirZ * cameraReach;
         // Never let the camera leave the room: outside it there is nothing to see.
-        camera.position.lerp(_specPos.set(
-          THREE.MathUtils.clamp(camX, -6.75, 6.75),
-          THREE.MathUtils.clamp(camY, 0.45, 4.85),
-          THREE.MathUtils.clamp(camZ, -4.75, 12.65),
-        ), 1 - Math.exp(-delta * 10));
+        if (inZen(cx, cz, -0.4)) {
+          // In the round room the camera keeps inside the dome.
+          const out = Math.hypot(camX - ZEN.x, camZ - ZEN.z);
+          const pull = Math.min(1, (ZEN.r - 0.5) / Math.max(out, 1e-3));
+          _specPos.set(ZEN.x + (camX - ZEN.x) * pull, THREE.MathUtils.clamp(camY, 0.45, 4.6), ZEN.z + (camZ - ZEN.z) * pull);
+        } else {
+          _specPos.set(
+            THREE.MathUtils.clamp(camX, -HALF + 0.25, HALF - 0.25),
+            THREE.MathUtils.clamp(camY, 0.45, 4.85),
+            THREE.MathUtils.clamp(camZ, cz < -4.3 ? ZEN.z : -4.75, 12.65),
+          );
+        }
+        camera.position.lerp(_specPos, 1 - Math.exp(-delta * 10));
         camera.lookAt(_specLook.set(cx, focusY, cz));
         cameraYaw = Math.PI - spectatorAzimuth;
         cameraPitch = -spectatorElevation;
@@ -2531,8 +2621,33 @@
         }
       }
 
-      blueMonitorGlow.intensity = pcBooted ? 1.15 + Math.sin(elapsed * 4.0) * 0.2 : 0;
-      pendantLightPoint.intensity = 0.75 + Math.sin(elapsed * 7.3) * 0.05 + Math.sin(elapsed * 13.1) * 0.03;
+      const body = spectatorMode ? mickeyModel.position : camera.position;
+      const inside = inZen(body.x, body.z, -0.2) ? 1 : (Math.abs(body.x - DOOR.x) < DOOR.half + 0.3 ? THREE.MathUtils.smoothstep(-body.z, 4.3, 5.7) : 0);
+      presence += (inside - presence) * Math.min(1, delta * 2.6);
+      const day = 1 - presence;
+      zen.update(elapsed, delta, camera.position, presence);
+      if (--pace.glowIn <= 0) {
+        pace.glowIn = 12;
+        const nearest = exhibitGlows.slice().sort((a, b) => Math.hypot(a.x - body.x, a.z - body.z) - Math.hypot(b.x - body.x, b.z - body.z));
+        rovingLights.forEach((light, i) => {
+          light.position.set(nearest[i].x, 1.5, nearest[i].z);
+          light.color.set(nearest[i].colour);
+        });
+      }
+      for (const light of rovingLights) light.intensity = 0.55 * day;
+      hemiLight.intensity = 0.32 * day + 0.035;
+      ambLight.intensity = 0.1 * day + 0.02;
+      sunLight.intensity = KEY_LIGHT * day;
+      sunLight.target.position.set(THREE.MathUtils.clamp(body.x, -HALF + 4, HALF - 4), 0, THREE.MathUtils.clamp(body.z, 0, 9));
+      sunLight.position.set(sunLight.target.position.x + 3.5, 15, sunLight.target.position.z + 2.5);
+      deskLampLight.intensity = 1.4 * day;
+      if ('environmentIntensity' in scene) scene.environmentIntensity = 0.11 * day + 0.03;
+      scene.background.copy(DAY_SKY).lerp(NIGHT_SKY, presence);
+      scene.fog.color.copy(scene.background);
+      scene.fog.density = 0.006 * day;
+
+      blueMonitorGlow.intensity = (pcBooted ? 1.15 + Math.sin(elapsed * 4.0) * 0.2 : 0) * day;
+      pendantLightPoint.intensity = (0.75 + Math.sin(elapsed * 7.3) * 0.05 + Math.sin(elapsed * 13.1) * 0.03) * day;
 
       const posArray = particlesGeometry.attributes.position.array;
       for (let i = 0; i < particleCount; i++) {
@@ -2541,7 +2656,7 @@
         posArray[i * 3 + 2] += Math.sin(elapsed * 1.8 + i * 0.9) * 0.0008;
         if (posArray[i * 3 + 1] > 4.7) posArray[i * 3 + 1] = 0.5;
         if (posArray[i * 3 + 1] < 0.3) posArray[i * 3 + 1] = 4.5;
-        if (Math.abs(posArray[i * 3]) > 6.8) posArray[i * 3] *= -0.9;
+        if (Math.abs(posArray[i * 3]) > HALF - 0.3) posArray[i * 3] *= -0.9;
         if (Math.abs(posArray[i * 3 + 2]) > 5.8) posArray[i * 3 + 2] *= -0.9;
       }
       particlesGeometry.attributes.position.needsUpdate = true;
@@ -2602,7 +2717,8 @@
       else if (isSeatedState) modeText.textContent = "Seated at the Workstation";
       else modeText.textContent = "Exploring the Playground";
       const spd = Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
-      fpsText.textContent = pcBooted ? "CORE ACTIVE" : (spd > 2.0 ? "WALKING" : "DAYLIGHT");
+      fpsText.textContent = presence > 0.5 ? "STARLIGHT" : pcBooted ? "CORE ACTIVE" : (spd > 2.4 ? "JOGGING" : spd > 0.4 ? "WALKING" : "DAYLIGHT");
+      if (presence > 0.5 && !typingMode) modeText.textContent = "In the quiet room";
     }
     setInterval(updateStateIndicators, 200);
 
@@ -2614,27 +2730,28 @@
     const PLACE_TARGETS = {
       desk: { at: [0, -4.05], stand: [0, -0.95] },
       impact: { at: [0, -4.98], normal: [0, 1], open: () => openPanel('impact') },
-      journey: { at: [-6.98, -1.5], normal: [1, 0], open: () => openPanel('journey') },
-      projects: { at: [6.98, -1.5], normal: [-1, 0], open: () => openPanel('projects') },
-      stack: { at: [-6.98, 3.8], normal: [1, 0], open: () => openPanel('stack') },
-      education: { at: [4.2, 12.86], normal: [0, -1], open: () => openPanel('education') },
-      contact: { at: [6.98, 11.3], normal: [-1, 0], open: () => openPanel('contact') },
-      neural_networks: { at: [4.8, -1.5], normal: toward(4.8, -1.5), open: () => openPanel('ai_nn') },
-      transformers: { at: [-4.6, 0.5], normal: toward(-4.6, 0.5), open: () => openPanel('ai_llm') },
-      overfitting: { at: [3.2, 4.2], normal: toward(3.2, 4.2), open: () => openPanel('ai_overfit') },
-      ar_scoring: { at: [-4.6, 6.2], normal: toward(-4.6, 6.2), open: () => openPanel('ai_arscore') },
-      computer_vision: { at: [4.6, 6.2], normal: toward(4.6, 6.2), open: () => openPanel('ai_cv') },
-      rag_voice: { at: [-4.6, 9.4], normal: toward(-4.6, 9.4), open: () => openPanel('ai_rag') },
-      forecasting: { at: [4.6, 9.4], normal: toward(4.6, 9.4), open: () => openPanel('ai_forecast') },
-      tts: { at: [-4.6, 12.0], normal: toward(-4.6, 12.0), open: () => openPanel('ai_tts') },
-      keepquill: { at: [-6.92, 0.4], normal: [1, 0], open: media('page', 'index.html?embed=showcase#keepquill', 'KeepQuill - Sample Book & Readme') },
-      favisra: { at: [-6.92, 2.0], normal: [1, 0], open: media('page', 'index.html?embed=showcase#favisra', 'Favisra - Live Dashboard (demo data)') },
-      mental_health: { at: [6.92, -3.0], normal: [-1, 0], open: media('image', 'images/mental_health.webp', 'Mental Health NLP') },
-      cigarette_detection: { at: [6.92, 0.6], normal: [-1, 0], open: media('image', 'images/cigarette_detection.webp', 'YOLOv8 Detection') },
+      journey: { at: [E(-6.98), -1.5], normal: [1, 0], open: () => openPanel('journey') },
+      projects: { at: [E(6.98), -1.5], normal: [-1, 0], open: () => openPanel('projects') },
+      stack: { at: [E(-6.98), 3.8], normal: [1, 0], open: () => openPanel('stack') },
+      education: { at: [6.4, 12.86], normal: [0, -1], open: () => openPanel('education') },
+      contact: { at: [E(6.98), 11.3], normal: [-1, 0], open: () => openPanel('contact') },
+      neural_networks: { at: PED.nn, normal: toward(...PED.nn), open: () => openPanel('ai_nn') },
+      transformers: { at: PED.llm, normal: toward(...PED.llm), open: () => openPanel('ai_llm') },
+      overfitting: { at: PED.overfit, normal: toward(...PED.overfit), open: () => openPanel('ai_overfit') },
+      ar_scoring: { at: PED.ar, normal: toward(...PED.ar), open: () => openPanel('ai_arscore') },
+      computer_vision: { at: PED.cv, normal: toward(...PED.cv), open: () => openPanel('ai_cv') },
+      rag_voice: { at: PED.rag, normal: toward(...PED.rag), open: () => openPanel('ai_rag') },
+      forecasting: { at: PED.forecast, normal: toward(...PED.forecast), open: () => openPanel('ai_forecast') },
+      tts: { at: PED.tts, normal: toward(...PED.tts), open: () => openPanel('ai_tts') },
+      keepquill: { at: [E(-6.92), 0.4], normal: [1, 0], open: media('page', 'index.html?embed=showcase#keepquill', 'KeepQuill - Sample Book & Readme') },
+      favisra: { at: [E(-6.92), 2.0], normal: [1, 0], open: media('page', 'index.html?embed=showcase#favisra', 'Favisra - Live Dashboard (demo data)') },
+      mental_health: { at: [E(6.92), -3.0], normal: [-1, 0], open: media('image', 'images/mental_health.webp', 'Mental Health NLP') },
+      cigarette_detection: { at: [E(6.92), 0.6], normal: [-1, 0], open: media('image', 'images/cigarette_detection.webp', 'YOLOv8 Detection') },
       resume: { at: [LX, DZ0], normal: [1, 0], open: media('pdf', 'resume.pdf', 'Résumé') },
       certificates: { at: [LX, 9.0], normal: [1, 0] },
-      demos: { at: [1.75, 12.84], normal: [0, -1], open: media('video', 'videos/attendance.mp4', 'Attendance System') },
-      whiteboard: { at: [6.9, 8.6], normal: [-1, 0], open: openWhiteboard },
+      demos: { at: [2.4, 12.84], normal: [0, -1], open: media('video', 'videos/attendance.mp4', 'Attendance System') },
+      whiteboard: { at: [E(6.9), 8.6], normal: [-1, 0], open: openWhiteboard },
+      ...zen.places,
     };
 
     const insideObstacle = (x, z, skip) => boundingObstacles.some((b) => b !== skip && x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ);
@@ -2671,12 +2788,15 @@
       obstacles: boundingObstacles,
       touch: isTouch,
       viable: verifySpatialViability,
+      bounds: { minX: MAIN.minX + 0.5, maxX: Math.max(MAIN.maxX, ZEN.x + ZEN.r) - 0.5, minZ: ZEN.z - ZEN.r + 0.5, maxZ: MAIN.maxZ - 0.5 },
+      plan: { main: MAIN, door: DOOR, zen: ZEN },
       state() {
         const body = spectatorMode ? mickeyModel.position : camera.position;
         return {
           x: body.x, z: body.z, yaw: characterYaw, speed: Math.hypot(velocityX, velocityZ),
           entered, seated: isSeatedState, thirdPerson: spectatorMode, typing: typingMode, booted: pcBooted,
           shell: terminalLog[terminalLog.length - 1] || '',
+          zone: presence > 0.5 ? 'quiet' : 'main',
           open: lightboxEl.classList.contains('active') ? 'lightbox' : browserEl.classList.contains('active') ? 'browser' : openPanelKey ? `panel:${openPanelKey}` : null,
         };
       },
@@ -2741,7 +2861,7 @@
       }),
       onInput(hook) { inputHooks.push(hook); },
     };
-    nav = makeNav(verifySpatialViability);
+    nav = makeNav(verifySpatialViability, RoomAPI.bounds);
     walker = createWalker(RoomAPI, nav);
     RoomAPI.nav = nav;
     RoomAPI.walker = walker;
@@ -2766,7 +2886,7 @@
     };
     // Each of these is an extra. The room works without any of them, so none may hold it up.
     const extra = (loading, name) => loading.then((module) => module.start(RoomAPI)).catch((err) => console.warn(`[room] the ${name} did not load:`, err));
-    extra(import('./room.agent.js?v=f700924a'), 'guide');
-    extra(import('./room.map.js?v=36fcd29a'), 'map');
-    extra(import('./room.sound.js?v=d508d1be'), 'sound');
+    extra(import('./room.agent.js?v=0e8b9beb'), 'guide');
+    extra(import('./room.map.js?v=9ce36be2'), 'map');
+    extra(import('./room.sound.js?v=22540348'), 'sound');
 
