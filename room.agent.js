@@ -4,9 +4,9 @@ import * as TOOLS from './room.tools.js?v=1619a99d';
 
 const API = String(window.PORTFOLIO_API || '').replace(/\/+$/, '');
 const STORE = 'pf-room-guide';
-const WALK_SPEED = 2.5;
+const WALK_SPEED = 1.5;
 const ARRIVE = 0.12;
-const WALK_LIMIT_S = 25;
+const WALK_LIMIT_S = 45;
 const DWELL_MS = 3600;
 const REQUEST_MS = 20000;
 const MIN_HOLD_MS = 280;
@@ -128,7 +128,7 @@ export function start(room) {
       walk.index++;
       return;
     }
-    room.drive({ x: dx / dist, z: dz / dist, speed: last ? Math.max(0.8, Math.min(WALK_SPEED, dist * 2.4)) : WALK_SPEED });
+    room.drive({ x: dx / dist, z: dz / dist, speed: last ? Math.max(0.6, Math.min(WALK_SPEED, dist * 2.4)) : WALK_SPEED });
 
     const orbit = room.orbit({});
     room.orbit({
@@ -298,6 +298,7 @@ export function start(room) {
     if (settle) { const done = settle; settle = null; done.resolve(); }
     try { voice?.pause(); } catch { /* nothing playing */ }
     voice = null;
+    room.speaking(false);
     return true;
   }
 
@@ -343,8 +344,10 @@ export function start(room) {
       if (res.status !== 200 || job.cancelled) return;
       const url = URL.createObjectURL(await res.blob());
       voice = new Audio(url);
-      voice.addEventListener('ended', () => URL.revokeObjectURL(url), { once: true });
-      if (!job.cancelled) await voice.play();
+      voice.addEventListener('ended', () => { URL.revokeObjectURL(url); room.speaking(false); }, { once: true });
+      if (job.cancelled) return;
+      await voice.play();
+      room.speaking(true);
     } catch { /* the caption already says it */ }
   }
 

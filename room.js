@@ -10,6 +10,7 @@
     import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
     import { makeHelpers } from './room.helpers.js?v=6cc096a3';
     import { DATA } from './room.data.js?v=e07bfef7';
+    import { createCharacter } from './room.character.js?v=982cac20';
 
     await Promise.race([
       Promise.all(['700 20px Geist', '800 20px "Bricolage Grotesque"', '500 20px "Geist Mono"'].map((f) => document.fonts.load(f))),
@@ -1272,7 +1273,8 @@
     let loadedCharacterModel = null;
     let characterBaseHeight = 1.7;
 
-    let charMixer = null, actIdle = null, actWalk = null, walkWeight = 0;
+    let character = null;
+    const stepHooks = [];
     const blinkMorphs = [];
 
     function finishLoad() {
@@ -1285,61 +1287,19 @@
       }
     }
 
-    const CHARACTER_BYTES = 1603060;
+    const CHARACTER_BYTES = 946020;
     const charChip = document.getElementById('charChip');
     const gltfLoader = new GLTFLoader();
     gltfLoader.setMeshoptDecoder(MeshoptDecoder);
     gltfLoader.load(
-      'eyad.glb?v=449b9ac1',
+      'eyad.glb?v=0cca42dd',
       (gltf) => {
-        const model = gltf.scene;
-        model.traverse((o) => {
-          if (o.isMesh) {
-            o.castShadow = true;
-            o.receiveShadow = true;
-            if (o.material) {
-              o.material.side = THREE.FrontSide;
-              if (o.material.map) o.material.map.colorSpace = THREE.SRGBColorSpace;
-              o.material.needsUpdate = true;
-            }
-          }
-        });
-
-        const box = new THREE.Box3().setFromObject(model);
-        const size = new THREE.Vector3();
-        const center = new THREE.Vector3();
-        box.getSize(size);
-        box.getCenter(center);
-        const targetHeight = 1.7;
-        const scale = size.y > 0.0001 ? targetHeight / size.y : 1;
-        model.scale.setScalar(scale);
-
-        const box2 = new THREE.Box3().setFromObject(model);
-        const c2 = new THREE.Vector3();
-        box2.getCenter(c2);
-        model.position.x -= c2.x;
-        model.position.z -= c2.z;
-        model.position.y -= box2.min.y;
-        characterBaseHeight = targetHeight;
-        characterPivot.add(model);
-        loadedCharacterModel = model;
+        // The file is built to scale: 1.70 m tall, feet on the origin, clips included.
+        character = createCharacter(gltf);
+        characterPivot.add(gltf.scene);
+        loadedCharacterModel = gltf.scene;
         characterReady = true;
-
-        if (gltf.animations && gltf.animations.length) {
-          charMixer = new THREE.AnimationMixer(model);
-          const pick = (re) => gltf.animations.find(a => re.test(a.name || ''));
-          const idleClip = pick(/idle|breath|stand/i) || gltf.animations[0];
-          const walkClip = pick(/walk|run|jog|locomot/i) || idleClip;
-          actIdle = charMixer.clipAction(idleClip); actIdle.play();
-          if (walkClip !== idleClip) { actWalk = charMixer.clipAction(walkClip); actWalk.play(); actWalk.setEffectiveWeight(0); }
-        }
-        model.traverse((o) => {
-          if (o.isMesh && o.morphTargetDictionary) {
-            for (const key in o.morphTargetDictionary) {
-              if (/blink|eyesclosed|eye_?close/i.test(key)) blinkMorphs.push({ mesh: o, idx: o.morphTargetDictionary[key] });
-            }
-          }
-        });
+        character.onStep((foot, running) => { for (const hook of stepHooks) hook(foot, running); });
 
         buildEyelids();
         if (charChip) charChip.remove();
@@ -1937,10 +1897,13 @@
     const _right = new THREE.Vector3();
     const frameHooks = [];
     let agentDrive = null;
+    // A walk and a jog. The walk clip covers 1.35 m a second at its natural rate.
+    const WALK_SPEED = 1.6;
+    const RUN_SPEED = 3.1;
     function runSpatialLocomotion(delta, elapsed) {
       if (isSeatedState || typingMode || uiOpen) return;
 
-      const targetSpeed = agentDrive ? agentDrive.speed : 3.5;
+      const targetSpeed = agentDrive ? agentDrive.speed : (pressedKeys['ShiftLeft'] || pressedKeys['ShiftRight'] ? RUN_SPEED : WALK_SPEED);
       const acceleration = 14.0;
       const deceleration = 10.0;
 
@@ -1973,7 +1936,7 @@
         let diff = targetYaw - characterYaw;
         while (diff > Math.PI) diff -= Math.PI * 2;
         while (diff < -Math.PI) diff += Math.PI * 2;
-        characterYaw += diff * Math.min(12 * delta, 1);
+        characterYaw += diff * Math.min(9 * delta, 1);
       } else {
         velocityX += (0 - velocityX) * Math.min(deceleration * delta, 1);
         velocityZ += (0 - velocityZ) * Math.min(deceleration * delta, 1);
@@ -1991,7 +1954,7 @@
       if (!spectatorMode) {
         const speed = Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
         if (speed > 0.3) {
-          camera.position.y = 1.68 + Math.sin(elapsed * 14.0) * 0.025 * Math.min(speed / 3.0, 1.0);
+          camera.position.y = 1.68 + Math.sin(elapsed * 9.5) * 0.02 * Math.min(speed / 1.6, 1.0);
         } else {
           camera.position.y = THREE.MathUtils.lerp(camera.position.y, 1.68, 0.15);
         }
@@ -2258,6 +2221,8 @@
         lid.position.set(sx * EYE.x, EYE.y, EYE.z);
         lid.visible = false; lid.castShadow = false; lid.receiveShadow = false;
         characterPivot.add(lid);
+        // Placed where the eyes are at rest, then handed to the head so they stay there.
+        if (character?.head) { characterPivot.updateWorldMatrix(true, true); character.head.attach(lid); }
         if (i === 0) lidL = lid; else lidR = lid;
       });
     }
@@ -2287,20 +2252,24 @@
       const v = vel + ((target - cur) * k - vel * damp) * dt;
       return [cur + v * dt, v];
     }
+    const _lastStand = new THREE.Vector3();
+    let groundSpeed = 0;
+    let lookTarget = null;
     function animateCharacter(dt, elapsed, speed) {
       if (!characterReady) return;
       dt = Math.min(dt, 0.04);
       if (prevYaw === null) prevYaw = characterYaw;
       const sp = THREE.MathUtils.clamp(speed / 3.5, 0, 1);
 
-      if (charMixer) {
-        const target = sp > 0.06 ? 1 : 0;
-        walkWeight += (target - walkWeight) * Math.min(1, dt * 8);
-        if (actWalk) { actWalk.setEffectiveWeight(walkWeight); actWalk.timeScale = 0.85 + sp * 0.8; }
-        if (actIdle) actIdle.setEffectiveWeight(1 - walkWeight);
-        charMixer.update(dt);
-        characterPivot.position.y = 0;
-        characterPivot.rotation.set(0, 0, 0);
+      if (character) {
+        if (!mickeyModel.visible) { _lastStand.copy(mickeyModel.position); return; }
+        // The speed that matters is how far the body really moved, not how hard a key is held:
+        // against a wall the feet must stop.
+        const moved = Math.hypot(mickeyModel.position.x - _lastStand.x, mickeyModel.position.z - _lastStand.z);
+        _lastStand.copy(mickeyModel.position);
+        groundSpeed += (Math.min(moved / Math.max(dt, 1e-3), 6) - groundSpeed) * Math.min(1, dt * 12);
+        mickeyModel.updateWorldMatrix(true, false);
+        character.update(dt, groundSpeed, lookTarget || (groundSpeed < 0.3 ? camera.position : null));
         updateBlink(dt);
         return;
       }
@@ -2623,6 +2592,10 @@
         redrawWorkstationMonitor();
         return !stopped();
       },
+      gesture: (name) => (character ? character.gesture(name) : 0),
+      speaking(on) { character?.speaking(on); },
+      lookAt(point) { lookTarget = point ? new THREE.Vector3(point[0], point[1] ?? 1.5, point[2]) : null; },
+      onStep(hook) { stepHooks.push(hook); },
       onFrame(hook) { frameHooks.push(hook); },
       stats: () => ({
         calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
@@ -2631,5 +2604,5 @@
       }),
       onInput(hook) { inputHooks.push(hook); },
     };
-    import('./room.agent.js?v=cb09f137').then((agent) => agent.start(RoomAPI)).catch((err) => console.warn('[room] the guide did not load:', err));
+    import('./room.agent.js?v=839b120a').then((agent) => agent.start(RoomAPI)).catch((err) => console.warn('[room] the guide did not load:', err));
 
