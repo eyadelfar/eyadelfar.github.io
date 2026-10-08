@@ -1,4 +1,4 @@
-import { renderCitations } from './citations.js?v=4999cd10';
+import { renderCitations } from './citations.js?v=b888f422';
 
 const launcher = document.getElementById('askBtn');
 const panel = document.getElementById('askPanel');
@@ -39,6 +39,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     'rate-limited': 'I have taken enough calls for today. You can still type below, or use the contact form.',
     busy: 'A call is already running in another tab or window. End that one first.',
     'server-ended': 'The call ended on my side. Press Call to start again.',
+    capped: 'That is the time limit for one call on this demo. You can keep typing below, or use the contact form to reach Eyad.',
     refused: 'I could not start the call. You can still type below.',
     unsupported: 'Your browser cannot do voice calls. Type instead.',
   };
@@ -195,7 +196,17 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     onSources(sources) {
       const el = lastBotBubble();
       if (!el || el.querySelector('.ask-cites')) return;
-      renderCitations(el, sources, false);
+      renderCitations(el, sources);
+      scrollDown();
+    },
+
+    onClip(text) {
+      bubble('bot', text);
+    },
+
+    onHandoff(draft) {
+      const el = lastBotBubble();
+      if (el) handoffButton(el, draft);
       scrollDown();
     },
 
@@ -233,7 +244,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     setStatus('');
 
     try {
-      voice ??= await import('./voice.js?v=dab1a873');
+      voice ??= await import('./voice.js?v=c0e54924');
       if (seq !== startSeq) return;
       if (!voice.isSupported()) {
         callBtn.disabled = true;
@@ -263,6 +274,30 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     el.appendChild(again);
   }
 
+  function handoffButton(el, draft) {
+    if (!draft || el.querySelector('.ask-handoff')) return;
+    const pass = document.createElement('button');
+    pass.type = 'button';
+    pass.className = 'ask-retry ask-handoff';
+    pass.textContent = 'Send this to Eyad';
+    pass.addEventListener('click', () => {
+      const contact = document.getElementById('contactForm');
+      const message = contact?.elements.message;
+      if (!message) return;
+      if (!message.value.trim() || message.dataset.drafted) {
+        message.value = draft;
+        message.dataset.drafted = '1';
+        message.addEventListener('input', () => delete message.dataset.drafted, { once: true });
+      }
+      track('handoff');
+      closePanel();
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+      const first = contact.elements.name.value ? message : contact.elements.name;
+      setTimeout(() => first.focus({ preventScroll: true }), 700);
+    });
+    el.appendChild(pass);
+  }
+
   async function ask(question, reuse) {
     if (!reuse) bubble('you', question);
     busy = true;
@@ -275,7 +310,7 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
     let streamed = false;
 
     try {
-      engine ??= await import('./chat.js?v=833175cf');
+      engine ??= await import('./chat.js?v=fabec287');
       const answer = await engine.ask(question, {
         stage(name) {
           if (!streamed && CHAT_STAGE[name]) setText(el, CHAT_STAGE[name]);
@@ -293,7 +328,8 @@ if (launcher && panel && window.PORTFOLIO_API && (!embed || embed === 'browser')
       const follow = atBottom();
       el.classList.remove('thinking', 'streaming');
       setText(el, answer.reply);
-      renderCitations(el, answer.hits, answer.overridden);
+      renderCitations(el, answer.hits);
+      handoffButton(el, answer.handoff);
       if (follow) scrollDown();
     } catch (err) {
       el.classList.remove('thinking', 'streaming');

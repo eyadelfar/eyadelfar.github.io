@@ -82,12 +82,12 @@ export async function ask(question, on = {}) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) throw fail(data.message || 'I cannot reach the assistant right now.', data.code);
       remember(question, data.reply);
-      return { reply: data.reply, hits: data.sources || [], overridden: !!data.overridden };
+      return { reply: data.reply, hits: data.sources || [], handoff: data.handoff || null };
     }
 
     let reply = '';
     let hits = [];
-    let overridden = false;
+    let handoff = null;
     let finished = false;
 
     for await (const { event, data } of events(res.body, () => arm(SILENCE_MS, 'stalled'))) {
@@ -104,11 +104,11 @@ export async function ask(question, on = {}) {
       } else if (event === 'replace') {
         clearTimeout(warming);
         reply = data.text;
-        overridden = !!data.overridden;
         on.text?.(reply);
+      } else if (event === 'handoff') {
+        handoff = data.draft || null;
       } else if (event === 'done') {
         reply = data.reply ?? reply;
-        overridden = !!data.overridden;
         finished = true;
       } else if (event === 'error') {
         throw fail(data.message || 'Something went wrong on my side.', data.code);
@@ -117,7 +117,7 @@ export async function ask(question, on = {}) {
 
     if (!finished) throw fail('The answer was cut off.', 'cut_off');
     remember(question, reply);
-    return { reply, hits, overridden };
+    return { reply, hits, handoff };
   } catch (err) {
     if (!controller.signal.aborted) {
       throw err.code ? err : fail('The connection dropped before I finished.', 'network');

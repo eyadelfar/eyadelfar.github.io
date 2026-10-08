@@ -1,3 +1,4 @@
+import { CLIPS } from './voice.clips.js?v=d3821b49';
 import { VoiceClient } from './voice-client.js?v=94c24cef';
 
 const API = String(window.PORTFOLIO_API || 'https://portfolio-contact.eyadelfar.workers.dev').replace(/\/+$/, '');
@@ -21,6 +22,18 @@ const MIC = {
 
 let generation = 0;
 let current = null;
+let clip = null;
+
+function stopClip() {
+  try { clip?.pause(); } catch { /* already stopped */ }
+  clip = null;
+}
+
+function playClip(id) {
+  stopClip();
+  clip = new Audio(CLIPS[id].src);
+  clip.play().catch(() => {});
+}
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const randomId = () => Math.random().toString(36).slice(2, 10);
@@ -211,6 +224,7 @@ function finish(reason) {
   clearTimeout(call.deadline);
   clearTimeout(call.slowTimer);
   clearTimeout(call.giveUpTimer);
+  if (reason !== 'capped') stopClip();
   try { call.client?.endCall(); } catch { /* ignore */ }
   try { call.client?.disconnect(); } catch { /* ignore */ }
   stopStream(call.probe);
@@ -281,9 +295,11 @@ export async function startCall(ui) {
     watchThinking(status === 'thinking');
 
     if (status === 'idle') {
-      if (call.acknowledged || call.refused) finish(call.limited ? 'rate-limited' : call.acknowledged ? 'server-ended' : 'refused');
+      if (!call.acknowledged && !call.refused) return;
+      finish(call.limited ? 'rate-limited' : call.capped ? 'capped' : call.acknowledged ? 'server-ended' : 'refused');
       return;
     }
+    if (status !== 'listening' && !call.capped) stopClip();
 
     if (!call.acknowledged) {
       call.acknowledged = true;
@@ -301,12 +317,15 @@ export async function startCall(ui) {
     if (tuning.silenceThreshold && level > tuning.silenceThreshold) stayAwake();
   });
 
-  on('interimtranscript', (text) => ui.onInterim(text || ''));
+  on('interimtranscript', (text) => {
+    if (text && !call.capped) stopClip();
+    ui.onInterim(text || '');
+  });
   on('transcriptchange', (messages) => ui.onTranscript(messages || []));
   on('mutechange', (muted) => ui.onMute(!!muted));
 
   on('error', (message) => {
-    if (!message) return;
+    if (!message || /no response generated/i.test(String(message))) return;
     if (!call.acknowledged) call.refused = true;
     else ui.onNotice(String(message));
   });
@@ -320,6 +339,12 @@ export async function startCall(ui) {
     try { if (typeof raw === 'string') message = JSON.parse(raw); } catch { return; }
     if (message?.type === 'sources') ui.onSources(message.sources || []);
     if (message?.type === 'interrupted') ui.onInterrupted();
+    if (message?.type === 'handoff' && message.draft) ui.onHandoff(String(message.draft));
+    if (message?.type === 'clip' && CLIPS[message.id]) {
+      if (message.id === 'limit') call.capped = true;
+      playClip(message.id);
+      ui.onClip(CLIPS[message.id].text);
+    }
     if (message?.type === 'rate_limited') {
       call.limited = true;
       call.refused = true;

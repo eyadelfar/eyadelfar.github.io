@@ -1,16 +1,9 @@
-export function renderCitations(bubble, hits, overridden) {
+export function renderCitations(bubble, hits) {
   const sources = (hits || []).slice(0, 3);
   if (!sources.length) return;
 
   const wrap = document.createElement('div');
   wrap.className = 'ask-cites';
-
-  if (overridden) {
-    const note = document.createElement('div');
-    note.className = 'ask-note';
-    note.textContent = 'That contradicted his resume, so this shows the source text instead.';
-    wrap.appendChild(note);
-  }
 
   const label = document.createElement('span');
   label.className = 'ask-cites-label';

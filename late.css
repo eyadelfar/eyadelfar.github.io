@@ -300,13 +300,12 @@
     cursor: pointer;
   }
   .ask-retry:hover { background: rgba(var(--rgb-accent), .08); }
-  .ask-note {
-    width: 100%;
-    font-size: .7rem;
-    line-height: 1.45;
-    color: var(--orange);
-    margin-bottom: 4px;
+  .ask-handoff {
+    color: #fff;
+    background: var(--accent);
+    border-color: var(--accent);
   }
+  .ask-handoff:hover { background: var(--accent); filter: brightness(1.08); }
 
   .cut {
     display: block;
