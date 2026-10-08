@@ -246,7 +246,7 @@
     border: 1px solid var(--border);
     border-radius: 999px;
     cursor: pointer;
-    transition: transform .2s var(--ease), opacity .2s var(--ease), color .2s var(--ease), background-color .2s var(--ease), border-color .2s var(--ease);
+    transition: transform .2s var(--ease), box-shadow .2s var(--ease), color .2s var(--ease), background-color .2s var(--ease), border-color .2s var(--ease), opacity .2s var(--ease);
   }
   .ask-cite:hover { border-color: var(--accent2); color: var(--accent2); }
   .ask-cite[aria-expanded="true"] {
@@ -363,7 +363,7 @@
     border: none;
     border-radius: 999px;
     cursor: pointer;
-    transition: transform .25s var(--ease), opacity .25s var(--ease), color .25s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease);
+    transition: transform .25s var(--ease), box-shadow .25s var(--ease), color .25s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease), opacity .25s var(--ease);
   }
   .ask-send:disabled { opacity: .5; cursor: not-allowed; }
   .ask-status {
@@ -539,7 +539,7 @@
     border: none;
     border-radius: 999px;
     cursor: pointer;
-    transition: transform .25s var(--ease), opacity .25s var(--ease), color .25s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease);
+    transition: transform .25s var(--ease), box-shadow .25s var(--ease), color .25s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease), opacity .25s var(--ease);
   }
   .ask-call:hover { filter: brightness(1.08); }
   .ask-call:disabled { opacity: .5; cursor: not-allowed; }

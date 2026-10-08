@@ -194,10 +194,10 @@ const SC_TEMPLATES = `
   <div id="tpl-cashflows">
     <div class="dash cf">
       <div class="dash-side">
-        <div class="dash-brand"><div class="dbm">B&amp;C</div><div><b>Baron &amp; Cabot</b><small style="color:rgba(255,255,255,.6)">Investment Calculator</small></div></div>
+        <div class="dash-brand"><div class="dbm">SP</div><div><b>Sample Property Co.</b><small style="color:rgba(255,255,255,.6)">Investment Calculator</small></div></div>
         <div class="dash-navhead">Property</div>
-        <div class="cf-field" style="margin-bottom:6px">Project <span class="v">Marina Vista</span></div>
-        <div class="cf-field" style="margin-bottom:6px">Unit <span class="v">B-1204</span></div>
+        <div class="cf-field" style="margin-bottom:6px">Project <span class="v">Sample Tower</span></div>
+        <div class="cf-field" style="margin-bottom:6px">Unit <span class="v">12-04</span></div>
         <div class="dash-navhead">Financial Inputs</div>
         <div style="display:grid;gap:6px">
           <div class="cf-field">LTV <span class="v">65%</span></div>
@@ -210,33 +210,33 @@ const SC_TEMPLATES = `
       </div>
       <div class="dash-main">
         <div class="dash-topbar">
-          <div><div style="font-size:.95rem;font-weight:700">Marina Vista &middot; Unit B-1204</div></div>
+          <div><div style="font-size:.95rem;font-weight:700">Sample Tower &middot; Unit 12-04</div></div>
           <span style="margin-left:auto;display:flex;gap:6px">
-            <span class="cbtn">Brochure</span><span class="cbtn">Fact Sheet</span><span class="cbadge">GBP</span>
+            <span class="cbtn">Brochure</span><span class="cbtn">Fact Sheet</span><span class="cbadge">Demo data</span>
           </span>
         </div>
         <div class="dash-kpis">
           <div class="ccard"><div class="ck-label">5yr ROI</div><div class="ck-val pos">+62.4%</div></div>
           <div class="ccard"><div class="ck-label">10yr ROI</div><div class="ck-val pos">+148%</div></div>
-          <div class="ccard"><div class="ck-label">Net / mo</div><div class="ck-val neg">-&#163;340</div></div>
-          <div class="ccard"><div class="ck-label">Equity In</div><div class="ck-val">&#163;182k</div></div>
+          <div class="ccard"><div class="ck-label">Net / mo</div><div class="ck-val neg">-$340</div></div>
+          <div class="ccard"><div class="ck-label">Equity In</div><div class="ck-val">$182k</div></div>
         </div>
         <div class="dash-row" style="grid-template-columns:1fr 1fr 1fr">
           <div class="ccard" style="padding:0;overflow:hidden">
             <div class="ctitle">Exchange</div>
-            <table><tr><td>Deposit</td><td class="r neg">-&#163;105,000</td></tr><tr><td>Fees</td><td class="r neg">-&#163;6,300</td></tr><tr style="background:#f1f5f9"><td><b>Total</b></td><td class="r neg"><b>-&#163;111,300</b></td></tr></table>
+            <table><tr><td>Deposit</td><td class="r neg">-$105,000</td></tr><tr><td>Fees</td><td class="r neg">-$6,300</td></tr><tr style="background:#f1f5f9"><td><b>Total</b></td><td class="r neg"><b>-$111,300</b></td></tr></table>
           </div>
           <div class="ccard" style="padding:0;overflow:hidden">
             <div class="ctitle">Completion</div>
-            <table><tr><td>Balance</td><td class="r neg">-&#163;245,000</td></tr><tr><td>Mortgage</td><td class="r pos">+&#163;195,000</td></tr><tr style="background:#f1f5f9"><td><b>Total</b></td><td class="r neg"><b>-&#163;50,000</b></td></tr></table>
+            <table><tr><td>Balance</td><td class="r neg">-$245,000</td></tr><tr><td>Mortgage</td><td class="r pos">+$195,000</td></tr><tr style="background:#f1f5f9"><td><b>Total</b></td><td class="r neg"><b>-$50,000</b></td></tr></table>
           </div>
           <div class="ccard" style="padding:0;overflow:hidden">
             <div class="ctitle">Income (Yr 1)</div>
-            <table><tr><td>Rent</td><td class="r pos">+&#163;28,000</td></tr><tr><td>Mortgage</td><td class="r neg">-&#163;14,100</td></tr><tr style="background:#f1f5f9"><td><b>Net</b></td><td class="r pos"><b>+&#163;9,920</b></td></tr></table>
+            <table><tr><td>Rent</td><td class="r pos">+$28,000</td></tr><tr><td>Mortgage</td><td class="r neg">-$14,100</td></tr><tr style="background:#f1f5f9"><td><b>Net</b></td><td class="r pos"><b>+$9,920</b></td></tr></table>
           </div>
         </div>
         <div class="ccard" style="padding:0;overflow:hidden;margin-bottom:12px">
-          <div class="ctitle">10-Year Forecast <span style="font-weight:500;color:var(--cmut)">5yr: +&#163;114k &middot; 10yr: +&#163;271k</span></div>
+          <div class="ctitle">10-Year Forecast <span style="font-weight:500;color:var(--cmut)">5yr: +$114k &middot; 10yr: +$271k</span></div>
           <table>
             <tr class="fc-th"><td>Year</td><td class="r">Y1</td><td class="r">Y2</td><td class="r">Y3</td><td class="r">Y4</td><td class="r fc-hl">Y5</td><td class="r">Y6</td><td class="r">Y7</td><td class="r">Y8</td><td class="r">Y9</td><td class="r fc-hl">Y10</td></tr>
             <tr><td>Value</td><td class="r">287k</td><td class="r">301k</td><td class="r">316k</td><td class="r">332k</td><td class="r fc-hl">349k</td><td class="r">366k</td><td class="r">385k</td><td class="r">404k</td><td class="r">424k</td><td class="r fc-hl">445k</td></tr>
@@ -247,20 +247,20 @@ const SC_TEMPLATES = `
           <div class="ccard"><div class="ck-label" style="margin-bottom:8px">Equity vs Profit</div><div class="dash-bars" style="height:74px"><i style="height:55%"></i><i class="pos" style="height:90%"></i><i style="height:100%;background:#64748b"></i></div></div>
           <div class="ccard"><div class="ck-label" style="margin-bottom:8px">Monthly Net Cash</div><div class="dash-bars" style="height:74px"><i class="neg" style="height:30%"></i><i class="neg" style="height:14%"></i><i class="pos" style="height:20%"></i><i class="pos" style="height:45%"></i><i class="pos" style="height:70%"></i><i class="pos" style="height:100%"></i></div></div>
           <div class="ccard"><div class="ck-label" style="margin-bottom:8px">Capital Growth</div>
-            <svg viewBox="0 0 120 60" style="width:100%;height:74px"><defs><linearGradient id="cfg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4af37" stop-opacity=".5"/><stop offset="1" stop-color="#d4af37" stop-opacity="0"/></linearGradient></defs><path d="M0,52 L24,44 L48,38 L72,28 L96,16 L120,6 L120,60 L0,60 Z" fill="url(#cfg)"/><path d="M0,52 L24,44 L48,38 L72,28 L96,16 L120,6" fill="none" stroke="#d4af37" stroke-width="2"/></svg>
+            <svg viewBox="0 0 120 60" style="width:100%;height:74px"><defs><linearGradient id="cfg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366f1" stop-opacity=".5"/><stop offset="1" stop-color="#6366f1" stop-opacity="0"/></linearGradient></defs><path d="M0,52 L24,44 L48,38 L72,28 L96,16 L120,6 L120,60 L0,60 Z" fill="url(#cfg)"/><path d="M0,52 L24,44 L48,38 L72,28 L96,16 L120,6" fill="none" stroke="#d4af37" stroke-width="2"/></svg>
           </div>
         </div>
       </div>
     </div>
     <div class="readme" style="margin-top:20px">
-      <p style="text-align:center;color:var(--text2)">Property investment cashflow visualization &middot; CSV import &middot; real-time ROI, forecast &amp; disposal modeling across GBP / AED / THB. <strong style="color:var(--accent2)">Next.js 16 &middot; React 19 &middot; tRPC &middot; Drizzle ORM &middot; Recharts</strong></p>
+      <p style="text-align:center;color:var(--text2)">Property investment cashflow visualization &middot; CSV import &middot; real-time ROI, forecast and disposal modelling, multi-currency.</p>
     </div>
   </div>
 
   <div id="tpl-cashflowauto">
     <div class="cf" style="border-radius:14px;padding:24px;border:1px solid var(--cbord)">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
-        <b style="font-size:1rem;color:var(--ctext)">Monthly Cash Statement &rarr; structured data</b><span class="cbadge" style="margin-left:auto">Python automation</span>
+        <b style="font-size:1rem;color:var(--ctext)">Monthly statement workbook &rarr; structured data</b><span class="cbadge" style="margin-left:auto">Demo data</span>
       </div>
       <div class="cfa-flow">
         <div class="cfa-node"><div class="ic" style="background:#16a34a;color:#fff">XLS</div><b>Workbook</b><span>multi-sheet .xlsx</span></div>
@@ -272,16 +272,15 @@ const SC_TEMPLATES = `
       <div class="ccard" style="padding:0;overflow:hidden">
         <div class="ctitle">Extracted fields <span style="font-weight:500;color:var(--cmut)">confidence</span></div>
         <table>
-          <tr><td>Opening Balance</td><td class="r">&#163;1,284,500</td><td class="r pos">98%</td></tr>
-          <tr><td>Total Inflows</td><td class="r pos">+&#163;642,100</td><td class="r pos">96%</td></tr>
-          <tr><td>Total Outflows</td><td class="r neg">-&#163;511,380</td><td class="r pos">95%</td></tr>
-          <tr><td>"Misc. Recievables"</td><td class="r">&#163;18,200</td><td class="r" style="color:var(--cgold)">81% &middot; fuzzy</td></tr>
-          <tr style="background:#f1f5f9"><td><b>Closing Balance</b></td><td class="r pos"><b>+&#163;1,415,220</b></td><td class="r pos"><b>99%</b></td></tr>
+          <tr><td>Opening Balance</td><td class="r">$1,284,500</td><td class="r pos">98%</td></tr>
+          <tr><td>Total Inflows</td><td class="r pos">+$642,100</td><td class="r pos">96%</td></tr>
+          <tr><td>Total Outflows</td><td class="r neg">-$511,380</td><td class="r pos">95%</td></tr>
+          <tr><td>"Misc. Recievables"</td><td class="r">$18,200</td><td class="r" style="color:var(--cgold)">81% &middot; fuzzy</td></tr>
+          <tr style="background:#f1f5f9"><td><b>Closing Balance</b></td><td class="r pos"><b>+$1,415,220</b></td><td class="r pos"><b>99%</b></td></tr>
         </table>
       </div>
       <p style="margin-top:16px;color:var(--cmut);font-size:.8rem">Fuzzy field matching tolerates renamed, misspelled and reordered columns across months, so finance never re-maps a template by hand. Cleaned output feeds the Cashflows App dashboards.</p>
     </div>
-    <div class="readme" style="margin-top:18px"><p style="text-align:center;color:var(--text2)"><strong style="color:var(--accent2)">Python &middot; openpyxl &middot; RapidFuzz</strong></p></div>
   </div>
 
   <div id="tpl-attendance">
@@ -315,7 +314,7 @@ const SC_TEMPLATES = `
   const SHOWCASES = {
     keepquill:    { title:'KeepQuill',                  tag:'AI-Powered Memory Book Generator', color:'#D4A574' },
     favisra:      { title:'Favisra',                    tag:'Self-Hosted KPI Dashboard Platform', color:'#38bdf8' },
-    cashflows:    { title:'Cashflows App',              tag:'Baron & Cabot · Investment Calculator', color:'#d4af37' },
+    cashflows:    { title:'Cashflows App',              tag:'Investment Calculator · demo data', color:'#6366f1' },
     cashflowauto: { title:'Cashflow Automation',        tag:'Excel → structured data', color:'#16a34a' },
     attendance:   { title:'One-Shot Attendance System', tag:'Graduation Thesis · Face Recognition', color:'#f472b6' },
     creativity:   { title:'Creativity Assessment System', tag:'ResNet + LLM evaluator · 6 dimensions', color:'#22d3ee' },

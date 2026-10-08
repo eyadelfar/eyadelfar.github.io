@@ -13,26 +13,62 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal, .reveal-scale, .stagger').forEach((el) => revealObserver.observe(el));
 
-if (hero) {
-  new IntersectionObserver(([entry]) => {
-    const past = !entry.isIntersecting;
-    nav.classList.toggle('scrolled', past);
-    if (fabDock) fabDock.classList.toggle('show', past);
-  }, { rootMargin: '-72px 0px 0px 0px' }).observe(hero);
-}
-
+const NAV_H = nav.offsetHeight;
 const links = new Map();
 document.querySelectorAll('nav .nav-links a').forEach((a) => links.set(a.getAttribute('href').slice(1), a));
+const sections = [...document.querySelectorAll('section[id]')];
 
-const spy = new IntersectionObserver((entries) => {
-  for (const entry of entries) {
-    if (!entry.isIntersecting) continue;
-    links.forEach((a) => a.classList.remove('active'));
-    links.get(entry.target.id)?.classList.add('active');
+let active = null;
+let pinned = null;
+let queued = false;
+
+// Reads first, then writes: one layout per frame at most.
+function update() {
+  queued = false;
+  const overHero = hero ? hero.getBoundingClientRect().bottom > NAV_H : false;
+  const state = window.scrollY < 8 ? 'top' : overHero ? 'hero' : 'page';
+
+  let current = null;
+  if (pinned) current = pinned;
+  else if (state === 'page') {
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= NAV_H + 96) current = section.id;
+    }
   }
-}, { rootMargin: '-45% 0px -50% 0px' });
 
-document.querySelectorAll('section[id]').forEach((section) => spy.observe(section));
+  if (nav.dataset.state !== state) {
+    nav.dataset.state = state;
+    if (fabDock) fabDock.classList.toggle('show', state === 'page');
+  }
+  if (current === active) return;
+  links.get(active)?.classList.remove('active');
+  links.get(current)?.classList.add('active');
+  active = current;
+}
+
+window.addEventListener('scroll', () => {
+  if (queued) return;
+  queued = true;
+  requestAnimationFrame(update);
+}, { passive: true });
+
+// A click on a link scrolls through other sections. Hold the highlight on the target.
+let unpin = null;
+links.forEach((link, id) => link.addEventListener('click', () => {
+  pinned = id;
+  clearTimeout(unpin);
+  unpin = setTimeout(() => { pinned = null; update(); }, 900);
+  update();
+}));
+window.addEventListener('scrollend', () => {
+  if (!pinned) return;
+  clearTimeout(unpin);
+  pinned = null;
+  update();
+});
+
+new ResizeObserver(update).observe(document.body);
+update();
 
 function cardStep(track) {
   const card = track.querySelector('.card');

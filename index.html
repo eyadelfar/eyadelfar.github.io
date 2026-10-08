@@ -33,15 +33,15 @@
 <link rel="preload" href="fonts/geist.woff2?v=59943677" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/geist-mono.woff2?v=5ebb8929" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://portfolio-contact.eyadelfar.workers.dev" crossorigin>
-<link rel="stylesheet" href="styles.css?v=48e8c45c">
-<link rel="stylesheet" href="late.css?v=5c4bd96e" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="late.css?v=5c4bd96e"></noscript>
+<link rel="stylesheet" href="styles.css?v=7f6b0b3b">
+<link rel="stylesheet" href="late.css?v=c0e8a8a5" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="late.css?v=c0e8a8a5"></noscript>
 </head>
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-github" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.1.82-.26.82-.58 0-.28-.01-1.23-.02-2.23-3.01.55-3.79-.74-4.03-1.41-.14-.35-.72-1.41-1.23-1.7-.42-.22-1.02-.78-.02-.79.95-.02 1.62.87 1.85 1.23 1.08 1.82 2.81 1.31 3.5.99.1-.78.42-1.3.76-1.6-2.67-.3-5.46-1.34-5.46-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.54-1.53.12-3.18 0 0 1-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.04.13 3 .4c2.3-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.23 1.9 1.23 3.22 0 4.61-2.81 5.63-5.48 5.93.44.37.81 1.1.81 2.22 0 1.6-.02 2.9-.02 3.3 0 .32.22.69.82.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></symbol></svg>
 
-<nav id="nav">
+<nav id="nav" data-state="top">
   <div class="container">
     <a class="logo" href="#top">Eyad Elfar</a>
     <div class="nav-links">
@@ -49,6 +49,7 @@
       <a href="#work">Work</a>
       <a href="#ventures">Products</a>
       <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
       <a href="#stack">Stack</a>
     </div>
     <div class="nav-end">
@@ -140,20 +141,20 @@
       <p class="agent-stack">Llama 3.3 70B for chat &middot; Llama 4 Scout on calls &middot; hybrid retrieval
       (BGE embeddings + BM25, fused with RRF) &middot; Deepgram speech &middot; Cloudflare Workers +
       Durable Objects. <b>Built and hosted by me.</b></p>
+      <p class="agent-note">A quick illustration I built for this page, not a production system.
+      The systems below are where the real engineering is.</p>
     </aside>
 
   </div>
-</header>
 
-<div class="proof" aria-label="In numbers">
-  <div class="container proof-grid">
-    <div class="proof-item"><b>12</b><span>production AI systems, built as the only AI engineer</span></div>
-    <div class="proof-item"><b>500M+</b><span>payment transactions analysed</span></div>
-    <div class="proof-item"><b>10K+</b><span>students served by the AR learning engine</span></div>
-    <div class="proof-item"><b>20+</b><span>school deployments</span></div>
-    <div class="proof-item"><b>90%+</b><span>alignment with educator benchmarks</span></div>
-  </div>
-</div>
+    <div class="hero-proof" aria-label="In numbers">
+      <div class="proof-item"><b>12</b><span>production AI systems, built as the only AI engineer</span></div>
+      <div class="proof-item"><b>500M+</b><span>payment transactions analysed</span></div>
+      <div class="proof-item"><b>10K+</b><span>students served by the AR learning engine</span></div>
+      <div class="proof-item"><b>20+</b><span>school deployments</span></div>
+      <div class="proof-item"><b>90%+</b><span>alignment with educator benchmarks</span></div>
+    </div>
+</header>
 
 <main>
 <section id="build">
@@ -602,10 +603,10 @@
   window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
 </script>
 
-<script src="app.js?v=6698d0ca" defer></script>
-<script src="showcase.js?v=d0e4ab20" defer></script>
+<script src="app.js?v=a8aa71af" defer></script>
+<script src="showcase.js?v=67fbcd88" defer></script>
 <script src="analytics.js?v=816c7549" defer></script>
-<script src="hello.js?v=c7297fde" defer></script>
+<script src="hello.js?v=b8e8e676" defer></script>
 <script src="contact.js?v=2fb69cdc" defer></script>
 <script src="rate.js?v=2765520e" defer></script>
 <script type="module" src="assistant.js?v=0888f78f"></script>
