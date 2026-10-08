@@ -11,6 +11,8 @@
     import { makeHelpers } from './room.helpers.js?v=6cc096a3';
     import { DATA } from './room.data.js?v=e07bfef7';
     import { createCharacter } from './room.character.js?v=982cac20';
+    import { makeNav } from './room.nav.js?v=4ffffe99';
+    import { createWalker } from './room.walk.js?v=888c6c2f';
 
     await Promise.race([
       Promise.all(['700 20px Geist', '800 20px "Bricolage Grotesque"', '500 20px "Geist Mono"'].map((f) => document.fonts.load(f))),
@@ -1401,8 +1403,8 @@
     function updateControlsDisplay() {
       let parts = [];
       if (spectatorMode) {
-        parts = ['<b>W</b> <b>A</b> <b>S</b> <b>D</b> Move Character', '<b>Mouse</b> Orbit Camera', '<b>Scroll</b> Zoom',
-          '<b>V</b> Exit Spectator'
+        parts = ['<b>Click</b> Walk there', '<b>Drag</b> Look', '<b>W</b> <b>A</b> <b>S</b> <b>D</b> Move', '<b>Shift</b> Jog',
+          '<b>M</b> Map', '<b>V</b> First person'
         ];
       } else if (typingMode) {
         parts = ['Type command', '<b>Enter</b> Submit', '<b>Esc</b> Exit Console'];
@@ -1413,7 +1415,7 @@
         }
         parts.push('<b>F</b> Stand');
       } else {
-        parts = ['<b>W</b> <b>A</b> <b>S</b> <b>D</b> Move', '<b>Mouse</b> Look', '<b>Scroll</b> Zoom'];
+        parts = ['<b>W</b> <b>A</b> <b>S</b> <b>D</b> Move', '<b>Shift</b> Jog', '<b>Mouse</b> Look'];
         if (currentHit) {
           const ud = currentHit.object.userData;
           if (ud.interact === 'chair') parts.push('<b>E</b> Sit');
@@ -1429,14 +1431,14 @@
           const distToMonitor = camera.position.distanceTo(_monProbe);
           if (distToMonitor < 3.2 && !pcBooted) parts.push('<b>E</b> Boot PC');
         }
-        parts.push('<b>V</b> Spectator');
+        parts.push('<b>V</b> Third person');
       }
       const html = parts.join(' · ');
       if (html !== _lastControls) { controlsEl.innerHTML = html; _lastControls = html; }
     }
 
     function triggerLockProcess() {
-      if (isTouch || guideBusy) return;
+      if (isTouch || guideBusy || spectatorMode) return;
       if (!mousePointerLockState && !uiOpen && entered) {
         const p = canvas.requestPointerLock();
         if (p && p.catch) p.catch(() => {});
@@ -1455,6 +1457,112 @@
       if (laserActive && mousePointerLockState) { forwardScreenClick(laserUV); return; }
       triggerLockProcess();
     });
+    const _pointer = new THREE.Vector2();
+    const _aim = new THREE.Vector3();
+    const goMarker = new THREE.Mesh(
+      new THREE.RingGeometry(0.16, 0.22, 40),
+      new THREE.MeshBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0, depthWrite: false }),
+    );
+    goMarker.rotation.x = -Math.PI / 2;
+    goMarker.position.y = 0.03;
+    goMarker.visible = false;
+    scene.add(goMarker);
+
+    function underPointer(clientX, clientY) {
+      _pointer.set((clientX / window.innerWidth) * 2 - 1, -(clientY / window.innerHeight) * 2 + 1);
+      raycaster.setFromCamera(_pointer, camera);
+      const hit = raycaster.intersectObjects(interactables, false)[0];
+      return hit && hit.distance < 40 ? hit.object : null;
+    }
+
+    function markGoal(x, z) {
+      goMarker.position.set(x, 0.03, z);
+      goMarker.material.opacity = 0.9;
+      goMarker.scale.setScalar(1);
+      goMarker.visible = true;
+    }
+
+    /* Where to stand to use a thing, worked out from the thing itself. */
+    function approachFor(object) {
+      if (object.userData.interact === 'chair' || object.userData.interact === 'monitor') return { stand: places.desk.stand, at: places.desk.at };
+      object.getWorldPosition(_aim);
+      const at = [_aim.x, _aim.z];
+      const nearest = Object.values(places).find((place) => Math.hypot(place.at[0] - at[0], place.at[1] - at[1]) < 0.6);
+      if (nearest) return nearest;
+      object.getWorldDirection(_aim);
+      const length = Math.hypot(_aim.x, _aim.z) || 1;
+      const stand = standPoint({ at, normal: [_aim.x / length, _aim.z / length] });
+      return stand ? { stand, at } : null;
+    }
+
+    async function pointAndGo(clientX, clientY) {
+      if (!spectatorMode || uiOpen || guideBusy) return;
+      const object = underPointer(clientX, clientY);
+      if (object) {
+        const approach = approachFor(object);
+        if (!approach) return;
+        closePanel();
+        markGoal(approach.stand[0], approach.stand[1]);
+        if (!await walker.to(approach.stand, { speed: WALK_SPEED })) return;
+        await walker.face(approach.at[0], approach.at[1]);
+        interact(object.userData);
+        return;
+      }
+      if (raycaster.ray.direction.y > -0.02) return;
+      const t = -raycaster.ray.origin.y / raycaster.ray.direction.y;
+      const x = raycaster.ray.origin.x + raycaster.ray.direction.x * t;
+      const z = raycaster.ray.origin.z + raycaster.ray.direction.z * t;
+      const path = nav.path([mickeyModel.position.x, mickeyModel.position.z], [x, z]);
+      if (!path || !path.length) return;
+      const goal = path[path.length - 1];
+      markGoal(goal[0], goal[1]);
+      walker.to(goal, { speed: pressedKeys['ShiftLeft'] || pressedKeys['ShiftRight'] ? RUN_SPEED : WALK_SPEED });
+    }
+
+    let drag = null;
+    let hoverAt = 0;
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!spectatorMode || uiOpen || e.pointerType === 'touch' || e.button !== 0) return;
+      drag = { x: e.clientX, y: e.clientY, moved: 0 };
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!spectatorMode || uiOpen || e.pointerType === 'touch') return;
+      if (drag) {
+        const dx = e.clientX - drag.x;
+        const dy = e.clientY - drag.y;
+        drag.x = e.clientX;
+        drag.y = e.clientY;
+        drag.moved += Math.abs(dx) + Math.abs(dy);
+        if (drag.moved > 5) {
+          spectatorAzimuth -= dx * 0.005;
+          spectatorElevation = THREE.MathUtils.clamp(spectatorElevation + dy * 0.005, -0.1, 1.3);
+          canvas.style.cursor = 'grabbing';
+        }
+        return;
+      }
+      // Looking up what is under the pointer on every pixel of movement would be wasteful.
+      if (e.timeStamp - hoverAt < 70) return;
+      hoverAt = e.timeStamp;
+      const object = guideBusy ? null : underPointer(e.clientX, e.clientY);
+      canvas.style.cursor = object ? 'pointer' : '';
+      if (object) {
+        setPrompt(String(object.userData.prompt || '').replace(/Press <b>E<\/b> to/, 'Click to'));
+        promptEl.classList.add('active');
+      } else {
+        promptEl.classList.remove('active');
+      }
+    });
+    const endDrag = (e) => {
+      if (!drag) return;
+      const moved = drag.moved;
+      drag = null;
+      canvas.style.cursor = '';
+      if (moved <= 5 && e.type === 'pointerup') pointAndGo(e.clientX, e.clientY);
+    };
+    canvas.addEventListener('pointerup', endDrag);
+    canvas.addEventListener('pointercancel', endDrag);
+
     let justLocked = false;
     document.addEventListener('pointerlockchange', () => {
       mousePointerLockState = document.pointerLockElement === canvas;
@@ -1510,6 +1618,11 @@
     const tellHooks = (what) => inputHooks.some((hook) => hook(what));
     const MOVE_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD']);
     const inField = (e) => e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+
+    inputHooks.push((what) => {
+      if (what === 'move') walker.stop();
+      return false;
+    });
 
     window.addEventListener('keydown', (e) => {
       if (inField(e)) return;
@@ -1589,7 +1702,13 @@
       else triggerContextInteraction();
     }
     canvas.addEventListener('touchend', e => {
-      for (const t of e.changedTouches) if (t.identifier === lookId) { lookId = null; if (lookMoved < 12) lookTap(); }
+      for (const t of e.changedTouches) {
+        if (t.identifier !== lookId) continue;
+        lookId = null;
+        if (lookMoved >= 12) continue;
+        if (spectatorMode) pointAndGo(t.clientX, t.clientY);
+        else lookTap();
+      }
     });
     document.getElementById('tBtnInteract').addEventListener('click', () => { if (!uiOpen) lookTap(); });
     document.getElementById('tBtnView').addEventListener('click', () => toggleSpectatorMode());
@@ -1598,6 +1717,8 @@
     const exitBtn = document.getElementById('exitRoom');
     if (exitBtn) exitBtn.addEventListener('click', exitRoom);
 
+    // The room opens in third person, as soon as there is a character to show.
+    let wantThirdPerson = true;
     function toggleSpectatorMode() {
       if (uiOpen) return;
       if (isSeatedState && !spectatorMode) {
@@ -1613,10 +1734,10 @@
         spectatorElevation = 0.45;
         spectatorDistance = 3.8;
 
-        triggerLockProcess();
+        if (document.pointerLockElement) document.exitPointerLock();
         reticle.classList.add('hidden');
         promptEl.classList.remove('active');
-        showNotice('Spectator Mode · Mouse orbits the camera around Eyad · Scroll zooms · WASD walks · V to return.');
+        showNotice(isTouch ? 'Tap the floor to walk there · drag to look around.' : 'Click the floor to walk there · drag to look around · V for first person.');
       } else {
         mickeyModel.visible = false;
         camera.position.set(mickeyModel.position.x, 1.68, mickeyModel.position.z);
@@ -1624,9 +1745,11 @@
         cameraPitch = 0;
         synchronizeTransformationRotation();
         reticle.classList.remove('hidden');
-        showNotice('First-person view restored.');
+        canvas.style.cursor = '';
+        showNotice('First person. Click to look around · V to step back out.');
         triggerLockProcess();
       }
+      wantThirdPerson = false;
       updateControlsDisplay();
     }
 
@@ -1715,7 +1838,12 @@
 
     function triggerContextInteraction() {
       if (!currentHit || spectatorMode) return;
-      const node = currentHit.object.userData;
+      interact(currentHit.object.userData);
+    }
+
+    function interact(node) {
+      // The workstation is used from the chair, through your own eyes.
+      if ((node.interact === 'chair' || node.interact === 'monitor') && spectatorMode) toggleSpectatorMode();
       if (node.interact === 'chair') executeSitSequence();
       if (node.interact === 'monitor') {
         if (!pcBooted) bootWorkstationSystem();
@@ -1761,7 +1889,7 @@
     function refreshTargetRayIntersections() {
       if (spectatorMode || uiOpen) {
         currentHit = null;
-        promptEl.classList.remove('active');
+        if (uiOpen || isTouch) promptEl.classList.remove('active');
         reticle.classList.add('hidden');
         return;
       }
@@ -1897,6 +2025,8 @@
     const _right = new THREE.Vector3();
     const frameHooks = [];
     let agentDrive = null;
+    let nav = null;
+    let walker = { busy: false, stop() {}, route: () => [] };
     // A walk and a jog. The walk clip covers 1.35 m a second at its natural rate.
     const WALK_SPEED = 1.6;
     const RUN_SPEED = 3.1;
@@ -2340,8 +2470,14 @@
       const delta = Math.min(clock.getDelta(), 0.04);
       const elapsed = clock.getElapsedTime();
 
+      if (wantThirdPerson && entered && characterReady && !spectatorMode && !isSeatedState && !uiOpen) toggleSpectatorMode();
       runSpatialLocomotion(delta, elapsed);
       for (let i = 0; i < frameHooks.length; i++) frameHooks[i](delta, elapsed);
+      if (goMarker.visible) {
+        goMarker.material.opacity = Math.max(0, goMarker.material.opacity - delta * (walker.busy ? 0.25 : 2.5));
+        goMarker.scale.setScalar(1 + (0.9 - goMarker.material.opacity) * 0.35);
+        if (goMarker.material.opacity <= 0.01) goMarker.visible = false;
+      }
 
       const charSpeed = Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
       // Shadows are redrawn while the avatar walks, and a few times a second otherwise.
@@ -2364,7 +2500,7 @@
           THREE.MathUtils.clamp(camX, -6.75, 6.75),
           THREE.MathUtils.clamp(camY, 0.45, 4.85),
           THREE.MathUtils.clamp(camZ, -4.75, 12.65),
-        ), 0.15);
+        ), 1 - Math.exp(-delta * 10));
         camera.lookAt(_specLook.set(cx, focusY, cz));
         cameraYaw = Math.PI - spectatorAzimuth;
         cameraPitch = -spectatorElevation;
@@ -2461,7 +2597,7 @@
     });
 
     function updateStateIndicators() {
-      if (spectatorMode) modeText.textContent = "Spectator Cinematic Mode";
+      if (spectatorMode) modeText.textContent = "Third person";
       else if (typingMode) modeText.textContent = "Writing Shell Queries";
       else if (isSeatedState) modeText.textContent = "Seated at the Workstation";
       else modeText.textContent = "Exploring the Playground";
@@ -2532,6 +2668,7 @@
     const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const RoomAPI = {
       places,
+      obstacles: boundingObstacles,
       touch: isTouch,
       viable: verifySpatialViability,
       state() {
@@ -2604,5 +2741,32 @@
       }),
       onInput(hook) { inputHooks.push(hook); },
     };
-    import('./room.agent.js?v=839b120a').then((agent) => agent.start(RoomAPI)).catch((err) => console.warn('[room] the guide did not load:', err));
+    nav = makeNav(verifySpatialViability);
+    walker = createWalker(RoomAPI, nav);
+    RoomAPI.nav = nav;
+    RoomAPI.walker = walker;
+    RoomAPI.walkTo = (point) => {
+      if (isSeatedState || uiOpen) return Promise.resolve(false);
+      if (!spectatorMode) toggleSpectatorMode();
+      const path = nav.path([mickeyModel.position.x, mickeyModel.position.z], point);
+      if (!path || !path.length) return Promise.resolve(false);
+      const goal = path[path.length - 1];
+      markGoal(goal[0], goal[1]);
+      return walker.to(goal, { speed: WALK_SPEED });
+    };
+    RoomAPI.goTo = async (id) => {
+      const place = places[id];
+      if (!place || isSeatedState || uiOpen) return false;
+      if (!spectatorMode) toggleSpectatorMode();
+      markGoal(place.stand[0], place.stand[1]);
+      if (!await walker.to(place.stand, { speed: WALK_SPEED })) return false;
+      await walker.face(place.at[0], place.at[1]);
+      place.open?.();
+      return true;
+    };
+    // Each of these is an extra. The room works without any of them, so none may hold it up.
+    const extra = (loading, name) => loading.then((module) => module.start(RoomAPI)).catch((err) => console.warn(`[room] the ${name} did not load:`, err));
+    extra(import('./room.agent.js?v=f700924a'), 'guide');
+    extra(import('./room.map.js?v=36fcd29a'), 'map');
+    extra(import('./room.sound.js?v=d508d1be'), 'sound');
 

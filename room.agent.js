@@ -1,12 +1,9 @@
 import { isStop, parse } from './room.intents.js?v=84827262';
-import { makeNav } from './room.nav.js?v=b4344da9';
 import * as TOOLS from './room.tools.js?v=1619a99d';
 
 const API = String(window.PORTFOLIO_API || '').replace(/\/+$/, '');
 const STORE = 'pf-room-guide';
 const WALK_SPEED = 1.5;
-const ARRIVE = 0.12;
-const WALK_LIMIT_S = 45;
 const DWELL_MS = 3600;
 const REQUEST_MS = 20000;
 const MIN_HOLD_MS = 280;
@@ -21,15 +18,6 @@ const NO_MIC = 'I could not use the microphone. You can type instead.';
 const MIC_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>';
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const lerp = (a, b, t) => a + (b - a) * Math.min(1, t);
-function turnTo(from, to, t) {
-  let diff = (to - from) % (Math.PI * 2);
-  if (diff > Math.PI) diff -= Math.PI * 2;
-  if (diff < -Math.PI) diff += Math.PI * 2;
-  return { next: from + diff * Math.min(1, t), left: Math.abs(diff) };
-}
-const facing = (x, z, tx, tz) => Math.atan2(-(tx - x), -(tz - z));
-
 function describe(action) {
   const place = TOOLS.PLACES[action.place]?.label;
   switch (action.tool) {
@@ -46,12 +34,10 @@ function describe(action) {
 }
 
 export function start(room) {
-  const nav = makeNav(room.viable);
+  const { nav, walker } = room;
   const speech = { supported: false, module: null };
   let on = false;
   let run = null;
-  let walk = null;
-  let settle = null;
   let voice = null;
   let recording = null;
   let history = [];
@@ -110,98 +96,15 @@ export function start(room) {
   }
 
   /* ---------- moving the avatar ---------- */
-  room.onFrame((dt) => {
-    if (walk) stepWalk(dt);
-    else if (settle) stepSettle(dt);
-  });
-
-  function stepWalk(dt) {
-    const s = room.state();
-    const [tx, tz] = walk.points[walk.index];
-    const dx = tx - s.x;
-    const dz = tz - s.z;
-    const dist = Math.hypot(dx, dz);
-    const last = walk.index === walk.points.length - 1;
-
-    if (dist < (last ? ARRIVE : 0.32)) {
-      if (last) return endWalk(true);
-      walk.index++;
-      return;
-    }
-    room.drive({ x: dx / dist, z: dz / dist, speed: last ? Math.max(0.6, Math.min(WALK_SPEED, dist * 2.4)) : WALK_SPEED });
-
-    const orbit = room.orbit({});
-    room.orbit({
-      azimuth: turnTo(orbit.azimuth, Math.PI - s.yaw, dt * 2.4).next,
-      elevation: lerp(orbit.elevation, 0.36, dt * 2),
-      distance: lerp(orbit.distance, 4.1, dt * 2),
-    });
-
-    walk.clock += dt;
-    if (walk.clock - walk.checked > 1.1) {
-      const moved = Math.hypot(s.x - walk.mark[0], s.z - walk.mark[1]);
-      walk.mark = [s.x, s.z];
-      walk.checked = walk.clock;
-      if (moved < 0.12) {
-        // Stuck on something the map did not know about: plan again from here, once.
-        const again = walk.replanned ? null : nav.path([s.x, s.z], walk.points[walk.points.length - 1]);
-        if (!again) return endWalk(false);
-        walk.points = again;
-        walk.index = 0;
-        walk.replanned = true;
-      }
-    }
-    if (walk.clock > WALK_LIMIT_S) endWalk(false);
-  }
-
-  function endWalk(arrived) {
-    const done = walk;
-    walk = null;
-    room.drive(null);
-    done?.resolve(arrived);
-  }
-
-  function walkTo(point) {
-    const s = room.state();
-    const points = nav.path([s.x, s.z], point);
-    if (!points || !points.length) return Promise.resolve(Math.hypot(s.x - point[0], s.z - point[1]) < 0.4);
-    return new Promise((resolve) => {
-      walk = { points, index: 0, resolve, clock: 0, checked: 0, mark: [s.x, s.z], replanned: false };
-    });
-  }
-
-  /* On arrival the camera swings round to look at the exhibit over the avatar's
-     shoulder, and the avatar turns to the visitor, the way a guide would. */
-  function stepSettle(dt) {
-    const s = room.state();
-    const azimuth = Math.PI - settle.yaw + 0.42;
-    const turn = turnTo(s.yaw, -azimuth, dt * 7);
-    room.turn(turn.next);
-    const orbit = room.orbit({});
-    room.orbit({
-      azimuth: turnTo(orbit.azimuth, azimuth, dt * 3).next,
-      elevation: lerp(orbit.elevation, 0.22, dt * 3),
-      distance: lerp(orbit.distance, 2.8, dt * 3),
-    });
-    settle.clock += dt;
-    if ((turn.left < 0.04 && settle.clock > 0.7) || settle.clock > 1.6) {
-      const done = settle;
-      settle = null;
-      done.resolve();
-    }
-  }
-  const face = (yaw) => new Promise((resolve) => { settle = { yaw, clock: 0, resolve }; });
-
   async function goTo(id, job) {
     const place = room.places[id];
     if (!place) return false;
     room.closeAll();
     if (room.state().seated) room.stand();
     if (!room.thirdPerson(true)) return false;
-    await walkTo(place.stand);
+    await walker.to(place.stand, { speed: WALK_SPEED, follow: true });
     if (job.cancelled) return false;
-    const s = room.state();
-    await face(facing(s.x, s.z, place.at[0], place.at[1]));
+    await walker.present(place.at[0], place.at[1]);
     return !job.cancelled;
   }
 
@@ -294,8 +197,7 @@ export function start(room) {
     run.cancelled = true;
     run.abort?.abort();
     run = null;
-    if (walk) endWalk(false);
-    if (settle) { const done = settle; settle = null; done.resolve(); }
+    walker.stop();
     try { voice?.pause(); } catch { /* nothing playing */ }
     voice = null;
     room.speaking(false);
@@ -504,7 +406,7 @@ export function start(room) {
     if (on) setOn(true, { greet: true });
   }, 200);
 
-  window.room = {
+  window.room = Object.assign(window.room || {}, {
     state: () => ({ ...snapshot(), guide: on, busy: Boolean(run) }),
     places: Object.keys(room.places),
     tools: TOOLS.TOOLS.map((tool) => `${tool.name}${tool.arg ? `(${tool.arg})` : '()'}  ${tool.does}`),
@@ -517,5 +419,5 @@ export function start(room) {
       if (!on) setOn(true);
       return request({ text: String(text) });
     },
-  };
+  });
 }

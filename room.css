@@ -216,6 +216,51 @@
     display: flex;
     gap: 8px;
   }
+  /* A switch that is only an icon keeps the quiet look when it is on. */
+  .btn.btn-icon,
+  .btn.btn-icon[aria-pressed="true"] {
+    width: 38px;
+    padding: 0;
+    border-color: var(--hair);
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--ink);
+    box-shadow: none;
+  }
+  .btn.btn-icon:hover { background: rgba(255, 255, 255, 0.14); }
+  .btn-icon[aria-pressed="true"] .cross,
+  .btn-icon[aria-pressed="false"] .waves { display: none; }
+  .btn-icon[aria-pressed="false"] { color: var(--faint); }
+
+  .minimap {
+    position: fixed;
+    z-index: 25;
+    right: 20px;
+    bottom: 18px;
+    padding: 8px;
+    border-radius: var(--r-md);
+    border: 1px solid var(--hair);
+    background: var(--glass);
+    box-shadow: var(--lift);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
+  }
+  .minimap[hidden] { display: none; }
+  .minimap canvas { display: block; }
+  .minimap-label {
+    position: absolute;
+    transform: translate(-50%, -150%);
+    padding: 4px 9px;
+    border-radius: var(--r-sm);
+    background: #0c0e1a;
+    color: var(--ink);
+    font: 500 11.5px/1.2 Geist, sans-serif;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .minimap-label[hidden] { display: none; }
+  body.touch .minimap { right: 12px; bottom: auto; top: 64px; padding: 6px; }
+  body.touch.ui-open .minimap { display: none; }
+
   .btn .dot {
     width: 7px;
     height: 7px;

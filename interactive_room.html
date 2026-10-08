@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/geist.woff2?v=59943677" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/geist-mono.woff2?v=5ebb8929" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="room.css?v=a2b20405">
+<link rel="stylesheet" href="room.css?v=f8997261">
 <script type="importmap">
 {
   "imports": {
@@ -27,7 +27,7 @@
 }
 </script>
 <link rel="modulepreload" href="vendor/three.bundle.min.js?v=a12432dc">
-<link rel="modulepreload" href="room.js?v=3c6a7165">
+<link rel="modulepreload" href="room.js?v=51af6dbc">
 <link rel="preload" href="eyad.glb?v=0cca42dd" as="fetch" type="model/gltf-binary" crossorigin>
 </head>
 <body>
@@ -63,6 +63,7 @@
     </div>
     <div id="topbar-right">
       <div class="hud-actions">
+        <button type="button" class="btn btn-icon" id="soundToggle" aria-pressed="true" aria-label="Sound" title="Sound is on"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path class="waves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path class="cross" d="m16 9 6 6M22 9l-6 6"/></svg></button>
         <button type="button" class="btn" id="guideToggle" aria-pressed="false" title="Turn the guide on or off"><span class="dot"></span>Guide</button>
         <button type="button" class="btn" id="exitRoom" title="Back to the portfolio"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Portfolio</button>
       </div>
@@ -159,12 +160,12 @@
         <button id="enterBtn" class="primary-btn">Enter the room</button>
         <a class="btn" href="index.html">Back to the portfolio</a>
       </div>
-      <div class="entry-keys">WASD move · Mouse look · E interact · V third person · Esc leave</div>
-      <div id="mobile-warning">Best with a mouse and keyboard. On a phone, use the joystick and drag to look.</div>
+      <div class="entry-keys">Click to walk · Drag to look · WASD move · Shift jog · M map · V first person</div>
+      <div id="mobile-warning">On a phone: tap the floor to walk, drag to look around.</div>
     </div>
   </div>
 
-  <script type="module" src="room.js?v=3c6a7165"></script>
+  <script type="module" src="room.js?v=51af6dbc"></script>
   <script>
     window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
     window.PORTFOLIO_PAGE = 'room';
