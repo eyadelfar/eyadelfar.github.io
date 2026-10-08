@@ -48,7 +48,14 @@
   console.log('%c' + [greeting, browser, origin, loyalty].filter(Boolean).join('\n'), lead);
 
   if (room) {
-    console.log('%cYou are inspecting a 3D room built in three.js, every object placed in code.\n%ceyad.home()%c  back to the portfolio', body, code, dim);
+    console.log(
+      '%cYou are inspecting a 3D room built in three.js, every object placed in code. It has a guide, and the guide takes orders from here too:\n\n' +
+      '%croom.run("give me a tour")%c\n' +
+      '%croom.tools%c    what the guide can do\n' +
+      '%croom.places%c   where it can go\n' +
+      '%croom.route("stack")%c   the path it would walk\n' +
+      '%ceyad.home()%c   back to the portfolio',
+      body, code, dim, code, dim, code, dim, code, dim, code, dim);
     window.eyad = {
       home: function () { location.href = 'index.html'; return 'On the way.'; },
     };

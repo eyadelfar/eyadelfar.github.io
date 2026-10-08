@@ -12,6 +12,13 @@
   var submit = document.getElementById('contactSubmit');
   var rendered = Date.now();
 
+  // The room's guide hands a request over by leaving it here.
+  try {
+    var draft = sessionStorage.getItem('pf-draft');
+    if (draft && !form.elements.message.value) form.elements.message.value = draft;
+    sessionStorage.removeItem('pf-draft');
+  } catch (e) { /* private mode */ }
+
   function setStatus(message, kind) {
     statusEl.textContent = message;
     statusEl.className = 'contact-status' + (kind ? ' ' + kind : '');

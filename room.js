@@ -42,7 +42,9 @@
     const reticle = document.getElementById('reticle');
     const controlsEl = document.getElementById('controls');
 
-    window.closePanel = () => document.getElementById('panel').classList.remove('active');
+    let openPanelKey = null;
+    const panelEl = document.getElementById('panel');
+    window.closePanel = () => { panelEl.classList.remove('active'); openPanelKey = null; };
 
     function openSidePanel() {
       document.getElementById('panel').classList.add('active');
@@ -111,6 +113,7 @@
       document.getElementById('panelTitle').textContent = d.title;
       document.getElementById('panelBody').innerHTML = panelBanner(PANEL_VIZ[key] || 'shimmer', d.color, d.title) + d.html;
       openSidePanel();
+      openPanelKey = key;
       showNotice(`Displaying: ${d.title}`);
     }
 
@@ -133,7 +136,11 @@
         .replace(/<b>W<\/b> <b>A<\/b> <b>S<\/b> <b>D<\/b> ?Move\s*\w*/gi, 'Joystick to move')
         .replace(/·\s*·/g, '·').replace(/(^\s*·\s*)|(\s*·\s*$)/g, '').trim();
     }
-    function showNotice(message) {
+    let guideBusy = false;
+    let guideTyping = false;
+    function showNotice(message, fromGuide = false) {
+      // While the guide is acting it narrates in its own panel.
+      if (guideBusy && !fromGuide) return;
       noticeEl.textContent = touchify(message);
       noticeEl.classList.add('show');
       clearTimeout(noticeTimer);
@@ -411,7 +418,7 @@
     }
     createPlant(-6.4, 0, -4.5, 0.9);
     createPlant(5.8, 0, -4.6, 0.75);
-    createPlant(-6.4, 0, 7.6, 1.0);
+    createPlant(-6.5, 0, 12.5, 1.0);
     createPlant(6.4, 0, 11.8, 0.95);
 
     const deskGroup = new THREE.Group();
@@ -743,9 +750,9 @@
     buildWallBoard('impact', [0, 3.05, -4.98], 0);
     buildWallBoard('journey', [-6.98, 2.3, -1.5], Math.PI / 2);
     buildWallBoard('projects', [6.98, 2.3, -1.5], -Math.PI / 2);
-    buildWallBoard('stack', [-6.98, 2.3, 2.5], Math.PI / 2);
+    buildWallBoard('stack', [-6.98, 2.3, 3.8], Math.PI / 2);
     buildWallBoard('education', [4.2, 2.5, 12.86], Math.PI);
-    buildWallBoard('contact', [-4.2, 2.5, 12.86], Math.PI);
+    buildWallBoard('contact', [6.98, 2.5, 11.3], -Math.PI / 2);
 
     const whiteboardTex = roundedCanvasTexture((ctx, w, h) => {
       ctx.fillStyle = '#ffffff';
@@ -1354,7 +1361,7 @@
       { minX: 6.0, maxX: 7.0, minZ: 3.9, maxZ: 5.7 },
       { minX: -6.7, maxX: -6.0, minZ: -4.9, maxZ: -4.1 },
       { minX: 5.4, maxX: 6.2, minZ: -5.0, maxZ: -4.2 },
-      { minX: -6.8, maxX: -6.0, minZ: 7.2, maxZ: 8.0 },
+      { minX: -6.9, maxX: -6.1, minZ: 12.1, maxZ: 12.9 },
       { minX: 6.0, maxX: 6.8, minZ: 11.4, maxZ: 12.2 },
 
       { minX: 4.1, maxX: 5.5, minZ: -2.2, maxZ: -0.8 },
@@ -1370,7 +1377,7 @@
 
     function verifySpatialViability(targetX, targetZ) {
       const margin = 0.45;
-      if (targetX < -6.55 || targetX > 6.55 || targetZ < -5.55 || targetZ > 12.55) return false;
+      if (targetX < -6.55 || targetX > 6.55 || targetZ < -4.55 || targetZ > 12.55) return false;
       for (let i = 0; i < boundingObstacles.length; i++) {
         const b = boundingObstacles[i];
         if (targetX > b.minX - margin && targetX < b.maxX + margin && targetZ > b.minZ - margin && targetZ < b.maxZ + margin)
@@ -1401,6 +1408,7 @@
     let isSeatedState = false;
     let velocityX = 0;
     let velocityZ = 0;
+    // Heading, same convention as the camera. The model itself is built facing the other way.
     let characterYaw = 0;
     let spectatorMode = false;
     let spectatorDistance = 3.8;
@@ -1458,7 +1466,7 @@
     }
 
     function triggerLockProcess() {
-      if (isTouch) return;
+      if (isTouch || guideBusy) return;
       if (!mousePointerLockState && !uiOpen && entered) {
         const p = canvas.requestPointerLock();
         if (p && p.catch) p.catch(() => {});
@@ -1528,13 +1536,21 @@
     }
     window.exitRoom = exitRoom;
 
-    window.addEventListener('keydown', (e) => {
+    const inputHooks = [];
+    const tellHooks = (what) => inputHooks.some((hook) => hook(what));
+    const MOVE_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD']);
+    const inField = (e) => e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
 
+    window.addEventListener('keydown', (e) => {
+      if (inField(e)) return;
       if (uiOpen) {
         if (e.code === 'Escape') { e.preventDefault(); closeOverlays(); disarmExit(); }
         return;
       }
+      // While the guide is at the keyboard, any key takes it back.
+      if (guideTyping) { e.preventDefault(); tellHooks(e.code === 'Escape' ? 'escape' : 'move'); return; }
       if (typingMode) { executeTerminalInputPipeline(e); return; }
+      if (MOVE_KEYS.has(e.code)) tellHooks('move');
       pressedKeys[e.code] = true;
       if (e.code === 'KeyE') triggerContextInteraction();
       if (e.code === 'KeyF') { if (isSeatedState) executeStandSequence(); }
@@ -1544,7 +1560,8 @@
       if (e.code === 'KeyV') toggleSpectatorMode();
 
       if (e.code === 'Escape') {
-        closePanel();
+        if (tellHooks('escape')) return;
+        if (panelEl.classList.contains('active')) { closePanel(); disarmExit(); return; }
         handleEscExit();
       }
     });
@@ -1567,7 +1584,7 @@
       for (const t of e.changedTouches) if (t.identifier === joyId) { joyId = null; joyVec.x = 0; joyVec.y = 0; joyThumb.style.transform = ''; }
     }
     if (joyEl) {
-      joyEl.addEventListener('touchstart', e => { e.preventDefault(); joyId = e.changedTouches[0].identifier; joyUpdate(e); }, { passive: false });
+      joyEl.addEventListener('touchstart', e => { e.preventDefault(); tellHooks('move'); joyId = e.changedTouches[0].identifier; joyUpdate(e); }, { passive: false });
       joyEl.addEventListener('touchmove', e => { e.preventDefault(); joyUpdate(e); }, { passive: false });
       joyEl.addEventListener('touchend', joyEnd);
       joyEl.addEventListener('touchcancel', joyEnd);
@@ -1622,7 +1639,7 @@
         mickeyModel.visible = true;
         mickeyModel.position.set(camera.position.x, 0, camera.position.z);
         characterYaw = cameraYaw;
-        spectatorAzimuth = cameraYaw + Math.PI;
+        spectatorAzimuth = Math.PI - cameraYaw;
         spectatorElevation = 0.45;
         spectatorDistance = 3.8;
 
@@ -1746,9 +1763,13 @@
       }
       if (node.interact === 'aiAR') {
         arAdvance();
+        openPanel(node.key);
         showNotice('AR scorer → next sample drawing');
       }
-      if (node.interact === 'whiteboard') {
+      if (node.interact === 'whiteboard') openWhiteboard();
+    }
+
+    function openWhiteboard() {
         const panel = document.getElementById('panel');
         panel.style.setProperty('--accent2', '#4f46e5');
         document.getElementById('panelTitle').textContent = 'Production Architecture';
@@ -1760,7 +1781,7 @@
            <h3>Intelligence Layer</h3><p>A LangGraph, n8n, and MLflow platform covering meeting scores, call activity, team rankings, company benchmarks, and custom manager reports.</p>
            <span class="tag">Vertex AI</span><span class="tag">RAG</span><span class="tag">Cloud Run</span><span class="tag">LangGraph</span><span class="tag">MLflow</span><span class="tag">n8n</span>`;
         openSidePanel();
-      }
+        openPanelKey = 'whiteboard';
     }
 
     let currentHit = null;
@@ -1904,10 +1925,12 @@
     const _moveDir = new THREE.Vector3();
     const _forward = new THREE.Vector3();
     const _right = new THREE.Vector3();
+    const frameHooks = [];
+    let agentDrive = null;
     function runSpatialLocomotion(delta, elapsed) {
       if (isSeatedState || typingMode || uiOpen) return;
 
-      const targetSpeed = 3.5;
+      const targetSpeed = agentDrive ? agentDrive.speed : 3.5;
       const acceleration = 14.0;
       const deceleration = 10.0;
 
@@ -1927,6 +1950,7 @@
         moveDir.addScaledVector(forward, -joyVec.y);
         moveDir.addScaledVector(right, joyVec.x);
       }
+      if (agentDrive) moveDir.set(agentDrive.x, 0, agentDrive.z);
       inputMag = Math.min(moveDir.length(), 1.0);
 
       if (inputMag > 0.001) {
@@ -1935,7 +1959,7 @@
         const tvz = moveDir.z * targetSpeed;
         velocityX += (tvx - velocityX) * Math.min(acceleration * delta, 1);
         velocityZ += (tvz - velocityZ) * Math.min(acceleration * delta, 1);
-        const targetYaw = Math.atan2(moveDir.x, -moveDir.z);
+        const targetYaw = Math.atan2(-moveDir.x, -moveDir.z);
         let diff = targetYaw - characterYaw;
         while (diff > Math.PI) diff -= Math.PI * 2;
         while (diff < -Math.PI) diff += Math.PI * 2;
@@ -2311,11 +2335,12 @@
       const elapsed = clock.getElapsedTime();
 
       runSpatialLocomotion(delta, elapsed);
+      for (let i = 0; i < frameHooks.length; i++) frameHooks[i](delta, elapsed);
 
       const charSpeed = Math.sqrt(velocityX * velocityX + velocityZ * velocityZ);
 
       if (spectatorMode) {
-        mickeyModel.rotation.y = characterYaw;
+        mickeyModel.rotation.y = characterYaw + Math.PI;
         mickeyModel.position.y = 0;
         const cx = mickeyModel.position.x;
         const cz = mickeyModel.position.z;
@@ -2323,9 +2348,14 @@
         const camX = cx + Math.sin(spectatorAzimuth) * Math.cos(spectatorElevation) * spectatorDistance;
         const camY = focusY + Math.sin(spectatorElevation) * spectatorDistance;
         const camZ = cz - Math.cos(spectatorAzimuth) * Math.cos(spectatorElevation) * spectatorDistance;
-        camera.position.lerp(_specPos.set(camX, camY, camZ), 0.15);
+        // Never let the camera leave the room: outside it there is nothing to see.
+        camera.position.lerp(_specPos.set(
+          THREE.MathUtils.clamp(camX, -6.75, 6.75),
+          THREE.MathUtils.clamp(camY, 0.45, 4.85),
+          THREE.MathUtils.clamp(camZ, -4.75, 12.65),
+        ), 0.15);
         camera.lookAt(_specLook.set(cx, focusY, cz));
-        cameraYaw = spectatorAzimuth + Math.PI;
+        cameraYaw = Math.PI - spectatorAzimuth;
         cameraPitch = -spectatorElevation;
       }
 
@@ -2334,7 +2364,7 @@
       if (!spectatorMode && !isSeatedState) {
         characterYaw = cameraYaw;
         mickeyModel.position.set(camera.position.x, 0, camera.position.z);
-        mickeyModel.rotation.y = characterYaw;
+        mickeyModel.rotation.y = characterYaw + Math.PI;
       }
 
       animateCharacter(delta, elapsed, charSpeed);
@@ -2428,5 +2458,130 @@
     }
     setInterval(updateStateIndicators, 200);
 
-    console.log("Eyad's AI Playground ready.");
+    /* Where the guide can take a visitor. Each place names the thing to look at
+       and, for most, how to open it. Where to stand is worked out from the room
+       itself, so moving an exhibit never leaves a stale coordinate behind. */
+    const toward = (x, z) => { const d = Math.hypot(x, z) || 1; return [-x / d, -z / d]; };
+    const media = (kind, src, title) => () => openLightbox(kind, src, title);
+    const PLACE_TARGETS = {
+      desk: { at: [0, -4.05], stand: [0, -0.95] },
+      impact: { at: [0, -4.98], normal: [0, 1], open: () => openPanel('impact') },
+      journey: { at: [-6.98, -1.5], normal: [1, 0], open: () => openPanel('journey') },
+      projects: { at: [6.98, -1.5], normal: [-1, 0], open: () => openPanel('projects') },
+      stack: { at: [-6.98, 3.8], normal: [1, 0], open: () => openPanel('stack') },
+      education: { at: [4.2, 12.86], normal: [0, -1], open: () => openPanel('education') },
+      contact: { at: [6.98, 11.3], normal: [-1, 0], open: () => openPanel('contact') },
+      neural_networks: { at: [4.8, -1.5], normal: toward(4.8, -1.5), open: () => openPanel('ai_nn') },
+      transformers: { at: [-4.6, 0.5], normal: toward(-4.6, 0.5), open: () => openPanel('ai_llm') },
+      overfitting: { at: [3.2, 4.2], normal: toward(3.2, 4.2), open: () => openPanel('ai_overfit') },
+      ar_scoring: { at: [-4.6, 6.2], normal: toward(-4.6, 6.2), open: () => openPanel('ai_arscore') },
+      computer_vision: { at: [4.6, 6.2], normal: toward(4.6, 6.2), open: () => openPanel('ai_cv') },
+      rag_voice: { at: [-4.6, 9.4], normal: toward(-4.6, 9.4), open: () => openPanel('ai_rag') },
+      forecasting: { at: [4.6, 9.4], normal: toward(4.6, 9.4), open: () => openPanel('ai_forecast') },
+      tts: { at: [-4.6, 12.0], normal: toward(-4.6, 12.0), open: () => openPanel('ai_tts') },
+      keepquill: { at: [-6.92, 0.4], normal: [1, 0], open: media('page', 'index.html?embed=showcase#keepquill', 'KeepQuill - Sample Book & Readme') },
+      favisra: { at: [-6.92, 2.0], normal: [1, 0], open: media('page', 'index.html?embed=showcase#favisra', 'Favisra - Live Dashboard (demo data)') },
+      mental_health: { at: [6.92, -3.0], normal: [-1, 0], open: media('image', 'images/mental_health.webp', 'Mental Health NLP') },
+      cigarette_detection: { at: [6.92, 0.6], normal: [-1, 0], open: media('image', 'images/cigarette_detection.webp', 'YOLOv8 Detection') },
+      resume: { at: [LX, DZ0], normal: [1, 0], open: media('pdf', 'resume.pdf', 'Résumé') },
+      certificates: { at: [LX, 9.0], normal: [1, 0] },
+      demos: { at: [1.75, 12.84], normal: [0, -1], open: media('video', 'videos/attendance.mp4', 'Attendance System') },
+      whiteboard: { at: [6.9, 8.6], normal: [-1, 0], open: openWhiteboard },
+    };
+
+    const insideObstacle = (x, z, skip) => boundingObstacles.some((b) => b !== skip && x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ);
+    function clearView(fromX, fromZ, toX, toZ) {
+      const own = boundingObstacles.find((b) => toX > b.minX && toX < b.maxX && toZ > b.minZ && toZ < b.maxZ);
+      const steps = Math.ceil(Math.hypot(toX - fromX, toZ - fromZ) / 0.12);
+      for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        if (insideObstacle(fromX + (toX - fromX) * t, fromZ + (toZ - fromZ) * t, own)) return false;
+      }
+      return true;
+    }
+    function standPoint({ at, normal, stand }) {
+      if (stand) return stand;
+      for (const distance of [2.3, 1.9, 2.7, 1.5, 3.1, 1.15, 3.6, 0.9]) {
+        for (const angle of [0, 0.35, -0.35, 0.7, -0.7, 1.05, -1.05]) {
+          const cos = Math.cos(angle), sin = Math.sin(angle);
+          const x = at[0] + (normal[0] * cos - normal[1] * sin) * distance;
+          const z = at[1] + (normal[0] * sin + normal[1] * cos) * distance;
+          if (verifySpatialViability(x, z) && clearView(x, z, at[0], at[1])) return [x, z];
+        }
+      }
+      return null;
+    }
+    const places = {};
+    for (const [id, target] of Object.entries(PLACE_TARGETS)) {
+      const stand = standPoint(target);
+      if (stand) places[id] = { at: target.at, stand, open: target.open || null };
+    }
+
+    const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const RoomAPI = {
+      places,
+      touch: isTouch,
+      viable: verifySpatialViability,
+      state() {
+        const body = spectatorMode ? mickeyModel.position : camera.position;
+        return {
+          x: body.x, z: body.z, yaw: characterYaw, speed: Math.hypot(velocityX, velocityZ),
+          entered, seated: isSeatedState, thirdPerson: spectatorMode, typing: typingMode, booted: pcBooted,
+          shell: terminalLog[terminalLog.length - 1] || '',
+          open: lightboxEl.classList.contains('active') ? 'lightbox' : browserEl.classList.contains('active') ? 'browser' : openPanelKey ? `panel:${openPanelKey}` : null,
+        };
+      },
+      thirdPerson(on) {
+        if (spectatorMode !== on) toggleSpectatorMode();
+        return spectatorMode === on;
+      },
+      drive(direction) { agentDrive = direction; },
+      turn(yaw) { characterYaw = yaw; },
+      orbit(view) {
+        if (view.azimuth !== undefined) spectatorAzimuth = view.azimuth;
+        if (view.elevation !== undefined) spectatorElevation = view.elevation;
+        if (view.distance !== undefined) spectatorDistance = view.distance;
+        return { azimuth: spectatorAzimuth, elevation: spectatorElevation, distance: spectatorDistance };
+      },
+      open(id) { places[id]?.open?.(); },
+      closeAll() { closePanel(); closeOverlays(); },
+      sit: executeSitSequence,
+      stand: executeStandSequence,
+      browser: openBrowser,
+      notice: (message) => showNotice(message, true),
+      busy(on) { guideBusy = on; },
+      /* Types a command on the terminal the way a person would, then leaves the
+         result on screen for a moment. `stopped` lets the caller abandon it. */
+      async type(command, stopped = () => false) {
+        if (spectatorMode) toggleSpectatorMode();
+        if (!isSeatedState) executeSitSequence();
+        if (!pcBooted) bootWorkstationSystem();
+        if (!isSeatedState) return false;
+        typingMode = true;
+        guideTyping = true;
+        screenInput = '';
+        updateControlsDisplay();
+        for (const letter of command) {
+          if (stopped()) break;
+          screenInput += letter;
+          redrawWorkstationMonitor();
+          await pause(70);
+        }
+        if (!stopped()) {
+          await pause(260);
+          processShellStatement(screenInput.trim());
+        }
+        screenInput = '';
+        redrawWorkstationMonitor();
+        if (!stopped()) await pause(2400);
+        guideTyping = false;
+        typingMode = false;
+        updateControlsDisplay();
+        redrawWorkstationMonitor();
+        return !stopped();
+      },
+      onFrame(hook) { frameHooks.push(hook); },
+      onInput(hook) { inputHooks.push(hook); },
+    };
+    import('./room.agent.js?v=5e71620b').then((agent) => agent.start(RoomAPI)).catch((err) => console.warn('[room] the guide did not load:', err));
 

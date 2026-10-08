@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/geist.woff2?v=59943677" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/geist-mono.woff2?v=5ebb8929" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="room.css?v=f2a3c0a1">
+<link rel="stylesheet" href="room.css?v=a2b20405">
 <script type="importmap">
 {
   "imports": {
@@ -27,7 +27,7 @@
 }
 </script>
 <link rel="modulepreload" href="vendor/three.bundle.min.js?v=a12432dc">
-<link rel="modulepreload" href="room.js?v=be1798b9">
+<link rel="modulepreload" href="room.js?v=2af726c2">
 <link rel="preload" href="eyad.glb?v=449b9ac1" as="fetch" type="model/gltf-binary" crossorigin>
 </head>
 <body>
@@ -35,9 +35,8 @@
 
   <div id="loader">
     <div class="loader-inner">
-      <div class="loader-ring"></div>
       <h2>Building the room…</h2>
-      <div class="loader-bar"><i id="loaderFill"></i></div>
+      <div class="loader-bar"><i></i></div>
       <div id="loaderPct">Placing the furniture</div>
     </div>
   </div>
@@ -47,7 +46,7 @@
     setTimeout(function () {
       if (window.__roomReady) return;
       var note = document.getElementById('loaderPct');
-      if (note) note.innerHTML = 'This is taking longer than it should. <a href="interactive_room.html" style="color:#3abef9">Reload</a> or go <a href="index.html" style="color:#3abef9">back to the portfolio</a>.';
+      if (note) note.innerHTML = 'This is taking longer than it should. <a href="interactive_room.html">Reload</a> or go <a href="index.html">back to the portfolio</a>.';
     }, 15000);
   </script>
 
@@ -63,6 +62,10 @@
       </div>
     </div>
     <div id="topbar-right">
+      <div class="hud-actions">
+        <button type="button" class="btn" id="guideToggle" aria-pressed="false" title="Turn the guide on or off"><span class="dot"></span>Guide</button>
+        <button type="button" class="btn" id="exitRoom" title="Back to the portfolio"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Portfolio</button>
+      </div>
       <div id="mode-card">
         <div class="label">Playground Status</div>
         <div class="value"><span id="modeText">Exploring the Playground</span><small id="fpsText">DAYLIGHT</small></div>
@@ -85,7 +88,6 @@
   <div id="notice"></div>
 
   <div id="touch-ui">
-    <button id="exitRoom" title="Back to Portfolio" aria-label="Back to Portfolio"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Portfolio</button>
     <div id="joy"><div id="joy-thumb"></div></div>
     <div id="touch-actions">
       <button id="tBtnStand" class="tbtn" title="Stand up" style="display:none">Stand</button>
@@ -145,21 +147,29 @@
 
   <div id="entry">
     <div class="entry-card">
-      <h1>Step into a <em>Realistic Workspace</em>.</h1>
-      <p>An ultra-responsive, high-fidelity interactive portfolio. Explore as a character, boot the workstation, toggle system commands, and switch to cinematic spectator view.</p>
+      <div class="entry-eyebrow">Interactive portfolio</div>
+      <h1>Walk through <em>my work</em>.</h1>
+      <p>A room you can walk around. Every board, screen and exhibit opens something I built. Explore it yourself, or let the guide take you.</p>
+      <label class="guide-option">
+        <input type="checkbox" id="guideOpt">
+        <span class="switch" aria-hidden="true"></span>
+        <span><b>Let the agent guide me</b><small>Tell it what you want to see, by voice or by typing. It walks there, opens things and runs commands on the terminal. Your microphone is only used while you hold the talk key.</small></span>
+      </label>
       <div class="entry-actions">
-        <button id="enterBtn" class="primary-btn">Enter the Playground</button>
+        <button id="enterBtn" class="primary-btn">Enter the room</button>
+        <a class="btn" href="index.html">Back to the portfolio</a>
       </div>
-      <div id="mobile-warning">Desktop mouse & keyboard highly recommended for native FPS interaction mechanics.</div>
+      <div class="entry-keys">WASD move · Mouse look · E interact · V third person · Esc leave</div>
+      <div id="mobile-warning">Best with a mouse and keyboard. On a phone, use the joystick and drag to look.</div>
     </div>
   </div>
 
-  <script type="module" src="room.js?v=be1798b9"></script>
+  <script type="module" src="room.js?v=2af726c2"></script>
   <script>
     window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
     window.PORTFOLIO_PAGE = 'room';
   </script>
   <script src="analytics.js?v=816c7549" defer></script>
-  <script src="hello.js?v=b8e8e676" defer></script>
+  <script src="hello.js?v=93b6d0b9" defer></script>
 </body>
 </html>
