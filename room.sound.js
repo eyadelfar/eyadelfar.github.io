@@ -1,3 +1,4 @@
+import { INTROS, introSrc } from './room.intros.js?v=d6aad748';
 /* Sound for the room, made in the browser: there are no audio files. Footsteps
    land when a foot does, and there is a very quiet room tone under everything.
    Nothing plays until the visitor has done something, and one button stops it. */
@@ -132,8 +133,27 @@ export function start(room) {
     last = [s.x, s.z];
   });
 
+  /* The one line said at a place, the first time it is opened. Never over the guide's own voice. */
+  let line = null;
+  let said = null;
+  function hush() {
+    try { line?.pause(); } catch { /* nothing playing */ }
+    line = null;
+  }
+  function intro(id) {
+    if (!on || !INTROS[id]) return false;
+    hush();
+    line = new Audio(introSrc(id));
+    line.volume = 0.95;
+    said = id;
+    line.play().catch(() => {});
+    room.notice(INTROS[id], 5200);
+    return true;
+  }
+
   function set(next) {
     on = next;
+    if (!on) hush();
     try { localStorage.setItem(STORE, on ? '1' : '0'); } catch { /* private mode */ }
     if (master) master.gain.setTargetAtTime(on ? 1 : 0, audio.currentTime, 0.05);
     if (toggle) {
@@ -144,5 +164,5 @@ export function start(room) {
   toggle?.addEventListener('click', () => set(!on));
   set(on);
 
-  window.room = Object.assign(window.room || {}, { sound: set });
+  window.room = Object.assign(window.room || {}, { sound: set, intro, hush, lastIntro: () => said });
 }

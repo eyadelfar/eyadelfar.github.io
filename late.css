@@ -551,3 +551,21 @@
     .ask-btn    { padding: 11px 14px; }
     .ask-btn span { display: none; }
   }
+
+  /* From a card to the thing itself, standing in the 3D room. */
+  .room-link {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: .45rem;
+    margin-top: 14px;
+    font-size: .84rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(var(--rgb-accent), .25);
+    padding-bottom: 2px;
+    transition: border-color .2s var(--ease), color .2s var(--ease);
+  }
+  .room-link svg { width: 15px; height: 15px; flex: none; }
+  .room-link:hover { color: var(--accent2); border-bottom-color: var(--accent2); }

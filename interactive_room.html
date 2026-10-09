@@ -2,14 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0c16">
 <title>Eyad's AI Playground</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/geist.woff2?v=59943677" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/geist-mono.woff2?v=5ebb8929" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="room.css?v=f8997261">
+<link rel="stylesheet" href="room.css?v=dcf07928">
 <script type="importmap">
 {
   "imports": {
@@ -27,7 +28,7 @@
 }
 </script>
 <link rel="modulepreload" href="vendor/three.bundle.min.js?v=a12432dc">
-<link rel="modulepreload" href="room.js?v=e63c7a0f">
+<link rel="modulepreload" href="room.js?v=6b5dd232">
 <link rel="preload" href="eyad.glb?v=0cca42dd" as="fetch" type="model/gltf-binary" crossorigin>
 </head>
 <body>
@@ -64,12 +65,14 @@
     <div id="topbar-right">
       <div class="hud-actions">
         <button type="button" class="btn btn-icon" id="soundToggle" aria-pressed="true" aria-label="Sound" title="Sound is on"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path class="waves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path class="cross" d="m16 9 6 6M22 9l-6 6"/></svg></button>
-        <button type="button" class="btn" id="guideToggle" aria-pressed="false" title="Turn the guide on or off"><span class="dot"></span>Guide</button>
         <button type="button" class="btn" id="exitRoom" title="Back to the portfolio"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Portfolio</button>
       </div>
       <div id="mode-card">
-        <div class="label">Playground Status</div>
-        <div class="value"><span id="modeText">Exploring the Playground</span><small id="fpsText">DAYLIGHT</small></div>
+        <div class="label"><span>Playground</span><span id="seenText"></span></div>
+        <div class="seen-bar" aria-hidden="true"><i id="seenBar"></i></div>
+        <div class="value"><span id="modeText">Exploring the Playground</span><small id="fpsText"></small></div>
+        <div class="next-label">Try next</div>
+        <div class="next" id="nextUp" hidden></div>
       </div>
       <div class="visitor-pill" id="visitorPill" hidden>
         <span class="visitor-dot"></span>
@@ -89,18 +92,35 @@
   <div id="notice"></div>
 
   <div id="touch-ui">
-    <div id="joy"><div id="joy-thumb"></div></div>
-    <div id="touch-actions">
-      <button id="tBtnStand" class="tbtn" title="Stand up" style="display:none">Stand</button>
-      <button id="tBtnInteract" class="tbtn" title="Interact">Tap</button>
-      <button id="tBtnView" class="tbtn" title="Spectator"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></button>
+    <div class="t-top">
+      <button type="button" id="tExit" class="t-icon" aria-label="Back to the portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>
+      <div class="t-where" role="status"><b id="tWhere">In the main room</b><small id="tSeen"></small></div>
+      <button type="button" id="tMap" class="t-icon" aria-label="Map" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.1 5.3a2 2 0 0 0 1.8 0l3.7-1.8A1 1 0 0 1 21 4.4v12.8a1 1 0 0 1-.6.9l-4.5 2.3a2 2 0 0 1-1.8 0l-4.2-2.1a2 2 0 0 0-1.8 0l-3.7 1.8A1 1 0 0 1 3 19.2V6.4a1 1 0 0 1 .6-.9l4.5-2.3a2 2 0 0 1 1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/></svg></button>
+      <button type="button" id="tSound" class="t-icon" aria-label="Sound" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path class="waves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path class="cross" d="m16 9 6 6M22 9l-6 6"/></svg></button>
+      <button type="button" id="tHelp" class="t-icon" aria-label="How to use the room"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
     </div>
-    <div id="touch-hint">Joystick to move · drag to look · tap to interact</div>
+    <div id="joy-zone"><div id="joy"><div id="joy-thumb"></div></div></div>
+    <div class="t-seat" id="tSeat" hidden></div>
+    <div class="t-cluster">
+      <div class="t-caption" id="tCaption" hidden></div>
+      <div class="t-row">
+        <button type="button" id="tBtnView" class="t-btn" aria-label="Switch between third and first person"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button type="button" id="tBtnGuide" class="t-btn" aria-label="Ask the guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg></button>
+        <button type="button" id="tMain" class="t-main"><span id="tMainText">Go</span></button>
+      </div>
+    </div>
+    <div class="t-coach" id="tCoach" hidden>
+      <span class="c-move">Left thumb<br>to move</span>
+      <span class="c-look">Drag to look around<br>Tap the floor to walk there<br>Pinch to zoom</span>
+      <span class="c-main">This button<br>does the next thing</span>
+      <b>Tap anywhere to start</b>
+    </div>
   </div>
 
   <aside id="panel">
     <button class="close-btn" onclick="closePanel()" title="Close (Esc)"><span>✕</span> Close</button>
     <h2 id="panelTitle"></h2>
+    <button type="button" class="panel-link" id="panelLink" hidden>Copy a link to this</button>
     <div id="panelBody"></div>
   </aside>
 
@@ -146,31 +166,51 @@
     <div class="lb-stage" id="lbStage"></div>
   </div>
 
+  <div id="farewell" hidden>
+    <div class="farewell-card" role="dialog" aria-modal="true" aria-labelledby="farewellTitle">
+      <div class="entry-eyebrow">Before you go</div>
+      <h2 id="farewellTitle"></h2>
+      <ul id="farewellList"></ul>
+      <p id="farewellLeft"></p>
+      <div class="entry-actions">
+        <button type="button" class="primary-btn" id="farewellSend">Send this to Eyad</button>
+        <button type="button" class="btn" id="farewellGo">Back to the portfolio</button>
+        <button type="button" class="btn" id="farewellStay">Keep looking</button>
+      </div>
+    </div>
+  </div>
+
   <div id="entry">
     <div class="entry-card">
       <div class="entry-eyebrow">Interactive portfolio</div>
       <h1>Walk through <em>my work</em>.</h1>
       <p>A room you can walk around. Every board, screen and exhibit opens something I built. Explore it yourself, or let the guide take you.</p>
-      <label class="guide-option">
-        <input type="checkbox" id="guideOpt">
-        <span class="switch" aria-hidden="true"></span>
-        <span><b>Let the agent guide me</b><small>Tell it what you want to see, by voice or by typing. It walks there, opens things and runs commands on the terminal. Your microphone is only used while you hold P.</small></span>
-      </label>
+      <div class="guide-option">
+        <span class="for-keys"><b>The guide is always one key away</b><small>Hold <kbd>P</kbd> and talk, or press <kbd>C</kbd> and type. It walks you anywhere, opens things, runs the terminal, and tells you how everything here works. Your microphone is only used while you hold P.</small></span>
+        <span class="for-touch"><b>The guide is always one tap away</b><small>Tap the mic and talk, or type. It walks you anywhere, opens things, runs the terminal, and tells you how everything here works. Your microphone is only used while it is listening.</small></span>
+      </div>
+      <p class="entry-start" id="entryStart" hidden></p>
       <div class="entry-actions">
         <button id="enterBtn" class="primary-btn">Enter the room</button>
         <a class="btn" href="index.html">Back to the portfolio</a>
       </div>
-      <div class="entry-keys">Click to walk · Drag to look · WASD move · Shift jog · M map · V first person</div>
-      <div id="mobile-warning">On a phone: tap the floor to walk, drag to look around.</div>
+      <div class="entry-tours">
+        <span>Or take a tour made for you:</span>
+        <button type="button" class="btn" data-tour="founder">I'm a founder</button>
+        <button type="button" class="btn" data-tour="sales">I run a sales team</button>
+        <button type="button" class="btn" data-tour="engineer">I'm an engineer</button>
+      </div>
+      <div class="entry-keys">Click to walk · Drag to look · WASD move · Shift jog · M map · V first person · P talk · C ask</div>
+      <div class="entry-touch">Left thumb moves · Drag to look · Tap the floor to walk · Pinch to zoom · The big button does the next thing</div>
     </div>
   </div>
 
-  <script type="module" src="room.js?v=e63c7a0f"></script>
+  <script type="module" src="room.js?v=6b5dd232"></script>
   <script>
     window.PORTFOLIO_API = 'https://portfolio-contact.eyadelfar.workers.dev';
     window.PORTFOLIO_PAGE = 'room';
   </script>
-  <script src="analytics.js?v=f3670d68" defer></script>
+  <script src="analytics.js?v=ec2e8908" defer></script>
   <script src="hello.js?v=5d645f06" defer></script>
 </body>
 </html>

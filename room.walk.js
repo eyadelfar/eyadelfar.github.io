@@ -40,6 +40,9 @@ export function createWalker(room, nav) {
     }
     room.drive({ x: dx / dist, z: dz / dist, speed: last ? Math.max(0.6, Math.min(walk.speed, dist * 2.4)) : walk.speed });
 
+    // Through his eyes there is no body to turn, so the view itself comes round to face the way.
+    if (!s.thirdPerson) room.turn(turnTo(s.yaw, bearing(s.x, s.z, tx, tz), dt * 3.2).next);
+
     if (walk.follow) {
       const orbit = room.orbit({});
       room.orbit({
@@ -77,16 +80,19 @@ export function createWalker(room, nav) {
     const s = room.state();
     const turn = turnTo(s.yaw, settle.yaw, dt * 7);
     room.turn(turn.next);
+    let swing = 0;
     if (settle.azimuth !== null) {
       const orbit = room.orbit({});
+      const round = turnTo(orbit.azimuth, settle.azimuth, dt * 3);
+      swing = settle.frame ? 0 : round.left;
       room.orbit({
-        azimuth: turnTo(orbit.azimuth, settle.azimuth, dt * 3).next,
-        elevation: lerp(orbit.elevation, 0.22, dt * 3),
-        distance: lerp(orbit.distance, 2.8, dt * 3),
+        azimuth: round.next,
+        elevation: settle.frame ? lerp(orbit.elevation, 0.22, dt * 3) : orbit.elevation,
+        distance: settle.frame ? lerp(orbit.distance, 2.8, dt * 3) : orbit.distance,
       });
     }
     settle.clock += dt;
-    if ((turn.left < 0.04 && settle.clock > settle.hold) || settle.clock > 1.6) {
+    if ((turn.left < 0.04 && swing < 0.06 && settle.clock > settle.hold) || settle.clock > (settle.frame === false ? 2.6 : 1.6)) {
       const done = settle;
       settle = null;
       done.resolve();
@@ -125,12 +131,19 @@ export function createWalker(room, nav) {
       return new Promise((resolve) => { settle = { yaw: bearing(s.x, s.z, x, z), azimuth: null, clock: 0, hold: 0.15, resolve }; });
     },
 
+    /* Turns to a heading, and brings the camera round behind it. */
+    heading(yaw) {
+      stop();
+      const third = room.state().thirdPerson;
+      return new Promise((resolve) => { settle = { yaw, azimuth: third ? Math.PI - yaw : null, frame: false, clock: 0, hold: 0.2, resolve }; });
+    },
+
     /* The guide's arrival: the camera swings round to see the thing over the
        avatar's shoulder, and the avatar turns to the visitor, the way a guide would. */
     present(x, z) {
       const s = room.state();
       const azimuth = Math.PI - bearing(s.x, s.z, x, z) + 0.42;
-      return new Promise((resolve) => { settle = { yaw: -azimuth, azimuth, clock: 0, hold: 0.7, resolve }; });
+      return new Promise((resolve) => { settle = { yaw: -azimuth, azimuth, frame: true, clock: 0, hold: 0.7, resolve }; });
     },
   };
 }

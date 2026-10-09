@@ -258,7 +258,6 @@
     pointer-events: none;
   }
   .minimap-label[hidden] { display: none; }
-  body.touch .minimap { right: 12px; bottom: auto; top: 64px; padding: 6px; }
   body.touch.ui-open .minimap { display: none; }
 
   .btn .dot {
@@ -270,6 +269,7 @@
   .btn[aria-pressed="true"] .dot { background: #fff; }
 
   .visitor-pill {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 7px;
@@ -288,8 +288,23 @@
     background: none;
     color: inherit;
     font: inherit;
-    cursor: pointer;
+    cursor: default;
   }
+  /* The month's traffic, shown under the pill without moving anything. */
+  .visitor-peek {
+    position: absolute;
+    --cyan: var(--mint);
+    top: calc(100% + 8px);
+    right: 0;
+    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--hair);
+    background: var(--glass-strong);
+    box-shadow: var(--lift);
+    pointer-events: none;
+  }
+  .visitor-peek[hidden] { display: none; }
+  .visitor-peek svg { display: block; }
   .visitor-num {
     font-weight: 700;
     color: var(--ink);
@@ -315,11 +330,64 @@
   }
 
   #mode-card .label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
     font: 500 10px/1 var(--mono);
     color: var(--faint);
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-bottom: 8px;
+  }
+  .seen-bar {
+    height: 3px;
+    margin-bottom: 11px;
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.09);
+    overflow: hidden;
+  }
+  .seen-bar i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--brand-bright);
+    transition: width 0.6s ease;
+  }
+  .next-label {
+    margin-top: 12px;
+    font: 500 10px/1 var(--mono);
+    color: var(--faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .next-label:has(+ .next[hidden]) { display: none; }
+  .next {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .next[hidden] { display: none; }
+  .next button,
+  .guide-tools button {
+    appearance: none;
+    max-width: 100%;
+    padding: 6px 11px;
+    border: 1px solid var(--hair);
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink);
+    font: 500 12px/1.2 Geist, system-ui, sans-serif;
+    text-align: left;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background 0.16s ease, border-color 0.16s ease;
+  }
+  .next button:hover,
+  .guide-tools button:hover {
+    background: rgba(129, 140, 248, 0.22);
+    border-color: rgba(129, 140, 248, 0.5);
   }
 
   #mode-card .value {
@@ -429,8 +497,9 @@
     top: 18px;
     bottom: 18px;
     width: min(480px, calc(100vw - 32px));
-    overflow-y: auto;
-    padding: 28px 28px 34px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     border-radius: var(--r-lg);
     border: 1px solid var(--hair);
     background: var(--glass-strong);
@@ -446,10 +515,18 @@
   }
   @keyframes panelIn { from { opacity: 0; } to { opacity: 1; } }
 
+  /* The title and Close stay put; only the body scrolls under them. */
+  #panelBody {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 6px 28px 34px;
+  }
   #panel h2 {
     position: relative;
-    margin: 0 0 6px;
-    padding: 0 104px 14px 0;
+    flex: none;
+    margin: 0 28px 6px;
+    padding: 28px 104px 14px 0;
     font: 700 28px/1.1 var(--display);
     letter-spacing: -0.02em;
     color: #f4f6fb;
@@ -495,6 +572,7 @@
   }
   .close-btn {
     position: absolute;
+    z-index: 2;
     top: 20px;
     right: 22px;
     min-height: 34px;
@@ -514,8 +592,8 @@
     border-color: rgba(248, 113, 113, 0.5);
     color: #fff;
   }
-  #panel::-webkit-scrollbar { width: 7px; }
-  #panel::-webkit-scrollbar-thumb {
+  #panelBody::-webkit-scrollbar { width: 7px; }
+  #panelBody::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.18);
     border-radius: var(--r-pill);
   }
@@ -533,11 +611,14 @@
     background:
       radial-gradient(900px 520px at 50% 0%, rgba(99, 102, 241, 0.22), transparent 70%),
       #0a0c16;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease, visibility 0s linear 0s;
   }
+  /* Gone means gone: its buttons take pointer events of their own, so fading it out is not enough. */
   #entry.hidden {
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
+    transition: opacity 0.5s ease, visibility 0s linear 0.5s;
   }
   .entry-card {
     width: min(580px, 100%);
@@ -569,53 +650,25 @@
   }
 
   .guide-option {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    margin: 24px 0;
-    padding: 16px;
+    display: block;
+    margin: 22px 0 24px;
+    padding: 14px 16px;
     border: 1px solid var(--hair);
     border-radius: var(--r-md);
     background: rgba(255, 255, 255, 0.04);
-    cursor: pointer;
-    transition: border-color 0.16s ease, background 0.16s ease;
+    text-align: left;
   }
-  .guide-option:hover { border-color: rgba(255, 255, 255, 0.22); }
-  .guide-option:has(input:checked) {
-    border-color: rgba(129, 140, 248, 0.6);
-    background: rgba(99, 102, 241, 0.12);
-  }
-  .guide-option input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .switch {
-    flex: none;
-    position: relative;
-    width: 42px;
-    height: 24px;
-    margin-top: 1px;
-    border-radius: var(--r-pill);
-    background: rgba(255, 255, 255, 0.16);
-    transition: background 0.18s ease;
-  }
-  .switch::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #fff;
-    transition: transform 0.18s ease;
-  }
-  .guide-option input:checked + .switch { background: var(--brand-bright); }
-  .guide-option input:checked + .switch::after { transform: translateX(18px); }
-  .guide-option input:focus-visible + .switch {
-    outline: 2px solid var(--focus);
-    outline-offset: 2px;
+  .guide-option kbd {
+    display: inline-block;
+    min-width: 20px;
+    padding: 2px 6px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ink);
+    font: 600 11px/1.2 var(--mono);
+    text-align: center;
   }
   .guide-option b {
     display: block;
@@ -673,7 +726,7 @@
     transition: opacity 0.6s ease;
     color: var(--ink);
   }
-  #loader.hidden { opacity: 0; pointer-events: none; }
+  #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
   .loader-inner { text-align: center; width: min(320px, 80vw); }
   .loader-inner h2 { font: 600 18px/1.2 var(--display); margin-bottom: 16px; }
   .loader-bar {
@@ -817,19 +870,44 @@
     pointer-events: auto;
   }
   .guide-tools[hidden] { display: none; }
-  .guide-tools li {
-    display: grid;
-    grid-template-columns: 124px 1fr;
-    gap: 2px 10px;
-    padding: 5px 0;
-    font-size: 12.5px;
-    color: var(--muted);
-  }
-  .guide-tools em {
-    grid-column: 2;
-    font-style: normal;
+  .guide-result {
+    margin-bottom: 8px;
     color: var(--faint);
     font-size: 12px;
+    line-height: 1.45;
+  }
+  .guide-suggest {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    border-top: 1px solid var(--hair);
+  }
+  .guide-suggest[hidden] { display: none; }
+  .guide-suggest li {
+    padding: 7px 10px;
+    border-radius: var(--r-sm);
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    pointer-events: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .guide-suggest li:hover,
+  .guide-suggest li[aria-selected="true"] {
+    background: rgba(129, 140, 248, 0.2);
+    color: var(--ink);
+  }
+  .guide-tools li {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 7px 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--muted);
   }
   .guide-form {
     display: flex;
@@ -1043,7 +1121,6 @@
   .ico { width: 1.05em; height: 1.05em; display: inline-block; vertical-align: -0.18em; flex: none; }
   .browser-tab .ico { width: 16px; height: 16px; }
   .pill .ico { width: 13px; height: 13px; vertical-align: -0.12em; }
-  .tbtn .ico { width: 26px; height: 26px; vertical-align: middle; }
 
   #laserdot {
     position: fixed; z-index: 22; width: 14px; height: 14px; margin: -7px 0 0 -7px;
@@ -1056,38 +1133,13 @@
   #browser .browser-body { cursor: crosshair; }
 
   body.touch #canvas { touch-action: none; }
-  #panel, .browser-pane, .gh-content, .lb-stage { -webkit-overflow-scrolling: touch; }
-  body.touch .browser-pane, body.touch #panel, body.touch .lb-stage { touch-action: pan-y; }
+  #panelBody, .browser-pane, .gh-content, .lb-stage { -webkit-overflow-scrolling: touch; }
+  body.touch .browser-pane, body.touch #panelBody, body.touch .lb-stage { touch-action: pan-y; }
   body.touch .browser-pane iframe { touch-action: auto; }
   #touch-ui { position: fixed; inset: 0; z-index: 30; pointer-events: none; display: none; }
   body.touch #touch-ui { display: block; }
   body.touch #controls { display: none; }
-  #joy {
-    position: absolute; left: 22px; bottom: 28px; width: 124px; height: 124px;
-    border-radius: 50%; background: var(--glass); border: 1px solid var(--hair);
-    pointer-events: auto; touch-action: none;
-  }
-  #joy-thumb {
-    position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px;
-    border-radius: 50%; background: var(--brand-bright);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4); transition: transform 0.04s;
-  }
-  #touch-actions { position: absolute; right: 20px; bottom: 30px; display: flex; flex-direction: column; gap: 12px; pointer-events: auto; }
-  .tbtn {
-    width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--hair);
-    background: var(--glass); color: var(--ink);
-    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-    font: 600 13px/1 Geist, sans-serif; display: grid; place-items: center; touch-action: manipulation;
-  }
-  .tbtn:active { background: var(--brand-bright); transform: scale(0.95); }
-  #touch-hint {
-    position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%);
-    color: var(--muted); font: 500 10.5px/1 var(--mono); white-space: nowrap;
-    background: var(--glass); padding: 6px 12px; border-radius: var(--r-pill);
-  }
   body.touch.ui-open #touch-ui { display: none; }
-  body.touch .guide { left: 12px; right: 92px; bottom: 168px; width: auto; }
-  body.touch.guide-on #touch-hint { display: none; }
   @media (pointer: coarse) { #mobile-warning { display: none; } }
   .browser-dots i:hover { transform: scale(1.25); filter: brightness(1.2); }
 
@@ -1124,3 +1176,483 @@
   padding: 7px 14px; border-radius: var(--r-pill); pointer-events: none;
   font: 500 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
 }
+
+  /* Tours, links and the summary at the door. */
+  .panel-link {
+    appearance: none;
+    flex: none;
+    align-self: flex-start;
+    margin: 0 28px 8px;
+    padding: 0 0 2px;
+    border: 0;
+    border-bottom: 1px solid rgba(129, 140, 248, 0.4);
+    background: none;
+    color: var(--mint);
+    font: 500 12.5px/1.3 Geist, system-ui, sans-serif;
+    cursor: pointer;
+    pointer-events: auto;
+    max-width: calc(100% - 56px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .panel-link[hidden] { display: none; }
+  .panel-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  .entry-start {
+    margin: -6px 0 18px;
+    color: var(--mint);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .entry-start[hidden] { display: none; }
+  .entry-tours {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .entry-tours span { flex-basis: 100%; }
+  .entry-tours .btn { min-height: 34px; padding: 0 14px; font-size: 12.5px; }
+
+  .guide-starters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .guide-starters[hidden],
+  .guide-offer[hidden] { display: none; }
+  .guide-starters button {
+    appearance: none;
+    padding: 6px 11px;
+    border: 1px solid var(--hair);
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink);
+    font: 500 12px/1.2 Geist, system-ui, sans-serif;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background 0.16s ease, border-color 0.16s ease;
+  }
+  .guide-starters button:hover { background: rgba(129, 140, 248, 0.22); border-color: rgba(129, 140, 248, 0.5); }
+  .guide-offer {
+    appearance: none;
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: var(--r-sm);
+    background: var(--brand-bright);
+    color: #fff;
+    font: 600 13px/1.2 Geist, system-ui, sans-serif;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .guide-offer:hover { background: #7275f5; }
+
+  #farewell {
+    position: fixed;
+    inset: 0;
+    z-index: 96;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(6, 8, 16, 0.72);
+  }
+  #farewell[hidden] { display: none; }
+  .farewell-card {
+    width: min(520px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    padding: 30px 32px;
+    border: 1px solid var(--hair);
+    border-radius: var(--r-lg);
+    background: var(--glass-strong);
+    box-shadow: var(--lift);
+    color: var(--ink);
+  }
+  .farewell-card h2 { margin: 10px 0 14px; font: 700 26px/1.15 var(--display); letter-spacing: -0.02em; }
+  .farewell-card ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 14px;
+    padding: 0;
+    list-style: none;
+  }
+  .farewell-card li {
+    padding: 5px 11px;
+    border: 1px solid var(--hair);
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 12.5px;
+  }
+  .farewell-card p { margin: 0 0 20px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+  .farewell-card .entry-actions { flex-wrap: wrap; }
+  .farewell-card .primary-btn { min-height: 44px; padding: 0 22px; font-size: 14px; }
+
+  /* ------------------------------------------------------------------
+     The room on a phone. No keyboard, two thumbs, a small screen that
+     may be turned either way and has a notch and a home bar to avoid.
+     Everything that can be pressed is at least 44 px.
+     ------------------------------------------------------------------ */
+  html, body { height: 100dvh; overscroll-behavior: none; }
+  body.touch { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+  body.touch button { touch-action: manipulation; }
+  body.touch #topbar,
+  body.touch #prompt,
+  body.touch .entry-keys { display: none; }
+  .for-touch { display: none; }
+  body.touch .for-touch { display: inline; }
+  body.touch .for-keys { display: none; }
+  body.touch.guide-open .t-coach,
+  body.touch.map-open .t-coach { display: none; }
+  .entry-touch { display: none; margin-top: 20px; color: var(--faint); font: 500 12px/1.7 var(--mono); }
+  body.touch .entry-touch { display: block; }
+  body.touch:not(.touch-live) #touch-ui { visibility: hidden; }
+
+  .t-top {
+    position: absolute;
+    top: calc(8px + env(safe-area-inset-top));
+    left: calc(10px + env(safe-area-inset-left));
+    right: calc(10px + env(safe-area-inset-right));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .t-icon,
+  .t-btn,
+  .t-where,
+  .t-caption,
+  .t-seat button,
+  #joy {
+    border: 1px solid var(--hair);
+    background: var(--glass);
+    color: var(--ink);
+    box-shadow: var(--lift);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    backdrop-filter: blur(16px) saturate(1.5);
+  }
+  .t-icon,
+  .t-btn {
+    appearance: none;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    pointer-events: auto;
+  }
+  .t-icon svg { width: 20px; height: 20px; }
+  .t-icon:active,
+  .t-btn:active { background: rgba(255, 255, 255, 0.2); }
+  .t-icon[aria-pressed="true"]#tMap,
+  .t-btn[aria-pressed="true"] { background: var(--brand-bright); border-color: transparent; }
+  #tSound[aria-pressed="true"] .cross,
+  #tSound[aria-pressed="false"] .waves { display: none; }
+  #tSound[aria-pressed="false"] { color: var(--faint); }
+  .t-where {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 14px;
+    border-radius: 22px;
+  }
+  .t-where b { font: 600 13px/1.1 Geist, system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t-where small { font: 500 10px/1 var(--mono); letter-spacing: 0.06em; color: var(--faint); text-transform: uppercase; }
+  .t-where small:empty { display: none; }
+
+  /* The left thumb's corner. The stick waits there and jumps under the thumb. */
+  #joy-zone {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 46%;
+    height: 42%;
+    pointer-events: auto;
+    touch-action: none;
+  }
+  #joy {
+    position: absolute;
+    left: calc(22px + env(safe-area-inset-left));
+    top: calc(100% - 112px - 26px - env(safe-area-inset-bottom));
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    opacity: 0.6;
+    transition: left 0.18s ease, top 0.18s ease, opacity 0.18s ease;
+  }
+  #joy.held { opacity: 1; transition: opacity 0.1s ease; }
+  #joy-thumb {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 48px;
+    height: 48px;
+    margin: -24px 0 0 -24px;
+    border-radius: 50%;
+    background: var(--brand-bright);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  }
+
+  /* The right thumb: one button that does the next thing, and two smaller ones. */
+  .t-cluster {
+    position: absolute;
+    right: calc(14px + env(safe-area-inset-right));
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .t-caption {
+    max-width: min(210px, 52vw);
+    padding: 7px 12px;
+    border-radius: 12px;
+    font: 500 12px/1.3 Geist, system-ui, sans-serif;
+    text-align: right;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .t-caption[hidden] { display: none; }
+  .t-row { display: flex; align-items: flex-end; gap: 10px; }
+  .t-btn { width: 52px; height: 52px; }
+  .t-btn svg { width: 22px; height: 22px; }
+  .t-main {
+    appearance: none;
+    min-width: 88px;
+    height: 72px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 36px;
+    background: var(--brand-bright);
+    color: #fff;
+    font: 700 17px/1 Geist, system-ui, sans-serif;
+    box-shadow: 0 10px 28px rgba(79, 70, 229, 0.5);
+    pointer-events: auto;
+  }
+  .t-main:active { transform: scale(0.96); }
+  .t-main[data-tone="stop"] { background: var(--danger); box-shadow: 0 10px 28px rgba(239, 68, 68, 0.45); }
+
+  /* Seated: the workstation's keys, as a row of buttons. */
+  .t-seat {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(112px + env(safe-area-inset-bottom));
+    display: flex;
+    gap: 8px;
+    padding: 4px calc(14px + env(safe-area-inset-right)) 4px calc(14px + env(safe-area-inset-left));
+    overflow-x: auto;
+    scrollbar-width: none;
+    pointer-events: auto;
+  }
+  .t-seat::-webkit-scrollbar { display: none; }
+  .t-seat[hidden] { display: none; }
+  .t-seat button {
+    appearance: none;
+    flex: none;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: var(--r-pill);
+    font: 600 13px/1 Geist, system-ui, sans-serif;
+    text-transform: capitalize;
+  }
+  .t-seat button.lead { background: var(--brand-bright); border-color: transparent; color: #fff; text-transform: none; }
+  body.seated #joy-zone { display: none; }
+
+  /* Where the thumbs go, the first time. */
+  .t-coach {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 8, 16, 0.66);
+    color: #fff;
+    font: 600 14px/1.45 Geist, system-ui, sans-serif;
+    pointer-events: auto;
+  }
+  .t-coach[hidden] { display: none; }
+  .t-coach span,
+  .t-coach b { position: absolute; }
+  .t-coach .c-move { left: calc(26px + env(safe-area-inset-left)); bottom: calc(160px + env(safe-area-inset-bottom)); }
+  .t-coach .c-look { left: 50%; top: 36%; transform: translate(-50%, -50%); text-align: center; white-space: nowrap; }
+  .t-coach .c-main { right: calc(18px + env(safe-area-inset-right)); bottom: calc(118px + env(safe-area-inset-bottom)); text-align: right; }
+  .t-coach b { left: 50%; bottom: calc(40px + env(safe-area-inset-bottom)); transform: translateX(-50%); color: var(--mint); font-size: 13px; white-space: nowrap; }
+
+  body.touch #notice {
+    top: calc(62px + env(safe-area-inset-top));
+    max-width: calc(100vw - 24px);
+    padding: 9px 16px;
+    border-radius: 16px;
+    font-size: 13px;
+  }
+
+  /* The guide is a sheet that comes up from the bottom, clear of the keyboard. */
+  body.touch .guide {
+    left: 0;
+    right: 0;
+    bottom: var(--keyboard, 0px);
+    z-index: 45;
+    width: auto;
+    max-height: min(66dvh, 540px);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom);
+    border-radius: 20px 20px 0 0;
+    border-bottom: 0;
+  }
+  body.touch .guide[hidden] { display: none; }
+  body.touch .guide-head { flex: none; padding: 10px 10px 10px 16px; }
+  body.touch .guide-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  body.touch .guide-x { width: 44px; height: 44px; }
+  body.touch .guide-chip { min-height: 36px; }
+  body.touch .guide-tools { flex: 0 1 auto; max-height: 30dvh; }
+  body.touch .guide-form { flex: none; padding: 10px 12px; }
+  body.touch .guide-input { height: 46px; font-size: 16px; }
+  body.touch .guide-mic { width: 46px; height: 46px; }
+  body.touch .guide-send { min-height: 46px; }
+  body.touch .guide-note { display: none; }
+  body.touch .guide-starters,
+  body.touch .guide-suggest {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  body.touch .guide-starters::-webkit-scrollbar,
+  body.touch .guide-suggest::-webkit-scrollbar { display: none; }
+  body.touch .guide-starters[hidden],
+  body.touch .guide-suggest[hidden] { display: none; }
+  body.touch .guide-starters button { flex: none; min-height: 40px; padding: 0 14px; font-size: 13px; }
+  body.touch .guide-suggest { flex: none; padding: 8px 12px; }
+  body.touch .guide-suggest li {
+    flex: none;
+    max-width: 78vw;
+    padding: 10px 14px;
+    border: 1px solid var(--hair);
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ink);
+  }
+  body.touch .guide-offer { min-height: 46px; }
+  body.touch.guide-open .t-cluster,
+  body.touch.guide-open .t-seat,
+  body.touch.guide-open #joy-zone { display: none; }
+
+  /* The map is asked for, and comes as a sheet of its own. */
+  .minimap-plan { position: relative; }
+  body.touch .minimap {
+    left: 50%;
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    z-index: 70;
+    transform: translate(-50%, -50%);
+    padding: 12px;
+    border-radius: 18px;
+    box-shadow: 0 0 0 100vmax rgba(6, 8, 16, 0.62), var(--lift);
+  }
+  .minimap-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; color: var(--ink); font: 600 14px/1.2 Geist, system-ui, sans-serif; }
+  .minimap-head b { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize; }
+  .minimap-go {
+    appearance: none;
+    flex: none;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--r-pill);
+    background: var(--brand-bright);
+    color: #fff;
+    font: 600 13px/1 Geist, system-ui, sans-serif;
+  }
+  .minimap-go[hidden] { display: none; }
+  .minimap-x {
+    appearance: none;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--hair);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--ink);
+    font-size: 20px;
+    line-height: 1;
+  }
+  body.touch.map-open .t-cluster,
+  body.touch.map-open .t-seat,
+  body.touch.map-open #joy-zone { display: none; }
+
+  /* Panels come up from the bottom too, and leave the room in view above them. */
+  @media (max-width: 720px) {
+    #panel {
+      left: 0;
+      right: 0;
+      top: auto;
+      bottom: -110%;
+      width: auto;
+      height: min(72dvh, 660px);
+      padding-bottom: env(safe-area-inset-bottom);
+      border-radius: 20px 20px 0 0;
+      border-bottom: 0;
+      box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5);
+      transition: bottom 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #panel.active { right: 0; bottom: 0; }
+    #panel h2 { margin: 0 20px 6px; padding: 22px 104px 12px 0; font-size: 23px; }
+    #panelBody { padding: 6px 20px 28px; }
+    .panel-link { margin: 0 20px 8px; }
+    .close-btn { top: 14px; right: 14px; min-height: 44px; }
+    .entry-card { padding: 26px 22px; }
+    .entry-actions > * { flex: 1 1 100%; }
+    .entry-tours .btn { flex: 1 1 auto; min-height: 44px; }
+    .farewell-card { padding: 24px 22px; }
+    #browser { padding: 0; }
+    .browser-close, .lb-close { width: 44px; height: 44px; }
+  }
+
+  /* A phone on its side: short, wide, with the notch at one end. */
+  @media (pointer: coarse) and (orientation: landscape) and (max-height: 520px) {
+    #joy-zone { width: 40%; height: 72%; }
+    .t-main { height: 60px; min-width: 80px; }
+    .t-cluster { bottom: calc(14px + env(safe-area-inset-bottom)); }
+    .t-seat { bottom: calc(88px + env(safe-area-inset-bottom)); right: 46%; }
+    body.touch .guide {
+      left: auto;
+      right: 0;
+      top: 0;
+      bottom: var(--keyboard, 0px);
+      width: min(54vw, 440px);
+      max-height: none;
+      padding-right: env(safe-area-inset-right);
+      border-radius: 20px 0 0 20px;
+    }
+    body.touch.guide-open #joy-zone { display: block; }
+    #panel,
+    #panel.active {
+      left: auto;
+      top: 0;
+      width: min(56vw, 460px);
+      height: auto;
+      padding-right: env(safe-area-inset-right);
+      border-radius: 20px 0 0 20px;
+      transition: right 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #panel { right: -110%; bottom: 0; }
+    #panel.active { right: 0; bottom: 0; }
+    .t-coach .c-look { top: 30%; }
+    .entry-card { max-height: calc(100dvh - 16px); overflow-y: auto; padding: 18px 22px; }
+    .entry-card h1 { font-size: 30px; }
+  }

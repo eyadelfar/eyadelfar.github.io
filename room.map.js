@@ -1,4 +1,4 @@
-import { PLACES } from './room.tools.js?v=5782d604';
+import { PLACES } from './room.tools.js?v=d47b4115';
 
 /* A small plan of the room, drawn from the same obstacle and place data the
    room walks by, so it cannot disagree with it. Click a dot to be walked there. */
@@ -10,7 +10,11 @@ const DOT = 9;
 export function start(room) {
   const BOUNDS = room.bounds;
   const { main, door, zen } = room.plan;
-  const scale = room.touch ? 4.4 : 6.6;
+  // On a phone the map is a sheet of its own, as large as the screen allows.
+  const spanX = BOUNDS.maxX - BOUNDS.minX + PAD * 2;
+  const spanZ = BOUNDS.maxZ - BOUNDS.minZ + PAD * 2;
+  const scale = room.touch ? Math.max(5, Math.min(13, (window.innerWidth - 56) / spanX, (window.innerHeight - 150) / spanZ)) : 6.6;
+  const reach = room.touch ? 26 : DOT;
   const minX = BOUNDS.minX - PAD;
   const minZ = BOUNDS.minZ - PAD;
   const width = Math.round((BOUNDS.maxX - BOUNDS.minX + PAD * 2) * scale);
@@ -20,10 +24,11 @@ export function start(room) {
   const wrap = document.createElement('div');
   wrap.className = 'minimap';
   wrap.hidden = true;
-  wrap.innerHTML = '<canvas aria-label="Map of the room. Click a place to walk there."></canvas><span class="minimap-label" hidden></span>';
+  wrap.innerHTML = `${room.touch ? '<div class="minimap-head"><b>Tap a dot to see what it is</b><button type="button" class="minimap-go" hidden>Walk there</button><button type="button" class="minimap-x" aria-label="Close the map">×</button></div>' : ''}
+    <div class="minimap-plan"><canvas aria-label="Map of the room. Choose a place to walk there."></canvas><span class="minimap-label" hidden></span></div>`;
   document.body.appendChild(wrap);
-  const canvas = wrap.firstChild;
-  const label = wrap.lastChild;
+  const canvas = wrap.querySelector('canvas');
+  const label = wrap.querySelector('.minimap-label');
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   canvas.style.width = `${width}px`;
@@ -35,8 +40,9 @@ export function start(room) {
   const name = (id) => PLACES[id].label.replace(/^the /, '');
   const places = Object.entries(room.places).filter(([id]) => PLACES[id]);
 
-  let shown = true;
-  try { shown = localStorage.getItem(STORE) !== '0'; } catch { /* private mode */ }
+  // A phone has no room for a map that is always open: there it is asked for.
+  let shown = !room.touch;
+  if (!room.touch) try { shown = localStorage.getItem(STORE) !== '0'; } catch { /* private mode */ }
   let hovered = null;
   let since = 1;
 
@@ -84,7 +90,7 @@ export function start(room) {
       const on = id === hovered;
       ctx.fillStyle = on ? '#a5b4fc' : 'rgba(255, 255, 255, 0.78)';
       ctx.beginPath();
-      ctx.arc(px(place.at[0]), py(place.at[1]), on ? 3.6 : 2.3, 0, Math.PI * 2);
+      ctx.arc(px(place.at[0]), py(place.at[1]), (on ? 3.6 : 2.3) * (room.touch ? 1.7 : 1), 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -108,7 +114,7 @@ export function start(room) {
     const x = event.clientX - box.left;
     const y = event.clientY - box.top;
     let best = null;
-    let nearest = DOT;
+    let nearest = reach;
     for (const [id, place] of places) {
       const d = Math.hypot(px(place.at[0]) - x, py(place.at[1]) - y);
       if (d < nearest) { nearest = d; best = id; }
@@ -117,6 +123,7 @@ export function start(room) {
   }
 
   canvas.addEventListener('pointermove', (event) => {
+    if (room.touch) return;
     const at = placeAt(event);
     hovered = at.id;
     canvas.style.cursor = at.id ? 'pointer' : 'crosshair';
@@ -128,17 +135,43 @@ export function start(room) {
     }
     since = 1;
   });
-  canvas.addEventListener('pointerleave', () => { hovered = null; label.hidden = true; since = 1; });
+  canvas.addEventListener('pointerleave', () => { if (room.touch) return; hovered = null; label.hidden = true; since = 1; });
+  // With no pointer to hover, a phone names the place first and walks on a second tap.
+  const title = wrap.querySelector('.minimap-head b');
+  const go = wrap.querySelector('.minimap-go');
+  let chosen = null;
+  function choose(id) {
+    chosen = id;
+    hovered = id;
+    since = 1;
+    if (title) title.textContent = id ? name(id) : 'Tap a dot to see what it is';
+    if (go) go.hidden = !id;
+  }
   canvas.addEventListener('click', (event) => {
     const at = placeAt(event);
-    if (at.id) room.goTo(at.id);
-    else room.walkTo([at.x, at.z]);
+    if (!room.touch) {
+      if (at.id) room.goTo(at.id);
+      else room.walkTo([at.x, at.z]);
+      return;
+    }
+    if (at.id) { choose(at.id); return; }
+    choose(null);
+    room.walkTo([at.x, at.z]);
+    setTimeout(() => show(false), 250);
   });
+  go?.addEventListener('click', () => {
+    if (chosen) room.goTo(chosen);
+    show(false);
+  });
+  wrap.querySelector('.minimap-x')?.addEventListener('click', () => show(false));
 
   function show(on) {
     shown = on;
-    try { localStorage.setItem(STORE, on ? '1' : '0'); } catch { /* private mode */ }
+    if (!room.touch) try { localStorage.setItem(STORE, on ? '1' : '0'); } catch { /* private mode */ }
     wrap.hidden = !(shown && room.state().entered);
+    document.body.classList.toggle('map-open', !wrap.hidden);
+    if (room.touch && wrap.hidden) choose(null);
+    document.getElementById('tMap')?.setAttribute('aria-pressed', String(!wrap.hidden));
     since = 1;
   }
 
@@ -162,6 +195,7 @@ export function start(room) {
 
   window.room = Object.assign(window.room || {}, {
     map: show,
+    mapShown: () => !wrap.hidden,
     // Where a place is drawn on the map, in page coordinates.
     mapPoint(id) {
       const box = canvas.getBoundingClientRect();

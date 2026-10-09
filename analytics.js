@@ -120,14 +120,17 @@
     Array.prototype.forEach.call(pill.querySelectorAll('.visitor-stat'), function (stat) {
       var key = stat.dataset.series;
 
+      var over = false;
       stat.addEventListener('mouseenter', function () {
+        over = true;
         charting().then(function () {
+          if (!over) return;
           peek.textContent = '';
           peek.appendChild(charts.sparkline(series, key));
           peek.hidden = false;
         });
       });
-      stat.addEventListener('mouseleave', function () { peek.hidden = true; });
+      stat.addEventListener('mouseleave', function () { over = false; peek.hidden = true; });
 
       if (!panel) return;
       stat.addEventListener('click', function () {
